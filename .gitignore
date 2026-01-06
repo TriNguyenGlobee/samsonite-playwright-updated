@@ -1,0 +1,22 @@
+# Node
+node_modules
+npm-debug.log
+yarn-error.log
+package-lock.json
+
+# Playwright
+test-results/
+playwright-report/
+blob-report/
+.playwright/
+.env
+test-env.test.ts
+utils/data/
+
+# Allure-report
+allure-report*/
+allure-results*/
+
+# Runable file
+run-multi-parallel.ps1
+run-multi.ps1
