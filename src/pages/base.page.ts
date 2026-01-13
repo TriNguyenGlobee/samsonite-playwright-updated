@@ -624,6 +624,14 @@ export class BasePage {
         });
     }
 
+    async assertEnabled(locator: Locator, description?: string) {
+        await step(description || "Assert element enabled", async () => {
+            await expect(locator).toBeEnabled({
+                timeout: 10000
+            });
+        });
+    }
+
     async assertHidden(locator: Locator, description?: string) {
         await step(description || "Assert element hidden", async () => {
             await expect(locator.first()).toBeHidden({

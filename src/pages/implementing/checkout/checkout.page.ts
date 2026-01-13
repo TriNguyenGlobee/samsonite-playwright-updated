@@ -1,6 +1,6 @@
 import { Page, Locator } from "@playwright/test";
 import { BasePage } from "../../base.page";
-import { t, PageUtils, selectDropdownOption } from "../../../../utils/helpers/helpers";
+import { t, PageUtils, selectDropdownOption, waitForHasBefore } from "../../../../utils/helpers/helpers";
 import { Config } from "../../../../config/env.config";
 import { step, attachment } from "allure-js-commons";
 import { test } from "@playwright/test";
@@ -26,13 +26,18 @@ export class CheckoutPage extends BasePage {
     readonly recipientPhone: Locator;
     readonly recipientContinueBtn: Locator;
     readonly paymentcontinueBtn: Locator;
+    readonly paymentEditBtn: Locator;
     readonly visaIcon: Locator;
     readonly masterIcon: Locator;
     readonly paypalIcon: Locator;
     readonly atomeIcon: Locator;
     readonly googlepayIcon: Locator;
+    readonly gpaybutton: Locator;
     readonly placeOrderBtn: Locator;
+    readonly paypalCheckoutBtn: Locator;
     readonly orderSuccessTitle: Locator;
+    readonly cvvModalCVVTextbox: Locator;
+    readonly cvvModalSubmitButton: Locator;
 
     constructor(page: Page) {
         super(page);
@@ -55,14 +60,19 @@ export class CheckoutPage extends BasePage {
         this.recipientLastName = this.recipientSection.locator(`xpath=.//input[@id="shippingLastName"]`)
         this.recipientPhone = this.recipientSection.locator(`xpath=.//input[@id="shippingPhoneNumber"]`)
         this.recipientContinueBtn = this.recipientSection.locator(`xpath=.//button[@type="submit"]`)
+        this.paymentEditBtn = page.locator(`//div[h4[normalize-space(text())="Payment"]]//span[normalize-space(text())="Edit"]`)
         this.paymentcontinueBtn = page.locator(`//div[@class="card payment-form"]//button[@type="submit"]`)
         this.visaIcon = page.locator(`//li[@data-method-id="CREDIT_CARD" and @data-card-type="Visa"]//a`)
         this.masterIcon = page.locator(`//li[@data-method-id="CREDIT_CARD" and @data-card-type="MasterCard"]//a`)
         this.paypalIcon = page.locator(`//li[@data-method-id="PayPal"]//a`)
         this.atomeIcon = page.locator(`//li[@data-method-id="ATOME_PAYMENT"]//a`)
         this.googlepayIcon = page.locator(`//li[@data-method-id="DW_GOOGLE_PAY"]//a`)
+        this.gpaybutton = page.locator(`#gpay-button-online-api-id`)
         this.placeOrderBtn = page.locator('//div[contains(@class,"page-checkout")]//div[contains(@class,"mini-order-summary")]//button[@value="place-order"]');
+        this.paypalCheckoutBtn = page.locator(`//div[.//span[normalize-space(text())="Checkout"] and @role="button"]`)
         this.orderSuccessTitle = this.page.locator('//h2[@class="order-thank-you-msg"]');
+        this.cvvModalCVVTextbox = page.locator(`//div[label[normalize-space(text())="CVV"] and @class="security-code-input"]//input`)
+        this.cvvModalSubmitButton = page.locator(`//button[@id="cvv-code-submit-btn"]`)
     }
 
     // =========================
@@ -78,19 +88,19 @@ export class CheckoutPage extends BasePage {
 
             if (data.lastName) {
                 await this.type(this.lastNameTextbox, data.lastName,
-                    `Fill firstname textbox: ${data.lastName}`
+                    `Fill lastname textbox: ${data.lastName}`
                 )
             }
 
             if (data.email) {
                 await this.type(this.emailTextbox, data.email,
-                    `Fill firstname textbox: ${data.email}`
+                    `Fill email textbox: ${data.email}`
                 )
             }
 
             if (data.phone) {
                 await this.type(this.phoneTextbox, data.phone,
-                    `Fill firstname textbox: ${data.phone}`
+                    `Fill phone number textbox: ${data.phone}`
                 )
             }
 
@@ -112,19 +122,19 @@ export class CheckoutPage extends BasePage {
         await step(description || "Fill recipient details detail", async () => {
             if (data.postcode) {
                 await this.type(this.postalCodeTxt, data.postcode,
-                    `Fill firstname textbox: ${data.postcode}`
+                    `Fill postcode textbox: ${data.postcode}`
                 )
             }
 
             if (data.address1) {
                 await this.type(this.address1Txt, data.address1,
-                    `Fill firstname textbox: ${data.address1}`
+                    `Fill address textbox: ${data.address1}`
                 )
             }
 
             if (data.unitnumber) {
                 await this.type(this.unitnumberTxt, data.unitnumber,
-                    `Fill firstname textbox: ${data.unitnumber}`
+                    `Fill unit number textbox: ${data.unitnumber}`
                 )
             }
 
@@ -152,13 +162,15 @@ export class CheckoutPage extends BasePage {
     // =========================
     // 📦 Helpers
     // =========================
-    async isCheckoutPageDisplayed(): Promise<boolean> {
+    async isCheckoutPageDisplayed(login: boolean = false): Promise<boolean> {
         await PageUtils.waitForDomAvailable(this.page)
         try {
             const title = await this.page.title();
             const expectedTitle = t.checkoutpage('title')
             const currentUrl = await this.page.url();
-            const expectedUrl = Config.baseURL + "checkout?stage=shipping#shipping";
+            let expectedUrl = Config.baseURL + "checkout?stage=shipping#shipping";
+
+            if (login) {expectedUrl = Config.baseURL + "checkout"}
 
             await test.step("Checkout page data: ", async () => {
                 await attachment("Current Page Title", title, "text/plain");
@@ -201,22 +213,7 @@ export class CheckoutPage extends BasePage {
             `//div[@class="step-wrapper" and .//div[normalize-space(text())="${stepName}"]]//i`
         );
 
-        if (await locator.count() === 0) return false;
-
-        return await locator.first().evaluate((el) => {
-            const before = window.getComputedStyle(el, '::before');
-            let content = before.getPropertyValue('content') || '';
-            const display = before.getPropertyValue('display');
-            const visibility = before.getPropertyValue('visibility');
-
-            content = content.replace(/^"(.*)"$/, '$1').trim();
-
-            const hasContent = content !== '' && content.toLowerCase() !== 'none';
-            const isDisplayed = display !== 'none';
-            const isVisible = visibility !== 'hidden' && visibility !== 'collapse';
-
-            return Boolean(hasContent && isDisplayed && isVisible);
-        });
+        return await waitForHasBefore(locator)
     }
 
     // =========================

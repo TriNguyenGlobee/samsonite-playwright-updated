@@ -12,6 +12,7 @@ blob-report/
 .env
 test-env.test.ts
 utils/data/
+screenshots/
 
 # Allure-report
 allure-report*/

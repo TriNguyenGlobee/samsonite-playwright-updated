@@ -2,6 +2,9 @@ import { Page, Locator } from '@playwright/test';
 import { I18n, Translations } from "../../config/i18n.config";
 import { test, expect } from '@playwright/test';
 import { step } from "allure-js-commons";
+import path from 'path';
+import { attachment } from 'allure-js-commons';
+import fs from 'fs';
 
 /**
  * **************************************************************************
@@ -364,6 +367,62 @@ export async function getReviewDecimalRatingStar(page: Page, index: number) {
     return Number(rating.toFixed(2));
   })
 }
+
+export async function screenshotAndAttach(
+  page: Page,
+  folderPath: string,
+  fileName: string
+) {
+  const dir = path.resolve(folderPath);
+
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
+
+  const filePath = path.join(dir, `${fileName}.png`);
+
+  const buffer = await page.screenshot({ path: filePath, fullPage: true });
+
+  await attachment(fileName, buffer, 'image/png');
+}
+
+/**
+ * Wait until locator has ::before
+ * @returns true if has ::before in timeout, else return false
+ */
+export async function waitForHasBefore(
+  locator: Locator,
+  timeoutMs: number = 3000,
+  pollingMs: number = 100
+): Promise<boolean> {
+  const start = Date.now();
+
+  while (Date.now() - start < timeoutMs) {
+    try {
+      const hasBefore = await locator.evaluate(el => {
+        const style = window.getComputedStyle(el, '::before');
+
+        if (!style) return false;
+
+        const content = style.getPropertyValue('content');
+
+        return (
+          content !== 'none' &&
+          content !== '""' &&
+          content !== "''"
+        );
+      });
+
+      if (hasBefore) return true;
+    } catch {
+    }
+
+    await new Promise(r => setTimeout(r, pollingMs));
+  }
+
+  return false;
+}
+
 
 /**
  * **************************************************************************
