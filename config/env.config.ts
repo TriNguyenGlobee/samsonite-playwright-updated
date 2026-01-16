@@ -10,6 +10,8 @@ interface Credentials {
     password: string;
     gg_username: string;
     gg_password: string;
+    fb_username: string;
+    fb_password: string;
 }
 
 interface EnvironmentConfig {
@@ -28,7 +30,9 @@ const environments: Record<EnvironmentName, Record<Locale, EnvironmentConfig>> =
                 username: process.env.DEV_USERNAME_SG as string,
                 password: process.env.DEV_PASSWORD_SG as string,
                 gg_username: process.env.DEV_GG_USERNAME_SG as string,
-                gg_password: process.env.DEV_GG_PASSWORD_SG as string
+                gg_password: process.env.DEV_GG_PASSWORD_SG as string,
+                fb_username: process.env.DEV_FB_USERNAME_SG as string,
+                fb_password: process.env.DEV_FB_PASSWORD_SG as string
             },
             basicAuthUser: process.env.DEV_BASIC_AUTH_USER,
             basicAuthPass: process.env.DEV_BASIC_AUTH_PASS,
@@ -39,7 +43,9 @@ const environments: Record<EnvironmentName, Record<Locale, EnvironmentConfig>> =
                 username: process.env.DEV_USERNAME_JP as string,
                 password: process.env.DEV_PASSWORD_JP as string,
                 gg_username: process.env.DEV_GG_USERNAME_JP as string,
-                gg_password: process.env.DEV_GG_PASSWORD_JP as string
+                gg_password: process.env.DEV_GG_PASSWORD_JP as string,
+                fb_username: process.env.DEV_FB_USERNAME_JP as string,
+                fb_password: process.env.DEV_FB_PASSWORD_JP as string
             },
             basicAuthUser: process.env.DEV_BASIC_AUTH_USER,
             basicAuthPass: process.env.DEV_BASIC_AUTH_PASS,
@@ -50,7 +56,9 @@ const environments: Record<EnvironmentName, Record<Locale, EnvironmentConfig>> =
                 username: process.env.DEV_USERNAME_TW as string,
                 password: process.env.DEV_PASSWORD_TW as string,
                 gg_username: process.env.DEV_GG_USERNAME_TW as string,
-                gg_password: process.env.DEV_GG_PASSWORD_TW as string
+                gg_password: process.env.DEV_GG_PASSWORD_TW as string,
+                fb_username: process.env.DEV_FB_USERNAME_TW as string,
+                fb_password: process.env.DEV_FB_PASSWORD_TW as string
             },
             basicAuthUser: process.env.DEV_BASIC_AUTH_USER,
             basicAuthPass: process.env.DEV_BASIC_AUTH_PASS,
@@ -61,7 +69,9 @@ const environments: Record<EnvironmentName, Record<Locale, EnvironmentConfig>> =
                 username: process.env.DEV_USERNAME_PH as string,
                 password: process.env.DEV_PASSWORD_PH as string,
                 gg_username: process.env.DEV_GG_USERNAME_PH as string,
-                gg_password: process.env.DEV_GG_PASSWORD_PH as string
+                gg_password: process.env.DEV_GG_PASSWORD_PH as string,
+                fb_username: process.env.DEV_FB_USERNAME_PH as string,
+                fb_password: process.env.DEV_FB_PASSWORD_PH as string
             },
             basicAuthUser: process.env.DEV_BASIC_AUTH_USER,
             basicAuthPass: process.env.DEV_BASIC_AUTH_PASS,
@@ -72,7 +82,9 @@ const environments: Record<EnvironmentName, Record<Locale, EnvironmentConfig>> =
                 username: process.env.DEV_USERNAME_AU as string,
                 password: process.env.DEV_PASSWORD_AU as string,
                 gg_username: process.env.DEV_GG_USERNAME_AU as string,
-                gg_password: process.env.DEV_GG_PASSWORD_AU as string
+                gg_password: process.env.DEV_GG_PASSWORD_AU as string,
+                fb_username: process.env.DEV_FB_USERNAME_AU as string,
+                fb_password: process.env.DEV_FB_PASSWORD_AU as string
             },
             basicAuthUser: process.env.DEV_BASIC_AUTH_USER,
             basicAuthPass: process.env.DEV_BASIC_AUTH_PASS,
@@ -83,7 +95,9 @@ const environments: Record<EnvironmentName, Record<Locale, EnvironmentConfig>> =
                 username: process.env.DEV_USERNAME_MY as string,
                 password: process.env.DEV_PASSWORD_MY as string,
                 gg_username: process.env.DEV_GG_USERNAME_MY as string,
-                gg_password: process.env.DEV_GG_PASSWORD_MY as string
+                gg_password: process.env.DEV_GG_PASSWORD_MY as string,
+                fb_username: process.env.DEV_FB_USERNAME_MY as string,
+                fb_password: process.env.DEV_FB_PASSWORD_MY as string
             },
             basicAuthUser: process.env.DEV_BASIC_AUTH_USER,
             basicAuthPass: process.env.DEV_BASIC_AUTH_PASS,
@@ -94,7 +108,9 @@ const environments: Record<EnvironmentName, Record<Locale, EnvironmentConfig>> =
                 username: process.env.DEV_USERNAME_ID as string,
                 password: process.env.DEV_PASSWORD_ID as string,
                 gg_username: process.env.DEV_GG_USERNAME_ID as string,
-                gg_password: process.env.DEV_GG_PASSWORD_ID as string
+                gg_password: process.env.DEV_GG_PASSWORD_ID as string,
+                fb_username: process.env.DEV_FB_USERNAME_ID as string,
+                fb_password: process.env.DEV_FB_PASSWORD_ID as string
             },
             basicAuthUser: process.env.DEV_BASIC_AUTH_USER,
             basicAuthPass: process.env.DEV_BASIC_AUTH_PASS,
@@ -105,7 +121,9 @@ const environments: Record<EnvironmentName, Record<Locale, EnvironmentConfig>> =
                 username: process.env.DEV_USERNAME_NZ as string,
                 password: process.env.DEV_PASSWORD_NZ as string,
                 gg_username: process.env.DEV_GG_USERNAME_NZ as string,
-                gg_password: process.env.DEV_GG_PASSWORD_NZ as string
+                gg_password: process.env.DEV_GG_PASSWORD_NZ as string,
+                fb_username: process.env.DEV_FB_USERNAME_NZ as string,
+                fb_password: process.env.DEV_FB_PASSWORD_NZ as string
             },
             basicAuthUser: process.env.DEV_BASIC_AUTH_USER,
             basicAuthPass: process.env.DEV_BASIC_AUTH_PASS,
@@ -116,7 +134,9 @@ const environments: Record<EnvironmentName, Record<Locale, EnvironmentConfig>> =
                 username: process.env.DEV_USERNAME_HK as string,
                 password: process.env.DEV_PASSWORD_HK as string,
                 gg_username: process.env.DEV_GG_USERNAME_HK as string,
-                gg_password: process.env.DEV_GG_PASSWORD_NZ as string
+                gg_password: process.env.DEV_GG_PASSWORD_NZ as string,
+                fb_username: process.env.DEV_FB_USERNAME_HK as string,
+                fb_password: process.env.DEV_FB_PASSWORD_HK as string
             },
             basicAuthUser: process.env.DEV_BASIC_AUTH_USER,
             basicAuthPass: process.env.DEV_BASIC_AUTH_PASS,
@@ -127,7 +147,9 @@ const environments: Record<EnvironmentName, Record<Locale, EnvironmentConfig>> =
                 username: process.env.DEV_USERNAME_KR as string,
                 password: process.env.DEV_PASSWORD_KR as string,
                 gg_username: process.env.DEV_GG_USERNAME_KR as string,
-                gg_password: process.env.DEV_GG_PASSWORD_KR as string
+                gg_password: process.env.DEV_GG_PASSWORD_KR as string,
+                fb_username: process.env.DEV_FB_USERNAME_KR as string,
+                fb_password: process.env.DEV_FB_PASSWORD_KR as string
             },
             basicAuthUser: process.env.DEV_BASIC_AUTH_USER,
             basicAuthPass: process.env.DEV_BASIC_AUTH_PASS,
@@ -138,7 +160,9 @@ const environments: Record<EnvironmentName, Record<Locale, EnvironmentConfig>> =
                 username: process.env.DEV_USERNAME_IN as string,
                 password: process.env.DEV_PASSWORD_IN as string,
                 gg_username: process.env.DEV_GG_USERNAME_IN as string,
-                gg_password: process.env.DEV_GG_PASSWORD_IN as string
+                gg_password: process.env.DEV_GG_PASSWORD_IN as string,
+                fb_username: process.env.DEV_FB_USERNAME_IN as string,
+                fb_password: process.env.DEV_FB_PASSWORD_IN as string
             },
             basicAuthUser: process.env.DEV_BASIC_AUTH_USER,
             basicAuthPass: process.env.DEV_BASIC_AUTH_PASS,
@@ -149,7 +173,9 @@ const environments: Record<EnvironmentName, Record<Locale, EnvironmentConfig>> =
                 username: process.env.DEV_USERNAME_TH as string,
                 password: process.env.DEV_PASSWORD_TH as string,
                 gg_username: process.env.DEV_GG_USERNAME_TH as string,
-                gg_password: process.env.DEV_GG_PASSWORD_TH as string
+                gg_password: process.env.DEV_GG_PASSWORD_TH as string,
+                fb_username: process.env.DEV_FB_USERNAME_TH as string,
+                fb_password: process.env.DEV_FB_PASSWORD_TH as string
             },
             basicAuthUser: process.env.DEV_BASIC_AUTH_USER,
             basicAuthPass: process.env.DEV_BASIC_AUTH_PASS,
@@ -162,7 +188,9 @@ const environments: Record<EnvironmentName, Record<Locale, EnvironmentConfig>> =
                 username: process.env.STG_USERNAME_SG as string,
                 password: process.env.STG_PASSWORD_SG as string,
                 gg_username: process.env.STG_GG_USERNAME_SG as string,
-                gg_password: process.env.STG_GG_PASSWORD_SG as string
+                gg_password: process.env.STG_GG_PASSWORD_SG as string,
+                fb_username: process.env.STG_FB_USERNAME_SG as string,
+                fb_password: process.env.STG_FB_PASSWORD_SG as string
             },
             basicAuthUser: process.env.STG_BASIC_AUTH_USER,
             basicAuthPass: process.env.STG_BASIC_AUTH_PASS,
@@ -173,7 +201,9 @@ const environments: Record<EnvironmentName, Record<Locale, EnvironmentConfig>> =
                 username: process.env.STG_USERNAME_JP as string,
                 password: process.env.STG_PASSWORD_JP as string,
                 gg_username: process.env.STG_GG_USERNAME_JP as string,
-                gg_password: process.env.STG_GG_PASSWORD_JP as string
+                gg_password: process.env.STG_GG_PASSWORD_JP as string,
+                fb_username: process.env.STG_FB_USERNAME_JP as string,
+                fb_password: process.env.STG_FB_PASSWORD_JP as string
             },
             basicAuthUser: process.env.STG_BASIC_AUTH_USER,
             basicAuthPass: process.env.STG_BASIC_AUTH_PASS,
@@ -184,7 +214,9 @@ const environments: Record<EnvironmentName, Record<Locale, EnvironmentConfig>> =
                 username: process.env.STG_USERNAME_TW as string,
                 password: process.env.STG_PASSWORD_TW as string,
                 gg_username: process.env.STG_GG_USERNAME_TW as string,
-                gg_password: process.env.STG_GG_PASSWORD_TW as string
+                gg_password: process.env.STG_GG_PASSWORD_TW as string,
+                fb_username: process.env.STG_FB_USERNAME_TW as string,
+                fb_password: process.env.STG_FB_PASSWORD_TW as string
             },
             basicAuthUser: process.env.STG_BASIC_AUTH_USER,
             basicAuthPass: process.env.STG_BASIC_AUTH_PASS,
@@ -195,7 +227,9 @@ const environments: Record<EnvironmentName, Record<Locale, EnvironmentConfig>> =
                 username: process.env.STG_USERNAME_PH as string,
                 password: process.env.STG_PASSWORD_PH as string,
                 gg_username: process.env.STG_GG_USERNAME_PH as string,
-                gg_password: process.env.STG_GG_PASSWORD_PH as string
+                gg_password: process.env.STG_GG_PASSWORD_PH as string,
+                fb_username: process.env.STG_FB_USERNAME_PH as string,
+                fb_password: process.env.STG_FB_PASSWORD_PH as string
             },
             basicAuthUser: process.env.STG_BASIC_AUTH_USER,
             basicAuthPass: process.env.STG_BASIC_AUTH_PASS,
@@ -206,7 +240,9 @@ const environments: Record<EnvironmentName, Record<Locale, EnvironmentConfig>> =
                 username: process.env.STG_USERNAME_AU as string,
                 password: process.env.STG_PASSWORD_AU as string,
                 gg_username: process.env.STG_GG_USERNAME_AU as string,
-                gg_password: process.env.STG_GG_PASSWORD_AU as string
+                gg_password: process.env.STG_GG_PASSWORD_AU as string,
+                fb_username: process.env.STG_FB_USERNAME_AU as string,
+                fb_password: process.env.STG_FB_PASSWORD_AU as string
             },
             basicAuthUser: process.env.STG_BASIC_AUTH_USER,
             basicAuthPass: process.env.STG_BASIC_AUTH_PASS,
@@ -217,7 +253,9 @@ const environments: Record<EnvironmentName, Record<Locale, EnvironmentConfig>> =
                 username: process.env.STG_USERNAME_MY as string,
                 password: process.env.STG_PASSWORD_MY as string,
                 gg_username: process.env.STG_GG_USERNAME_MY as string,
-                gg_password: process.env.STG_GG_PASSWORD_MY as string
+                gg_password: process.env.STG_GG_PASSWORD_MY as string,
+                fb_username: process.env.STG_FB_USERNAME_MY as string,
+                fb_password: process.env.STG_FB_PASSWORD_MY as string
             },
             basicAuthUser: process.env.STG_BASIC_AUTH_USER,
             basicAuthPass: process.env.STG_BASIC_AUTH_PASS,
@@ -228,7 +266,9 @@ const environments: Record<EnvironmentName, Record<Locale, EnvironmentConfig>> =
                 username: process.env.STG_USERNAME_ID as string,
                 password: process.env.STG_PASSWORD_ID as string,
                 gg_username: process.env.STG_GG_USERNAME_ID as string,
-                gg_password: process.env.STG_GG_PASSWORD_ID as string
+                gg_password: process.env.STG_GG_PASSWORD_ID as string,
+                fb_username: process.env.STG_FB_USERNAME_ID as string,
+                fb_password: process.env.STG_FB_PASSWORD_ID as string
             },
             basicAuthUser: process.env.STG_BASIC_AUTH_USER,
             basicAuthPass: process.env.STG_BASIC_AUTH_PASS,
@@ -239,7 +279,9 @@ const environments: Record<EnvironmentName, Record<Locale, EnvironmentConfig>> =
                 username: process.env.STG_USERNAME_NZ as string,
                 password: process.env.STG_PASSWORD_NZ as string,
                 gg_username: process.env.STG_GG_USERNAME_NZ as string,
-                gg_password: process.env.STG_GG_PASSWORD_NZ as string
+                gg_password: process.env.STG_GG_PASSWORD_NZ as string,
+                fb_username: process.env.STG_FB_USERNAME_NZ as string,
+                fb_password: process.env.STG_FB_PASSWORD_NZ as string
             },
             basicAuthUser: process.env.STG_BASIC_AUTH_USER,
             basicAuthPass: process.env.STG_BASIC_AUTH_PASS,
@@ -250,7 +292,9 @@ const environments: Record<EnvironmentName, Record<Locale, EnvironmentConfig>> =
                 username: process.env.STG_USERNAME_HK as string,
                 password: process.env.STG_PASSWORD_HK as string,
                 gg_username: process.env.STG_GG_USERNAME_HK as string,
-                gg_password: process.env.STG_GG_PASSWORD_HK as string
+                gg_password: process.env.STG_GG_PASSWORD_HK as string,
+                fb_username: process.env.STG_FB_USERNAME_HK as string,
+                fb_password: process.env.STG_FB_PASSWORD_HK as string
             },
             basicAuthUser: process.env.STG_BASIC_AUTH_USER,
             basicAuthPass: process.env.STG_BASIC_AUTH_PASS,
@@ -261,7 +305,9 @@ const environments: Record<EnvironmentName, Record<Locale, EnvironmentConfig>> =
                 username: process.env.STG_USERNAME_KR as string,
                 password: process.env.STG_PASSWORD_KR as string,
                 gg_username: process.env.STG_GG_USERNAME_KR as string,
-                gg_password: process.env.STG_GG_PASSWORD_KR as string
+                gg_password: process.env.STG_GG_PASSWORD_KR as string,
+                fb_username: process.env.STG_FB_USERNAME_KR as string,
+                fb_password: process.env.STG_FB_PASSWORD_KR as string
             },
             basicAuthUser: process.env.STG_BASIC_AUTH_USER,
             basicAuthPass: process.env.STG_BASIC_AUTH_PASS,
@@ -272,7 +318,9 @@ const environments: Record<EnvironmentName, Record<Locale, EnvironmentConfig>> =
                 username: process.env.STG_USERNAME_IN as string,
                 password: process.env.STG_PASSWORD_IN as string,
                 gg_username: process.env.STG_GG_USERNAME_IN as string,
-                gg_password: process.env.STG_GG_PASSWORD_IN as string
+                gg_password: process.env.STG_GG_PASSWORD_IN as string,
+                fb_username: process.env.STG_FB_USERNAME_IN as string,
+                fb_password: process.env.STG_FB_PASSWORD_IN as string
             },
             basicAuthUser: process.env.STG_BASIC_AUTH_USER,
             basicAuthPass: process.env.STG_BASIC_AUTH_PASS,
@@ -283,7 +331,9 @@ const environments: Record<EnvironmentName, Record<Locale, EnvironmentConfig>> =
                 username: process.env.STG_USERNAME_TH as string,
                 password: process.env.STG_PASSWORD_TH as string,
                 gg_username: process.env.STG_GG_USERNAME_TH as string,
-                gg_password: process.env.STG_GG_PASSWORD_TH as string
+                gg_password: process.env.STG_GG_PASSWORD_TH as string,
+                fb_username: process.env.STG_FB_USERNAME_TH as string,
+                fb_password: process.env.STG_FB_PASSWORD_TH as string
             },
             basicAuthUser: process.env.STG_BASIC_AUTH_USER,
             basicAuthPass: process.env.STG_BASIC_AUTH_PASS,

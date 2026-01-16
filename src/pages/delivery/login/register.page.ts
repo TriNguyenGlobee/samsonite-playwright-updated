@@ -1,6 +1,9 @@
 import { Page, Locator } from "@playwright/test";
 import { BasePage } from "../../base.page";
-import { t, selectDropdownOption } from "../../../../utils/helpers/helpers";
+import {
+    t, selectDropdownOption, generateSentence, generateNumberString, generateReadableTimeBasedId, randomAlphaString,
+    randomInt
+} from "../../../../utils/helpers/helpers";
 import { Config } from "../../../../config/env.config";
 import { step } from "allure-js-commons";
 
@@ -55,20 +58,32 @@ export class RegisterPage extends BasePage {
     // =========================
     // 🚀 Actions
     // =========================
-    async fillRegisterForm(data: any) {
+    async fillRegisterForm(data?: {
+        gender?: string;
+        firstname?: string;
+        lastname?: string;
+        phone?: string;
+        day?: string;
+        month?: string;
+        year?: string;
+        email?: string;
+        password?: string;
+        confirmPassword?: string;
+        agreePolicy?: boolean;
+    }) {
         const {
-            gender,
-            firstname,
-            lastname,
-            phone,
-            day,
-            month,
-            year,
-            email,
-            password,
-            confirmPassword,
+            gender = `Mr.`,
+            firstname = `fname ${randomAlphaString(4)} ${randomAlphaString(3)}`,
+            lastname = `lname ${randomAlphaString(4)} ${randomAlphaString(3)}`,
+            phone = `${generateNumberString(8)}`,
+            day = `${randomInt(1, 28)}`,
+            month = `${randomInt(1, 12)}`,
+            year = `${randomInt(1930, 2008)}`,
+            email = `globee${generateReadableTimeBasedId()}@mailinator.com`,
+            password = "Test@123",
+            confirmPassword = "Test@123",
             agreePolicy = true,
-        } = data;
+        } = data ?? {};
 
         await step('Fill register form', async () => {
             const titleDropdown = this.page.locator(`//select[@id="registration-form-title"]`)

@@ -72,6 +72,26 @@ export function generateReadableTimeBasedId(): string {
   return `${timestamp}${random}`;
 }
 
+export function randomInt(min: number, max: number): number {
+    if (min > max) {
+        throw new Error('min must be less than or equal to max');
+    }
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+export function randomFloat(min: number, max: number, decimals = 2): number {
+    if (min > max) {
+        throw new Error('min must be less than max');
+    }
+    const num = Math.random() * (max - min) + min;
+    return Number(num.toFixed(decimals));
+}
+
+export function randomAlphaString(length: number): string {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+    return Array.from({ length }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+}
+
 /**
  * Generate a paragraph with specified number of chars
  * @param length 
@@ -89,6 +109,19 @@ export function generateSentence(length: number): string {
   }
 
   return result.trim();
+}
+
+/**
+ * Generate a random number string
+ * @param length 
+ * @returns 
+ */
+export function generateNumberString(length: number): string {
+  let result = '';
+  for (let i = 0; i < length; i++) {
+    result += Math.floor(Math.random() * 10); // 0–9
+  }
+  return result;
 }
 
 /**

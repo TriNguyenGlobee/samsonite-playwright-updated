@@ -49,7 +49,10 @@ export default defineConfig({
             channel: 'chrome',
         },
         viewport: null,
-        screenshot: 'on',
+        screenshot: {
+            mode: 'on',
+            fullPage: true,
+        },
         video: 'retain-on-failure',
         trace: 'on-first-retry'
     }

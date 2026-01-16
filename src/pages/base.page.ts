@@ -643,8 +643,8 @@ export class BasePage {
     async assertEqual(actual: any, expected: any, description?: string) {
         await step(description || "Assert equal", async () => {
             console.log(`Test data ${description} :`)
-            console.log(`Actual - "${actual}"`)
-            console.log(`Expected - "${expected}"`)
+            console.log(`- Actual: "${actual}"`)
+            console.log(`- Expected: "${expected}"`)
             expect(actual).toBe(expected);
         });
     }

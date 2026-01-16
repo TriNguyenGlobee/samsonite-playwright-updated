@@ -2,7 +2,7 @@ import { Page, Locator, expect } from "@playwright/test";
 import { BasePage } from "../../base.page";
 import { step, attachment } from "allure-js-commons";
 import { Config } from "../../../../config/env.config";
-import { PageUtils, maskEmail, t } from "../../../../utils/helpers/helpers";
+import { PageUtils, maskEmail, t, openNewTab } from "../../../../utils/helpers/helpers";
 import { test } from "@playwright/test";
 
 export abstract class LoginPage extends BasePage {
@@ -124,6 +124,37 @@ export abstract class LoginPage extends BasePage {
         await googlePage.waitForLoadState();
         await PageUtils.waitForPageLoadComplete(this.page);
         await googlePage.close();
+    }
+
+    async loginByFacebookAccount(facebookUsername: string, facebookPassword: string) {
+        const facebookPage = await openNewTab(this.page, async () => {
+            await this.signinWithFbButton.click();
+        });
+
+        expect(facebookPage).toBeDefined();
+        await expect(facebookPage).toHaveURL(/facebook\.com\/login/);
+
+        await facebookPage.waitForLoadState();
+
+        const facebookEmailTextbox = facebookPage.locator('//input[@id="email"]');
+        const facebookPasswordTextbox = facebookPage.locator('//input[@id="pass"]');
+        const facebookLoginbutton = facebookPage.locator('//input[@type="submit"]');
+
+        await step(`Type facebook username: ${facebookUsername}`, async () => {
+            await facebookEmailTextbox.fill(facebookUsername);
+        });
+
+        await step(`Type facebook password: ${'*'.repeat(facebookPassword.length)}`, async () => {
+            await facebookPasswordTextbox.fill(facebookPassword);
+        });
+
+        await step("Click facebook login button after input password", async () => {
+            await facebookLoginbutton.click();
+        });
+
+        await facebookPage.waitForLoadState();
+        await PageUtils.waitForPageLoadComplete(this.page);
+        await facebookPage.close();
     }
 
     async goToForgotPasswordPage(): Promise<void> {
