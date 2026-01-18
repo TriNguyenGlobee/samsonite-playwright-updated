@@ -1,5 +1,5 @@
 import { test, expect } from "../../../src/fixtures/test-fixture"
-import { t, clickUntil, PageUtils, delay } from "../../../utils/helpers/helpers";
+import { t, clickUntil, PageUtils, delay, screenshotAndAttach } from "../../../utils/helpers/helpers";
 import { NewArrivalsPage } from "../../../src/pages/delivery/productlistingpage/newarrivals/newarrivals.page";
 import { createHomePage } from "../../../src/factories/home.factory";
 import { createMinicartPage } from "../../../src/factories/minicart.factory";
@@ -9,7 +9,6 @@ import { step } from "allure-js-commons";
 import { CheckoutPage } from "../../../src/pages/implementing/checkout/checkout.page";
 import { loadTestData } from "../../../utils/data";
 import { Config } from "../../../config/env.config";
-import { screenshotAndAttach } from "../../../utils/helpers/helpers";
 
 test.describe("Guest-checkout", async () => {
     test.beforeEach(async ({ basicAuthPage }) => {

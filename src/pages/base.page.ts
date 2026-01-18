@@ -141,7 +141,7 @@ export class BasePage {
             try {
                 await locator.waitFor({ state: 'visible', timeout })
                 await this.type(locator, text)
-            } catch {}
+            } catch { }
         })
     }
 
@@ -933,6 +933,50 @@ export class BasePage {
             console.log(`Review point array: ${decimalPointArr.toString()}`)
             expect(isSorted(decimalPointArr, order)).toBe(true)
         })
+    }
+
+    // Assert locator shows in viewport
+    async assertLocatorInViewport(locator: Locator,
+        options?: {
+            fullyVisible?: boolean;
+            tolerance?: number;
+        }
+    ) {
+        const { fullyVisible = false, tolerance = 0 } = options || {};
+
+        await expect(locator).toBeVisible();
+
+        const isInViewport = await locator.evaluate(
+            (el, args) => {
+                const rect = el.getBoundingClientRect();
+                const tolerance = args.tolerance;
+
+                const viewportHeight =
+                    window.innerHeight || document.documentElement.clientHeight;
+                const viewportWidth =
+                    window.innerWidth || document.documentElement.clientWidth;
+
+                if (args.fullyVisible) {
+                    return (
+                        rect.top >= 0 + tolerance &&
+                        rect.left >= 0 + tolerance &&
+                        rect.bottom <= viewportHeight - tolerance &&
+                        rect.right <= viewportWidth - tolerance
+                    );
+                }
+
+                // Partial visibility (default)
+                return (
+                    rect.bottom > 0 + tolerance &&
+                    rect.right > 0 + tolerance &&
+                    rect.top < viewportHeight - tolerance &&
+                    rect.left < viewportWidth - tolerance
+                );
+            },
+            { fullyVisible, tolerance }
+        );
+
+        expect(isInViewport).toBe(true);
     }
 }
 

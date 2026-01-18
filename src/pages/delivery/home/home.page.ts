@@ -1,7 +1,7 @@
 import { Page, Locator, expect } from "@playwright/test";
 import { BasePage } from "../../base.page";
-import { t, PageUtils, getRandomInt, extractNumber } from "../../../../utils/helpers/helpers";
-import { description, step } from "allure-js-commons";
+import { t, PageUtils, getRandomInt, extractNumber, screenshotAndAttach } from "../../../../utils/helpers/helpers";
+import { step } from "allure-js-commons";
 import { Config } from "../../../../config/env.config";
 import { test } from "../../../fixtures/test-fixture";
 
@@ -460,7 +460,7 @@ export abstract class HomePage extends BasePage {
     // Right side of campaign underway section
     // Check nextButton Until nextButton Disabled
     // Click prevButton Until prevButton Disabled
-    async assertRightSideColumnActivity(page: Page) {
+    async assertRightSideColumnActivity(page: Page, screenshot: boolean = false) {
         await PageUtils.waitForDomAvailable(page, 20000)
         const title = page.locator('//div[@class="magazine-title"]');
         const itemList = page.locator(`//div[@class="magazine-title"]/following-sibling::div[@class="swiper-wrapper"]`)
@@ -487,6 +487,10 @@ export abstract class HomePage extends BasePage {
         const currentLabel = await currentActive.getAttribute('aria-label');
         expect(currentLabel).not.toBe(`1 / ${items}`);
 
+        if (screenshot){
+            await screenshotAndAttach(page, './screenshots/Home-campaignunderway', '02 - Last item shows, next button disabled');
+        }
+        
         const item1 = page.locator(`//div[@class="tile-item swiper-slide" and @aria-label="1 / ${items}"]`);
         await expect(item1).not.toHaveClass(/swiper-slide-active/);
 
@@ -507,7 +511,7 @@ export abstract class HomePage extends BasePage {
     // Product Review section
     // Check nextButton Until nextButton Disabled
     // Click prevButton Until prevButton Disabled
-    async assertProductReviewActivity(page: Page) {
+    async assertProductReviewActivity(page: Page, screenshot: boolean = false) {
         await PageUtils.waitForDomAvailable(page, 20000)
 
         const prevButton = this.productReviewSection.locator('xpath=.//div[@role="button" and contains(@class,"swiper-button-prev")]');
@@ -535,6 +539,10 @@ export abstract class HomePage extends BasePage {
         const currentActive = getActiveItem();
         const currentLabel = await currentActive.getAttribute('aria-label');
         expect(currentLabel).not.toBe(`1 / ${itemAmount}`);
+
+        if (screenshot) {
+            await screenshotAndAttach(page, './screenshots/Home-productReview', '02 - Last reivew shows, next button disabled');
+        }
 
         const item1 = page.locator(`//div[contains(@class,"AddProductReviews")]//div[contains(@class,"swiper-slide") and @aria-label="1 / ${itemAmount}"]`);
         await expect(item1).not.toHaveClass(/slide-active/);
