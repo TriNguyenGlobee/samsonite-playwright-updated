@@ -96,15 +96,15 @@ export class BasePage {
         this.decimalRatingPoint = this.prodItem.locator(`xpath=.//span[@class="bv-rating-decimal"]`);
         this.plpProductSizeDropdown = this.prodItem.locator(`xpath=///div[@data-attr="productSize"]`);
         this.plpProductSizeOption = this.plpProductSizeDropdown.locator(`xpath=.//div[@class="variant-item "]`);
-        this.searchForm = page.locator(`site-search`)
-        this.searchFormCloseButton = this.searchForm.locator(`//div[@class="site-search desktop-mode row"]//span[text()="Close"]`);
+        this.searchForm = page.locator(`//div[contains(@class,"site-search")]`)
+        this.searchFormCloseButton = page.locator(`//div[@class="site-search desktop-mode row"]//span[text()="Close"]`);
         this.popularSearchTermList = this.searchForm.locator(`//div[contains(@class,"collection-search") and not(contains(@class,"recent-search"))]`);
         this.recentSearchTermList = this.searchForm.locator(`.collection-search.recent-search`);
         this.popularSearchTermItem = this.popularSearchTermList.locator(`xpath=.//div[@class="item"]`);
         this.searchtextbox = this.searchForm.locator(`#search-box`);
         this.viewAllResultsButton = this.searchForm.locator(`.view-all-result`);
         this.recentSearchTermItem = this.recentSearchTermList.locator(`.item`);
-        this.clearSearchButton = this.searchForm.locator(`span.clear-search`);
+        this.clearSearchButton = this.searchForm.locator(`xpath=.//span[contains(@class,"clear-search")]`);
 
         this.testData = loadTestData();
     }
