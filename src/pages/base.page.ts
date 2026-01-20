@@ -118,10 +118,15 @@ export class BasePage {
         });
     }
 
-    async click(locator: Locator, description?: string) {
-        await step(description || "Click on locator", async () => {
-            await PageUtils.waitForPageLoad(this.page)
-            await locator.click();
+    async click(locator: Locator, description?: string, x?: number, y?: number) {
+        await step(description || 'Click on locator', async () => {
+            await PageUtils.waitForPageLoad(this.page);
+
+            if (x !== undefined && y !== undefined) {
+                await locator.click({ position: { x, y } });
+            } else {
+                await locator.click();
+            }
         });
     }
 
@@ -539,12 +544,16 @@ export class BasePage {
                 const termText = (await termItem.textContent())?.trim()
                 console.log(`Deleting recent search term: ${termText}`)
 
+                if (!await termItem.isVisible()) {
+                    await this.click(this.searchIcon, `Click on Search Icon to open search form`)
+                }
+
                 await this.hover(termItem, `Hover on recent search term: ${termText}`)
-                await this.click(deleteButton, `Click on delete button of recent search term: ${termText}`)
+                await this.click(deleteButton, `Click on delete button of recent search term: ${termText}`, 10, 10)
                 await delay(1000)
-            }   
+            }
         })
-    }    
+    }
 
     // =========================
     // 📦 Helpers
