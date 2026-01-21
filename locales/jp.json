@@ -467,5 +467,9 @@
     "reviewtitle": "レビューのタイトル",
     "nickname": "ニックネーム",
     "email": "電子メール"
+  },
+  "contactuspage": {
+    "title": "Contact Us | Samsonite Singapore",
+    "successmsg": "Your message has been sent. We will be contacting you shortly."
   }
 }

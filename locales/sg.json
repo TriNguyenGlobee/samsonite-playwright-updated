@@ -473,5 +473,9 @@
     "reviewtitle": "Review Title",
     "nickname": "Nickname",
     "email": "Email"
+  },
+  "contactuspage": {
+    "title": "Contact Us | Samsonite Singapore",
+    "successmsg": "Your message has been sent. We will be contacting you shortly."
   }
 }

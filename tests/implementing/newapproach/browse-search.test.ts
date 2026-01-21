@@ -14,31 +14,34 @@ test.describe("Browse-search", async () => {
         6. Recent searches are displayed
         7. Clear search input - Search input is cleared
         8. Clear recent searches - Recent searches are cleared
-        `, async ({ basicAuthPage }) => {
-        const homepage = createHomePage(basicAuthPage);
-        const MCPBanner = basicAuthPage.locator(`//button[@class="mcp-close"]`)
-        
+        `, async ({ basicAuthPageNoWatchdog }) => {
+        const homepage = createHomePage(basicAuthPageNoWatchdog);
+        const MCPBanner = basicAuthPageNoWatchdog.locator(`//button[@class="mcp-close"]`)
+
         await step("Close MCP banner if displayed", async () => {
-            await homepage.click(MCPBanner, "Close MCP banner")
+            if (await MCPBanner.isVisible()) {
+                await homepage.click(MCPBanner, "Close MCP banner")
+            }
         })
 
         await step("Clicking on Search icon", async () => {
             await homepage.click(homepage.searchIcon, `Click on Search icon`);
-            await delay(3000)
+            await delay(1000)
         })
 
         await step("Verify - 1. Search form is displayed", async () => {
             await homepage.assertVisible(homepage.searchForm, `Search form is displayed`);
-            await screenshotAndAttach(basicAuthPage, './screenshots/Search', '01 - Search form');
+            await screenshotAndAttach(basicAuthPageNoWatchdog, './screenshots/Search', '01 - Search form');
         })
 
         await step("Clicking on Close icon", async () => {
             await homepage.click(homepage.searchFormCloseButton, `Click on Close icon`);
+            await delay(3000)
         })
 
         await step("Verify - 2. Search form is closed", async () => {
             await homepage.assertHidden(homepage.searchForm, `Search form is closed`);
-            await screenshotAndAttach(basicAuthPage, './screenshots/Search', '02 - Search form closed');
+            await screenshotAndAttach(basicAuthPageNoWatchdog, './screenshots/Search', '02 - Search form closed');
         })
 
         await step("Clicking on Search icon", async () => {
@@ -49,12 +52,12 @@ test.describe("Browse-search", async () => {
         await step("Verify - 3. Select popular search term - Search results page is displayed", async () => {
             const popularSearchTerm = await homepage.popularSearchTermItem.nth(0).innerText();
             await homepage.click(homepage.popularSearchTermItem.nth(0), `Click on popular search term: ${popularSearchTerm}`, 15, 3);
-            await PageUtils.waitForPageLoad(basicAuthPage);
+            await PageUtils.waitForPageLoad(basicAuthPageNoWatchdog);
 
             await delay(5000)
 
             await homepage.assertUrl(`${Config.baseURL}search?q=${popularSearchTerm}`, `Search results page is displayed`);
-            await screenshotAndAttach(basicAuthPage, './screenshots/Search', '03 - Search results page')
+            await screenshotAndAttach(basicAuthPageNoWatchdog, './screenshots/Search', '03 - Search results page')
         })
 
         await step("Clicking on Search icon", async () => {
@@ -67,7 +70,7 @@ test.describe("Browse-search", async () => {
             //await homepage.type(homepage.searchtextbox, searchTerm, `Enter search term: ${searchTerm}`);
             await homepage.typeByManual(homepage.searchtextbox, searchTerm, `Enter search term: ${searchTerm}`)
             await homepage.assertVisible(homepage.viewAllResultsButton, `View All Results button is displayed`);
-            await screenshotAndAttach(basicAuthPage, './screenshots/Search', '04 - View All Results button');
+            await screenshotAndAttach(basicAuthPageNoWatchdog, './screenshots/Search', '04 - View All Results button');
             await delay(5000)
         })
 
@@ -76,7 +79,7 @@ test.describe("Browse-search", async () => {
             await delay(5000)
 
             await homepage.assertUrl(/search\?q=bags/, `Search results page is displayed`);
-            await screenshotAndAttach(basicAuthPage, './screenshots/Search', '05 - Search results page from View All Results button');
+            await screenshotAndAttach(basicAuthPageNoWatchdog, './screenshots/Search', '05 - Search results page from View All Results button');
         })
 
         await step("Clicking on Search icon", async () => {
@@ -87,7 +90,7 @@ test.describe("Browse-search", async () => {
         await step("Verify - 6. Recent searches are displayed", async () => {
             await delay(3000)
             await homepage.assertVisible(homepage.recentSearchTermList, `Recent searches are displayed`);
-            await screenshotAndAttach(basicAuthPage, './screenshots/Search', '06 - Recent searches');
+            await screenshotAndAttach(basicAuthPageNoWatchdog, './screenshots/Search', '06 - Recent searches');
         })
 
         await step("Verify - 7. Clear search input - Search input is cleared", async () => {
@@ -101,15 +104,15 @@ test.describe("Browse-search", async () => {
             await delay(5000)
             await homepage.assertEqual(await homepage.searchtextbox.inputValue(), "", `Search input is cleared`);
 
-            await screenshotAndAttach(basicAuthPage, './screenshots/Search', '07 - Search input cleared');
+            await screenshotAndAttach(basicAuthPageNoWatchdog, './screenshots/Search', '07 - Search input cleared');
         })
 
         await step("Verify - 8. Clear recent searches - Recent searches are cleared", async () => {
             await delay(5000)
             await homepage.removeAllRecentSearchTerms();
             await homepage.assertEqual(await homepage.recentSearchTermItem.count(), 0, `Recent searches are cleared`);
-            await screenshotAndAttach(basicAuthPage, './screenshots/Search', '08 - Recent searches cleared');
+            await screenshotAndAttach(basicAuthPageNoWatchdog, './screenshots/Search', '08 - Recent searches cleared');
         })
-    
+
     });
 })

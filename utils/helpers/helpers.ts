@@ -238,6 +238,7 @@ export const t = {
   globalnavfooter: (key: keyof Translations['globalnavfooter']) => I18n.translations.globalnavfooter[key],
   checkoutpage: (key: keyof Translations['checkoutpage']) => I18n.translations.checkoutpage[key],
   bvintegration: (key: keyof Translations['bvintegration']) => I18n.translations.bvintegration[key],
+  contactuspage: (key: keyof Translations['contactuspage']) => I18n.translations.contactuspage[key],
 };
 
 /**
