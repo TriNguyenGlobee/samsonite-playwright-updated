@@ -10,6 +10,8 @@ import { CheckoutPage } from "../../../src/pages/implementing/checkout/checkout.
 import { loadTestData } from "../../../utils/data";
 import { Config } from "../../../config/env.config";
 
+const isProd = () => process.env.ENV === 'prod';
+
 test.describe("Guest-visa-checkout", async () => {
     test.beforeEach(async ({ basicAuthPage }) => {
         const newarrivalspage = new NewArrivalsPage(basicAuthPage)
@@ -142,17 +144,19 @@ test.describe("Guest-visa-checkout", async () => {
             await screenshotAndAttach(basicAuthPage, './screenshots/Guest-visa-checkout', '05 - Place Order');
         })
 
-        await step("Click place order button", async () => {
-            await checkoutpage.click(checkoutpage.placeOrderBtn, "Click on Place Order button")
-            await basicAuthPage.waitForURL(/orderconfirmation/)
-        })
+        if (await !isProd()) {
+            await step("Click place order button", async () => {
+                await checkoutpage.click(checkoutpage.placeOrderBtn, "Click on Place Order button")
+                await basicAuthPage.waitForURL(/orderconfirmation/)
+            })
 
-        await step("Verify - 6. Ordering success page is displayed", async () => {
-            await checkoutpage.assertVisible(checkoutpage.orderSuccessTitle,
-                "Assert the order success title is visible"
-            )
-            await screenshotAndAttach(basicAuthPage, './screenshots/Guest-visa-checkout', '06 - Ordering success page');
-        })
+            await step("Verify - 6. Ordering success page is displayed", async () => {
+                await checkoutpage.assertVisible(checkoutpage.orderSuccessTitle,
+                    "Assert the order success title is visible"
+                )
+                await screenshotAndAttach(basicAuthPage, './screenshots/Guest-visa-checkout', '06 - Ordering success page');
+            })
+        }
     });
 })
 
@@ -288,17 +292,19 @@ test.describe("Guest-mastercard-checkout", async () => {
             await screenshotAndAttach(basicAuthPage, './screenshots/Guest-mastercard-checkout', '05 - Place Order');
         })
 
-        await step("Click place order button", async () => {
-            await checkoutpage.click(checkoutpage.placeOrderBtn, "Click on Place Order button")
-            await basicAuthPage.waitForURL(/orderconfirmation/)
-        })
+        if (await !isProd()) {
+            await step("Click place order button", async () => {
+                await checkoutpage.click(checkoutpage.placeOrderBtn, "Click on Place Order button")
+                await basicAuthPage.waitForURL(/orderconfirmation/)
+            })
 
-        await step("Verify - 6. Ordering success page is displayed", async () => {
-            await checkoutpage.assertVisible(checkoutpage.orderSuccessTitle,
-                "Assert the order success title is visible"
-            )
-            await screenshotAndAttach(basicAuthPage, './screenshots/Guest-mastercard-checkout', '06 - Ordering success page');
-        })
+            await step("Verify - 6. Ordering success page is displayed", async () => {
+                await checkoutpage.assertVisible(checkoutpage.orderSuccessTitle,
+                    "Assert the order success title is visible"
+                )
+                await screenshotAndAttach(basicAuthPage, './screenshots/Guest-mastercard-checkout', '06 - Ordering success page');
+            })
+        }
     });
 })
 
@@ -428,38 +434,40 @@ test.describe("Guest-paypal-checkout", async () => {
             await screenshotAndAttach(basicAuthPage, './screenshots/Guest-paypal-checkout', '05 - Paypal Checkout Button');
         })
 
-        await step("Verify - 6. Type paypal infor and review order", async () => {
-            const paypalPage = await openNewTab(basicAuthPage, () =>
-                checkoutpage.click(checkoutpage.paypalCheckoutBtn, "Click on Paypal checkout button")
-            )
+        if (await !isProd()) {
+            await step("Verify - 6. Type paypal infor and review order", async () => {
+                const paypalPage = await openNewTab(basicAuthPage, () =>
+                    checkoutpage.click(checkoutpage.paypalCheckoutBtn, "Click on Paypal checkout button")
+                )
 
-            const { paypalCheckoutData } = loadTestData();
-            const emailInput = paypalPage.locator('input#email')
-            const nextButton = paypalPage.locator('button#btnNext')
-            const passwordInput = paypalPage.locator('input#password')
-            const loginButton = paypalPage.locator('button#btnLogin')
-            const continueButton = paypalPage.locator('//button[@data-id="payment-submit-btn"]')
+                const { paypalCheckoutData } = loadTestData();
+                const emailInput = paypalPage.locator('input#email')
+                const nextButton = paypalPage.locator('button#btnNext')
+                const passwordInput = paypalPage.locator('input#password')
+                const loginButton = paypalPage.locator('button#btnLogin')
+                const continueButton = paypalPage.locator('//button[@data-id="payment-submit-btn"]')
 
-            await emailInput.fill(paypalCheckoutData.email)
-            await screenshotAndAttach(basicAuthPage, './screenshots/Guest-paypal-checkout', '06 - 1 - Paypal Checkout email field');
-            await nextButton.click()
-            await delay(2000)
-            await passwordInput.fill(paypalCheckoutData.pass)
-            await screenshotAndAttach(basicAuthPage, './screenshots/Guest-paypal-checkout', '06 - 2 - Paypal Checkout password field');
-            await loginButton.click()
-            await delay(5000)
-            await screenshotAndAttach(basicAuthPage, './screenshots/Guest-paypal-checkout', '06 - 3 - Paypal continue button');
+                await emailInput.fill(paypalCheckoutData.email)
+                await screenshotAndAttach(basicAuthPage, './screenshots/Guest-paypal-checkout', '06 - 1 - Paypal Checkout email field');
+                await nextButton.click()
+                await delay(2000)
+                await passwordInput.fill(paypalCheckoutData.pass)
+                await screenshotAndAttach(basicAuthPage, './screenshots/Guest-paypal-checkout', '06 - 2 - Paypal Checkout password field');
+                await loginButton.click()
+                await delay(5000)
+                await screenshotAndAttach(basicAuthPage, './screenshots/Guest-paypal-checkout', '06 - 3 - Paypal continue button');
 
-            await continueButton.click()
-            await paypalPage.close()
-        })
+                await continueButton.click()
+                await paypalPage.close()
+            })
 
-        await step("Verify - 7. Ordering success page is displayed", async () => {
-            await checkoutpage.assertVisible(checkoutpage.orderSuccessTitle,
-                "Assert the order success title is visible"
-            )
-            await screenshotAndAttach(basicAuthPage, './screenshots/Guest-paypal-checkout', '07 - Ordering success page');
-        })
+            await step("Verify - 7. Ordering success page is displayed", async () => {
+                await checkoutpage.assertVisible(checkoutpage.orderSuccessTitle,
+                    "Assert the order success title is visible"
+                )
+                await screenshotAndAttach(basicAuthPage, './screenshots/Guest-paypal-checkout', '07 - Ordering success page');
+            })
+        }
     });
 })
 
@@ -601,18 +609,20 @@ test.describe("Logged-checkout", async () => {
             )
         })
 
-        await step("Click place order button then input cvv to textbox", async () => {
-            await checkoutpage.click(checkoutpage.placeOrderBtn, "Click on Place Order button")
-            await checkoutpage.type(checkoutpage.cvvModalCVVTextbox, "123", "Enter CVV to CVV textbox")
-            await checkoutpage.click(checkoutpage.cvvModalSubmitButton, "Click on Yes button")
-            await loggedInPage.waitForURL(/orderconfirmation/)
-        })
+        if (await !isProd()) {
+            await step("Click place order button then input cvv to textbox", async () => {
+                await checkoutpage.click(checkoutpage.placeOrderBtn, "Click on Place Order button")
+                await checkoutpage.type(checkoutpage.cvvModalCVVTextbox, "123", "Enter CVV to CVV textbox")
+                await checkoutpage.click(checkoutpage.cvvModalSubmitButton, "Click on Yes button")
+                await loggedInPage.waitForURL(/orderconfirmation/)
+            })
 
-        await step("Verify - 6. Ordering success page is displayed", async () => {
-            await checkoutpage.assertVisible(checkoutpage.orderSuccessTitle,
-                "Assert the order success title is visible"
-            )
-            await screenshotAndAttach(loggedInPage, './screenshots/Logged-checkout', '06 - Ordering success page');
-        })
+            await step("Verify - 6. Ordering success page is displayed", async () => {
+                await checkoutpage.assertVisible(checkoutpage.orderSuccessTitle,
+                    "Assert the order success title is visible"
+                )
+                await screenshotAndAttach(loggedInPage, './screenshots/Logged-checkout', '06 - Ordering success page');
+            })
+        }
     });
 })

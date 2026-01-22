@@ -551,6 +551,7 @@ export class BasePage {
                 }
 
                 await this.hover(termItem, `Hover on recent search term: ${termText}`)
+                await delay(1000)
                 await this.click(deleteButton, `Click on delete button of recent search term: ${termText}`, 10, 10)
                 await delay(1000)
             }

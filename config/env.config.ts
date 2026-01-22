@@ -2,7 +2,7 @@ import * as dotenv from 'dotenv';
 dotenv.config();
 
 // Environment name
-export type EnvironmentName = 'dev' | 'stg';
+export type EnvironmentName = 'dev' | 'stg' | 'prod';
 export type Locale = 'sg' | 'jp' | 'tw' | 'ph' | 'au' | 'my' | 'id' | 'nz' | 'hk' | 'kr' | 'in' | 'th';
 
 interface Credentials {
@@ -337,6 +337,164 @@ const environments: Record<EnvironmentName, Record<Locale, EnvironmentConfig>> =
             },
             basicAuthUser: process.env.STG_BASIC_AUTH_USER,
             basicAuthPass: process.env.STG_BASIC_AUTH_PASS,
+        }
+    },
+    prod: {
+        sg: {
+            baseURL: 'https://www.samsonite.com.sg/',
+            credentials: {
+                username: process.env.PROD_USERNAME_SG as string,
+                password: process.env.PROD_PASSWORD_SG as string,
+                gg_username: process.env.PROD_GG_USERNAME_SG as string,
+                gg_password: process.env.PROD_GG_PASSWORD_SG as string,
+                fb_username: process.env.PROD_FB_USERNAME_SG as string,
+                fb_password: process.env.PROD_FB_PASSWORD_SG as string
+            },
+            basicAuthUser: process.env.PROD_BASIC_AUTH_USER,
+            basicAuthPass: process.env.PROD_BASIC_AUTH_PASS,
+        },
+        jp: {
+            baseURL: 'https://ssjp.stg.samsonite-asia.com/',
+            credentials: {
+                username: process.env.PROD_USERNAME_JP as string,
+                password: process.env.PROD_PASSWORD_JP as string,
+                gg_username: process.env.PROD_GG_USERNAME_JP as string,
+                gg_password: process.env.PROD_GG_PASSWORD_JP as string,
+                fb_username: process.env.PROD_FB_USERNAME_JP as string,
+                fb_password: process.env.PROD_FB_PASSWORD_JP as string
+            },
+            basicAuthUser: process.env.PROD_BASIC_AUTH_USER,
+            basicAuthPass: process.env.PROD_BASIC_AUTH_PASS,
+        },
+        tw: {
+            baseURL: 'https://sstw.stg.samsonite-asia.com/',
+            credentials: {
+                username: process.env.PROD_USERNAME_TW as string,
+                password: process.env.PROD_PASSWORD_TW as string,
+                gg_username: process.env.PROD_GG_USERNAME_TW as string,
+                gg_password: process.env.PROD_GG_PASSWORD_TW as string,
+                fb_username: process.env.PROD_FB_USERNAME_TW as string,
+                fb_password: process.env.PROD_FB_PASSWORD_TW as string
+            },
+            basicAuthUser: process.env.PROD_BASIC_AUTH_USER,
+            basicAuthPass: process.env.PROD_BASIC_AUTH_PASS,
+        },
+        ph: {
+            baseURL: 'https://ssph.stg.samsonite-asia.com/',
+            credentials: {
+                username: process.env.PROD_USERNAME_PH as string,
+                password: process.env.PROD_PASSWORD_PH as string,
+                gg_username: process.env.PROD_GG_USERNAME_PH as string,
+                gg_password: process.env.PROD_GG_PASSWORD_PH as string,
+                fb_username: process.env.PROD_FB_USERNAME_PH as string,
+                fb_password: process.env.PROD_FB_PASSWORD_PH as string
+            },
+            basicAuthUser: process.env.PROD_BASIC_AUTH_USER,
+            basicAuthPass: process.env.PROD_BASIC_AUTH_PASS,
+        },
+        au: {
+            baseURL: 'https://ssau.stg.samsonite-asia.com/',
+            credentials: {
+                username: process.env.PROD_USERNAME_AU as string,
+                password: process.env.PROD_PASSWORD_AU as string,
+                gg_username: process.env.PROD_GG_USERNAME_AU as string,
+                gg_password: process.env.PROD_GG_PASSWORD_AU as string,
+                fb_username: process.env.PROD_FB_USERNAME_AU as string,
+                fb_password: process.env.PROD_FB_PASSWORD_AU as string
+            },
+            basicAuthUser: process.env.PROD_BASIC_AUTH_USER,
+            basicAuthPass: process.env.PROD_BASIC_AUTH_PASS,
+        },
+        my: {
+            baseURL: 'https://ssmy.stg.samsonite-asia.com/',
+            credentials: {
+                username: process.env.PROD_USERNAME_MY as string,
+                password: process.env.PROD_PASSWORD_MY as string,
+                gg_username: process.env.PROD_GG_USERNAME_MY as string,
+                gg_password: process.env.PROD_GG_PASSWORD_MY as string,
+                fb_username: process.env.PROD_FB_USERNAME_MY as string,
+                fb_password: process.env.PROD_FB_PASSWORD_MY as string
+            },
+            basicAuthUser: process.env.PROD_BASIC_AUTH_USER,
+            basicAuthPass: process.env.PROD_BASIC_AUTH_PASS,
+        },
+        id: {
+            baseURL: 'https://ssid.stg.samsonite-asia.com/',
+            credentials: {
+                username: process.env.PROD_USERNAME_ID as string,
+                password: process.env.PROD_PASSWORD_ID as string,
+                gg_username: process.env.PROD_GG_USERNAME_ID as string,
+                gg_password: process.env.PROD_GG_PASSWORD_ID as string,
+                fb_username: process.env.PROD_FB_USERNAME_ID as string,
+                fb_password: process.env.PROD_FB_PASSWORD_ID as string
+            },
+            basicAuthUser: process.env.PROD_BASIC_AUTH_USER,
+            basicAuthPass: process.env.PROD_BASIC_AUTH_PASS,
+        },
+        nz: {
+            baseURL: 'https://ssnz.stg.samsonite-asia.com/',
+            credentials: {
+                username: process.env.PROD_USERNAME_NZ as string,
+                password: process.env.PROD_PASSWORD_NZ as string,
+                gg_username: process.env.PROD_GG_USERNAME_NZ as string,
+                gg_password: process.env.PROD_GG_PASSWORD_NZ as string,
+                fb_username: process.env.PROD_FB_USERNAME_NZ as string,
+                fb_password: process.env.PROD_FB_PASSWORD_NZ as string
+            },
+            basicAuthUser: process.env.PROD_BASIC_AUTH_USER,
+            basicAuthPass: process.env.PROD_BASIC_AUTH_PASS,
+        },
+        hk: {
+            baseURL: 'https://sshk.stg.samsonite-asia.com/',
+            credentials: {
+                username: process.env.PROD_USERNAME_HK as string,
+                password: process.env.PROD_PASSWORD_HK as string,
+                gg_username: process.env.PROD_GG_USERNAME_HK as string,
+                gg_password: process.env.PROD_GG_PASSWORD_HK as string,
+                fb_username: process.env.PROD_FB_USERNAME_HK as string,
+                fb_password: process.env.PROD_FB_PASSWORD_HK as string
+            },
+            basicAuthUser: process.env.PROD_BASIC_AUTH_USER,
+            basicAuthPass: process.env.PROD_BASIC_AUTH_PASS,
+        },
+        kr: {
+            baseURL: 'https://sskr.stg.samsonite-asia.com/',
+            credentials: {
+                username: process.env.PROD_USERNAME_KR as string,
+                password: process.env.PROD_PASSWORD_KR as string,
+                gg_username: process.env.PROD_GG_USERNAME_KR as string,
+                gg_password: process.env.PROD_GG_PASSWORD_KR as string,
+                fb_username: process.env.PROD_FB_USERNAME_KR as string,
+                fb_password: process.env.PROD_FB_PASSWORD_KR as string
+            },
+            basicAuthUser: process.env.PROD_BASIC_AUTH_USER,
+            basicAuthPass: process.env.PROD_BASIC_AUTH_PASS,
+        },
+        in: {
+            baseURL: 'https://ssin.stg.samsonite-asia.com/',
+            credentials: {
+                username: process.env.PROD_USERNAME_IN as string,
+                password: process.env.PROD_PASSWORD_IN as string,
+                gg_username: process.env.PROD_GG_USERNAME_IN as string,
+                gg_password: process.env.PROD_GG_PASSWORD_IN as string,
+                fb_username: process.env.PROD_FB_USERNAME_IN as string,
+                fb_password: process.env.PROD_FB_PASSWORD_IN as string
+            },
+            basicAuthUser: process.env.PROD_BASIC_AUTH_USER,
+            basicAuthPass: process.env.PROD_BASIC_AUTH_PASS,
+        },
+        th: {
+            baseURL: 'https://ssth.stg.samsonite-asia.com/',
+            credentials: {
+                username: process.env.PROD_USERNAME_TH as string,
+                password: process.env.PROD_PASSWORD_TH as string,
+                gg_username: process.env.PROD_GG_USERNAME_TH as string,
+                gg_password: process.env.PROD_GG_PASSWORD_TH as string,
+                fb_username: process.env.PROD_FB_USERNAME_TH as string,
+                fb_password: process.env.PROD_FB_PASSWORD_TH as string
+            },
+            basicAuthUser: process.env.PROD_BASIC_AUTH_USER,
+            basicAuthPass: process.env.PROD_BASIC_AUTH_PASS,
         }
     }
 };

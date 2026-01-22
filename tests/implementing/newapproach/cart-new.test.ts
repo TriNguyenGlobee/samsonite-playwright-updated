@@ -55,7 +55,7 @@ test.describe("Cartpage-empty", () => {
                 maxTries: 3,
                 timeoutMs: 3000
             })
-
+            await delay(500)
             const expectedURL = await homePage.getLocatorURL(minicartPage.footerCategoryItem.nth(1))
             await minicartPage.assertNavigatedURLByClickLocator(basicAuthPage, minicartPage.footerCategoryItem.nth(1), expectedURL!)
         })
