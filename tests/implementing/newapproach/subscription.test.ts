@@ -13,6 +13,7 @@ import { RegisterPage } from "../../../src/pages/delivery/login/register.page";
 import { MyPage } from "../../../src/pages/implementing/mypage/mypage.page";
 import { loadTestData } from "../../../utils/data";
 import { Config } from "../../../config/env.config";
+import { steps } from "../../../utils/helpers/localeStep";
 
 test.describe("Subscription-homepage", () => {
     test.beforeEach(async ({ basicAuthPage }) => {
@@ -71,9 +72,11 @@ test.describe("Subscription-homepage", () => {
         const subscribeMsg = t.globalnavfooter('createsuccess')
         const accountexistMsg = t.globalnavfooter('duplicateemail')
         const createdmsg = basicAuthPage.locator(`//footer[@id="footer"]//div[contains(@class,"subscribe-msg accountcreated")]`)
+        const successmsg = basicAuthPage.locator(`//div[@class="resp-messages"]//h2[@class="success"]`)
         const emailexistmsg = basicAuthPage.locator(`//footer[@id="footer"]//div[contains(@class,"subscribe-msg accountexists")]`)
+        const returnbutton = basicAuthPage.locator(`//button[@class="btn-return"]`)
 
-        await step("Enter the invalid-email into the email textbox", async () => {
+        await step("Enter the valid-email into the email textbox", async () => {
             await globalnavfooterpage.type(globalnavfooterpage.emailTextbox, valid_email)
         })
 
@@ -81,17 +84,39 @@ test.describe("Subscription-homepage", () => {
             await globalnavfooterpage.click(globalnavfooterpage.subscribeButton,
                 "Clicking on Subscribe button"
             )
+
+            await steps(["au"], "Fill the lastest news", async () => {
+                await globalnavfooterpage.fillLatestNewsForm({
+                    email: valid_email
+                })
+            })
+
+            await steps(["au"], "Click lastest news submit button", async () => {
+                await globalnavfooterpage.click(globalnavfooterpage.latestNewsSubmitButton,
+                    "Clicking on Latest News Submit button"
+                )
+            })
+
             await globalnavfooterpage.assertHidden(globalnavfooterpage.underlay,
                 "Waiting for underlay screen hidden"
             )
         })
 
-        await step("Verify - 3. Subscription success - Successful subscription message shown", async () => {
+        await steps(["sg"], "Verify - 3. Subscription success - Successful subscription message shown", async () => {
             await globalnavfooterpage.assertText(createdmsg, subscribeMsg,
                 "Assert invalid-feedback: Account created success"
             )
 
             await screenshotAndAttach(basicAuthPage, './screenshots/Subscription', '03 - Successful subscription message');
+        })
+
+        await steps(["au"], "Verify - 3. Subscription success - Successful subscription message shown", async () => {
+            await globalnavfooterpage.assertVisible(successmsg,
+                "Assert success message is visible"
+            )
+
+            await screenshotAndAttach(basicAuthPage, './screenshots/Subscription', '03 - Successful subscription message');
+            await globalnavfooterpage.click(returnbutton, "Clicking on Return button")
         })
 
         await step("Clicking on the subscribe button again", async () => {

@@ -34,6 +34,11 @@ test.describe("Cartpage-empty", () => {
         })
 
         await step("Click Shopping Cart button", async () => {
+            await clickUntil(basicAuthPage, homePage.cartIcon, minicartPage.minicartRender, 'visible', {
+                delayMs: 500,
+                maxTries: 3,
+                timeoutMs: 3000
+            })
             await minicartPage.click(minicartPage.startShoppingButton)
             await delay(500)
         })

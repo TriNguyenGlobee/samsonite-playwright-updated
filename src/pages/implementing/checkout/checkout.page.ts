@@ -17,6 +17,11 @@ export class CheckoutPage extends BasePage {
     readonly postalCodeTxt: Locator;
     readonly address1Txt: Locator;
     readonly unitnumberTxt: Locator;
+    readonly apartmentTxt: Locator;
+    readonly addressTxt: Locator;
+    readonly suburbTxt: Locator
+    readonly stateDropdown: Locator;
+    readonly countryTxt: Locator;
     readonly shippingContinueBtn: Locator;
     readonly yourDetailsEditBtn: Locator;
     readonly recipientSection: Locator;
@@ -38,6 +43,7 @@ export class CheckoutPage extends BasePage {
     readonly orderSuccessTitle: Locator;
     readonly cvvModalCVVTextbox: Locator;
     readonly cvvModalSubmitButton: Locator;
+    readonly notlistedLink: Locator;
 
     constructor(page: Page) {
         super(page);
@@ -49,9 +55,14 @@ export class CheckoutPage extends BasePage {
         this.phoneTextbox = this.customerDetailsSection.locator(`xpath=.//input[@id="billingPhoneNumber"]`)
         this.continueButton = this.customerDetailsSection.locator(`xpath=.//button[@type="submit"]`)
         this.shippingSection = page.locator(`//div[@class="shipping-section"]//div[@class="single-shipping"]`)
-        this.postalCodeTxt = this.shippingSection.locator(`xpath=.//input[@id="shippingZipCode"]`)
+        this.postalCodeTxt = this.shippingSection.locator(`xpath=.//input[@id="shippingZipCode" or @id="shippingPostalCode"]`)
         this.address1Txt = this.shippingSection.locator(`xpath=.//input[@id="shippingAddressOne"]`)
         this.unitnumberTxt = this.shippingSection.locator(`xpath=.//input[@id="shippingAddressTwo"]`)
+        this.apartmentTxt = this.shippingSection.locator(`xpath=.//input[@id="shippingAddressTwo"]`)
+        this.addressTxt = this.shippingSection.locator(`xpath=.//input[@id="shippingAddressOne"]`)
+        this.suburbTxt = this.shippingSection.locator(`xpath=.//input[@id="shippingCity"]`)
+        this.stateDropdown = this.shippingSection.locator(`xpath=.//select[@id="shippingState"]`)
+        this.countryTxt = this.shippingSection.locator(`xpath=.//select[@id="shippingCountry"]`)
         this.shippingContinueBtn = this.shippingSection.locator(`xpath=.//button[@type="submit"]`)
         this.yourDetailsEditBtn = page.locator(`//div[h4[normalize-space(text())="Your details"]]//span[normalize-space(text())="Edit"]`)
         this.recipientSection = page.locator(`//div[@class="single-shipping"]`)
@@ -73,6 +84,7 @@ export class CheckoutPage extends BasePage {
         this.orderSuccessTitle = this.page.locator('//h2[@class="order-thank-you-msg"]');
         this.cvvModalCVVTextbox = page.locator(`//div[label[normalize-space(text())="CVV"] and @class="security-code-input"]//input`)
         this.cvvModalSubmitButton = page.locator(`//button[@id="cvv-code-submit-btn"]`)
+        this.notlistedLink = page.locator(`//span[@class="not-list"]`)
     }
 
     // =========================
@@ -138,6 +150,31 @@ export class CheckoutPage extends BasePage {
                 )
             }
 
+            if (data.apartment) {
+                await this.type(this.unitnumberTxt, data.apartment,
+                    `Fill apartment textbox: ${data.apartment}`
+                )
+            }
+
+            if (data.address) {
+                await this.type(this.addressTxt, data.address,
+                    `Fill address textbox: ${data.address}`
+                )
+            }
+
+            if (data.suburb) {
+                await this.click(this.notlistedLink.first(), "Click Not listed link to fill suburb")
+
+                await this.type(this.suburbTxt, data.suburb,
+                    `Fill suburb textbox: ${data.suburb}`
+                )
+            }
+
+            if (data.state) {
+                await selectDropdownOption(page, this.stateDropdown, data.state, "value",
+                    `Select shipping state: ${data.state}`
+                )
+            }
         })
     }
 
@@ -243,4 +280,9 @@ export type RecipientDetails = {
     postcode?: string;
     address1?: string;
     unitnumber?: string;
+    apartment?: string;
+    address?: string;
+    suburb?: string;
+    state?: string;
+    country?: string;
 }

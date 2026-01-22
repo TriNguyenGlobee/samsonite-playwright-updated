@@ -1,7 +1,7 @@
 import { Page, Locator, expect } from "@playwright/test";
 import { step } from "allure-js-commons";
 import { Translations } from "../../config/i18n.config";
-import { t, extractNumber, PageUtils, delay, splitString, escapeXPathText, isSorted, selectDropdownOption, scrollToTop, lazyLoad, scrollDownUntilVisible } from "../../utils/helpers/helpers";
+import { t, extractNumber, PageUtils, delay, splitString, escapeXPathText, isSorted, selectDropdownOption, scrollToTop, lazyLoad, scrollDownUntilVisible, randomAlphaString, generateNumberString, generateReadableTimeBasedId } from "../../utils/helpers/helpers";
 import { loadTestData } from "../../utils/data";
 
 type RightNavbarItem = 'search' | 'wishlist' | 'login' | 'location' | 'cart' | 'news';
@@ -54,6 +54,7 @@ export class BasePage {
     readonly viewAllResultsButton: Locator;
     readonly recentSearchTermItem: Locator;
     readonly clearSearchButton: Locator;
+    readonly latestNewsSubmitButton: Locator;
 
     protected testData: ReturnType<typeof loadTestData>;
 
@@ -105,6 +106,7 @@ export class BasePage {
         this.viewAllResultsButton = this.searchForm.locator(`.view-all-result`);
         this.recentSearchTermItem = this.recentSearchTermList.locator(`.item`);
         this.clearSearchButton = this.searchForm.locator(`xpath=.//span[contains(@class,"clear-search")]`);
+        this.latestNewsSubmitButton = page.locator(`//button[@class="btn-submit"]`);
 
         this.testData = loadTestData();
     }
@@ -552,6 +554,50 @@ export class BasePage {
                 await this.click(deleteButton, `Click on delete button of recent search term: ${termText}`, 10, 10)
                 await delay(1000)
             }
+        })
+    }
+
+    async fillLatestNewsForm(data?: {
+        firstname?: string;
+        lastname?: string;
+        phone?: string;
+        email?: string;
+        postcode?: string;
+        gender?: string;
+        whySamsonite?: string;
+    }) {
+        const {
+            firstname = `fname ${randomAlphaString(4)} ${randomAlphaString(3)}`,
+            lastname = `lname ${randomAlphaString(4)} ${randomAlphaString(3)}`,
+            phone = `0499999999`,
+            email = `globee${generateReadableTimeBasedId()}@mailinator.com`,
+            postcode = `2000`,
+            gender = `male`,
+            whySamsonite = `I want something super light`
+        } = data ?? {};
+
+        await step('Fill register form', async () => {
+            const firstNameTextbox = this.page.locator(`//input[@id="newsletter-firstname"]`)
+            const lastNameTextbox = this.page.locator(`//input[@id="newsletter-lastname"]`)
+            const phoneNumberTextbox = this.page.locator(`//input[@id="newsletter-phone"]`)
+            const emailTextbox = this.page.locator(`//input[@id="newsletter-email"]`)
+            const postcodeTextbox = this.page.locator(`//input[@id="newsletter-postalCode"]`)
+            const genderDropdown = this.page.locator(`//select[@id="form-gender"]`)
+            const whySamsoniteDropdown = this.page.locator(`//select[@id="why-samsonite-select"]`)
+
+            if (gender != "") {
+                await selectDropdownOption(this.page, genderDropdown, gender)
+            }
+
+            if (whySamsonite != "") {
+                await selectDropdownOption(this.page, whySamsoniteDropdown, whySamsonite)
+            }
+
+            await this.type(firstNameTextbox, firstname)
+            await this.type(lastNameTextbox, lastname)
+            await this.type(phoneNumberTextbox, phone)
+            await this.type(emailTextbox, email)
+            await this.type(postcodeTextbox, postcode)
         })
     }
 
