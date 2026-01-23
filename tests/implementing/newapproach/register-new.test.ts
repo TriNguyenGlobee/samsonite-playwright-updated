@@ -5,7 +5,7 @@ import { RegisterPage } from "../../../src/pages/delivery/login/register.page";
 import { MyPage } from "../../../src/pages/implementing/mypage/mypage.page";
 import { screenshotAndAttach, generateNumberString } from "../../../utils/helpers/helpers";
 
-test.describe("Clicking create account button with invalid information", async () => {
+test.describe("Clicking create account button with valid information", async () => {
     test.beforeEach(async ({ basicAuthPage }) => {
         const loginPage = createLoginPage(basicAuthPage);
 

@@ -44,6 +44,10 @@ export class CheckoutPage extends BasePage {
     readonly cvvModalCVVTextbox: Locator;
     readonly cvvModalSubmitButton: Locator;
     readonly notlistedLink: Locator;
+    readonly atomePhoneTextbox: Locator;
+    readonly atomeNextButton: Locator;
+    readonly smsContinueButton: Locator;
+    readonly otpInput: Locator;
 
     constructor(page: Page) {
         super(page);
@@ -85,6 +89,10 @@ export class CheckoutPage extends BasePage {
         this.cvvModalCVVTextbox = page.locator(`//div[label[normalize-space(text())="CVV"] and @class="security-code-input"]//input`)
         this.cvvModalSubmitButton = page.locator(`//button[@id="cvv-code-submit-btn"]`)
         this.notlistedLink = page.locator(`//span[@class="not-list"]`)
+        this.atomePhoneTextbox = page.locator(`//div[contains(@class,"input_atome")]//input`)
+        this.atomeNextButton = page.locator(`//button[@type="submit" and text()="Next"]`)
+        this.smsContinueButton = page.locator(`//button[text()="Continue with SMS"]`)
+        this.otpInput = page.locator(`//input[@type="number"]`)
     }
 
     // =========================
@@ -93,25 +101,25 @@ export class CheckoutPage extends BasePage {
     async fillCheckoutYourDetailForm(page: Page, data: CheckoutYourDetailLoad, description?: string): Promise<void> {
         await step(description || "Fill checkout detail", async () => {
             if (data.firstName) {
-                await this.type(this.firstNameTextbox, data.firstName,
+                await this.typeByManual(this.firstNameTextbox, data.firstName,
                     `Fill firstname textbox: ${data.firstName}`
                 )
             }
 
             if (data.lastName) {
-                await this.type(this.lastNameTextbox, data.lastName,
+                await this.typeByManual(this.lastNameTextbox, data.lastName,
                     `Fill lastname textbox: ${data.lastName}`
                 )
             }
 
             if (data.email) {
-                await this.type(this.emailTextbox, data.email,
+                await this.typeByManual(this.emailTextbox, data.email,
                     `Fill email textbox: ${data.email}`
                 )
             }
 
             if (data.phone) {
-                await this.type(this.phoneTextbox, data.phone,
+                await this.typeByManual(this.phoneTextbox, data.phone,
                     `Fill phone number textbox: ${data.phone}`
                 )
             }
@@ -133,31 +141,31 @@ export class CheckoutPage extends BasePage {
     async fillRecipientDetilsForm(page: Page, data: RecipientDetails, description?: string): Promise<void> {
         await step(description || "Fill recipient details detail", async () => {
             if (data.postcode) {
-                await this.type(this.postalCodeTxt, data.postcode,
+                await this.typeByManual(this.postalCodeTxt, data.postcode,
                     `Fill postcode textbox: ${data.postcode}`
                 )
             }
 
             if (data.address1) {
-                await this.type(this.address1Txt, data.address1,
+                await this.typeByManual(this.address1Txt, data.address1,
                     `Fill address textbox: ${data.address1}`
                 )
             }
 
             if (data.unitnumber) {
-                await this.type(this.unitnumberTxt, data.unitnumber,
+                await this.typeByManual(this.unitnumberTxt, data.unitnumber,
                     `Fill unit number textbox: ${data.unitnumber}`
                 )
             }
 
             if (data.apartment) {
-                await this.type(this.unitnumberTxt, data.apartment,
+                await this.typeByManual(this.unitnumberTxt, data.apartment,
                     `Fill apartment textbox: ${data.apartment}`
                 )
             }
 
             if (data.address) {
-                await this.type(this.addressTxt, data.address,
+                await this.typeByManual(this.addressTxt, data.address,
                     `Fill address textbox: ${data.address}`
                 )
             }
@@ -165,7 +173,7 @@ export class CheckoutPage extends BasePage {
             if (data.suburb) {
                 await this.click(this.notlistedLink.first(), "Click Not listed link to fill suburb")
 
-                await this.type(this.suburbTxt, data.suburb,
+                await this.typeByManual(this.suburbTxt, data.suburb,
                     `Fill suburb textbox: ${data.suburb}`
                 )
             }
