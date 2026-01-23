@@ -79,7 +79,7 @@ export class RegisterPage extends BasePage {
             day = `${randomInt(1, 28)}`,
             month = `${randomInt(1, 12)}`,
             year = `${randomInt(1930, 2008)}`,
-            email = `globee${generateReadableTimeBasedId()}@mailinator.com`,
+            email = `globee_test${generateReadableTimeBasedId()}@mailinator.com`,
             password = "Test@123",
             confirmPassword = "Test@123",
             agreePolicy = true,

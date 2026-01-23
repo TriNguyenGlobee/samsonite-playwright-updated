@@ -41,10 +41,10 @@ export class ContactUS extends BasePage {
         const {
             gender = `Mr.`,
             name = `name ${randomAlphaString(4)} ${randomAlphaString(3)}`,
-            email = `globee${generateReadableTimeBasedId()}@mailinator.com`,
+            email = `globee_test${generateReadableTimeBasedId()}@mailinator.com`,
             phone = `${generateNumberString(8)}`,
-            subject = `subject${generateReadableTimeBasedId()}`,
-            message = `${generateSentence(20)}`
+            subject = `globee test subject${generateReadableTimeBasedId()}`,
+            message = `globee test ${generateSentence(20)}`
         } = data ?? {};
 
         await step('Fill contact us form', async () => {
@@ -53,11 +53,11 @@ export class ContactUS extends BasePage {
                 await selectDropdownOption(this.page, this.titleDropdown, gender)
             }
 
-            await this.type(this.nameTextbox, name)
-            await this.type(this.emailTextbox, email)
-            await this.type(this.phoneTextbox, phone)
-            await this.type(this.subjectTextbox, subject)
-            await this.type(this.messageTextbox, message)
+            await this.typeByManual(this.nameTextbox, name)
+            await this.typeByManual(this.emailTextbox, email)
+            await this.typeByManual(this.phoneTextbox, phone)
+            await this.typeByManual(this.subjectTextbox, subject)
+            await this.typeByManual(this.messageTextbox, message)
         })
     }
 

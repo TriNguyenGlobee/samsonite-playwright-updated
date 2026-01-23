@@ -80,7 +80,7 @@ export class CheckoutPage extends BasePage {
         this.googlepayIcon = page.locator(`//li[@data-method-id="DW_GOOGLE_PAY"]//a`)
         this.gpaybutton = page.locator(`#gpay-button-online-api-id`)
         this.placeOrderBtn = page.locator('//div[contains(@class,"page-checkout")]//div[contains(@class,"mini-order-summary")]//button[@value="place-order"]');
-        this.paypalCheckoutBtn = page.locator(`//div[.//span[normalize-space(text())="Checkout"] and @role="button"]`)
+        this.paypalCheckoutBtn = page.locator(`//div[contains(@id,"paypal-button")]`)
         this.orderSuccessTitle = this.page.locator('//h2[@class="order-thank-you-msg"]');
         this.cvvModalCVVTextbox = page.locator(`//div[label[normalize-space(text())="CVV"] and @class="security-code-input"]//input`)
         this.cvvModalSubmitButton = page.locator(`//button[@id="cvv-code-submit-btn"]`)

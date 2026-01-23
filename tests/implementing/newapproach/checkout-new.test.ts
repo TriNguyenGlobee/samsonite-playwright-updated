@@ -555,54 +555,63 @@ test.describe("Logged-checkout", async () => {
             await screenshotAndAttach(loggedInPage, './screenshots/Logged-checkout', '02 - Recipient section');
         })
 
-        await checkoutpage.click(checkoutpage.continueButton, "Click on Continue button")
+        await checkoutpage.click(checkoutpage.continueButton, "Click on Continue button") */
 
-        await step("Verify - 3. Step 2 is done - Payment methods section shows correctly", async () => {
-            await checkoutpage.assertEqual(await checkoutpage.isCheckoutStepDone("Shipping"), true,
-                "Assert current step 2 status is Done: true"
-            )
+        const isShippingContinueBtnExist = await checkoutpage.shippingContinueBtn.isVisible()
 
-            await checkoutloginpage.assertVisible(checkoutpage.visaIcon, "Assert payment method section visbile")
+        if (isShippingContinueBtnExist) {
+            await step("Click on shipping continue button", async () => {
+                await checkoutpage.click(checkoutpage.shippingContinueBtn, "Click on Step 2 Continue button")
+                await PageUtils.waitForPageLoad(loggedInPage)
+            })
 
-            await screenshotAndAttach(loggedInPage, './screenshots/Logged-checkout', '03 - Payment methods section');
-        })
+            await step("Verify - 3. Step 2 is done - Payment methods section shows correctly", async () => {
+                await checkoutpage.assertEqual(await checkoutpage.isCheckoutStepDone("Shipping"), true,
+                    "Assert current step 2 status is Done: true"
+                )
 
-        await step("Select Visa payment method", async () => {
-            await checkoutpage.click(checkoutpage.visaIcon, "Select Visa payment method")
-        })
+                await checkoutloginpage.assertVisible(checkoutpage.visaIcon, "Assert payment method section visbile")
 
-        await step("Verify - 4. Payment method is selected - Payment details form shows correctly", async () => {
-            await checkoutpage.assertVisible(checkoutpage.paymentcontinueBtn,
-                "Assert the Payment Continue button is displayed"
-            )
+                await screenshotAndAttach(loggedInPage, './screenshots/Logged-checkout', '03 - Payment methods section');
+            })
 
-            await checkoutloginpage.assertVisible(cardNumberIframe, "Assert payment detail form visbile")
+            await step("Select Visa payment method", async () => {
+                await checkoutpage.click(checkoutpage.visaIcon, "Select Visa payment method")
+            })
 
-            await delay(500)
-            await screenshotAndAttach(loggedInPage, './screenshots/Logged-checkout', '04 - Payment detail form');
-        })
+            await step("Verify - 4. Payment method is selected - Payment details form shows correctly", async () => {
+                await checkoutpage.assertVisible(checkoutpage.paymentcontinueBtn,
+                    "Assert the Payment Continue button is displayed"
+                )
 
-        await step("Fill payment details with Visa card", async () => {
-            const { visaCheckoutData } = loadTestData();
-            await checkoutpage.fillVisaPaymentDetails(loggedInPage, visaCheckoutData.cardNumber,
-                visaCheckoutData.expiryMonth, visaCheckoutData.expiryYear, visaCheckoutData.cvv,
-                "Fill Visa card payment details");
-        })
+                await checkoutloginpage.assertVisible(cardNumberIframe, "Assert payment detail form visbile")
 
-        await step("Click payment continue button", async () => {
-            await checkoutpage.click(checkoutpage.paymentcontinueBtn, "Click on payment continue button")
-        })
+                await delay(500)
+                await screenshotAndAttach(loggedInPage, './screenshots/Logged-checkout', '04 - Payment detail form');
+            })
 
-        await step("Verify - 5. Step 3 is done - Place Order button shows", async () => {
-            await checkoutpage.assertEqual(await checkoutpage.isCheckoutStepDone("Payment"), true,
-                "Assert current step 3 status is Done: true"
-            )
+            await step("Fill payment details with Visa card", async () => {
+                const { visaCheckoutData } = loadTestData();
+                await checkoutpage.fillVisaPaymentDetails(loggedInPage, visaCheckoutData.cardNumber,
+                    visaCheckoutData.expiryMonth, visaCheckoutData.expiryYear, visaCheckoutData.cvv,
+                    "Fill Visa card payment details");
+            })
 
-            await checkoutloginpage.assertVisible(checkoutpage.placeOrderBtn, "Assert place order button visbile")
+            await step("Click payment continue button", async () => {
+                await checkoutpage.click(checkoutpage.paymentcontinueBtn, "Click on payment continue button")
+            })
 
-            await screenshotAndAttach(loggedInPage, './screenshots/Logged-checkout', '05 - Place Order');
-        })
-        */
+            await step("Verify - 5. Step 3 is done - Place Order button shows", async () => {
+                await checkoutpage.assertEqual(await checkoutpage.isCheckoutStepDone("Payment"), true,
+                    "Assert current step 3 status is Done: true"
+                )
+
+                await checkoutloginpage.assertVisible(checkoutpage.placeOrderBtn, "Assert place order button visbile")
+
+                await screenshotAndAttach(loggedInPage, './screenshots/Logged-checkout', '05 - Place Order');
+            })
+        }
+
         await step("Click Agree to Privacy Policy checkbox", async () => {
             await checkoutpage.clickCheckbox(loggedInPage, t.checkoutpage('terms'),
                 `Need to click ${t.checkoutpage('terms')} checkbox`

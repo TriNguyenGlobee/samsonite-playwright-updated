@@ -1,6 +1,5 @@
 import { test } from "../../../src/fixtures/test-fixture"
-import { delay, PageUtils, screenshotAndAttach } from "../../../utils/helpers/helpers";
-import { createHomePage } from "../../../src/factories/home.factory";
+import { screenshotAndAttach, generateNumberString, delay } from "../../../utils/helpers/helpers";
 import { ContactUS } from "../../../src/pages/delivery/contactus/contactus.page";
 import { step } from "allure-js-commons";
 import { Config } from "../../../config/env.config";
@@ -24,8 +23,9 @@ test.describe("Contact Us", async () => {
 
         await step('Verify - 2. Submit contact us form - Success message is displayed', async () => {
             const contactUsPage = new ContactUS(basicAuthPage);
-            await contactUsPage.fillContactUsForm();
+            await contactUsPage.fillContactUsForm({ phone: `8${generateNumberString(7)}` });
             await contactUsPage.click(contactUsPage.submitButton, "Click on Submit button on Contact Us form");
+            await delay(500)
 
             await contactUsPage.assertVisible(contactUsPage.successMessageLocator, "Success message is displayed after submitting Contact Us form");
 

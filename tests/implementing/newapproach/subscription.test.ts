@@ -15,6 +15,8 @@ import { loadTestData } from "../../../utils/data";
 import { Config } from "../../../config/env.config";
 import { steps } from "../../../utils/helpers/localeStep";
 
+const isProd = () => process.env.ENV === 'prod';
+
 test.describe("Subscription-homepage", () => {
     test.beforeEach(async ({ basicAuthPage }) => {
         const globalnavfooterpage = new GlobalNavFooterPage(basicAuthPage)
@@ -144,6 +146,10 @@ test.describe("Subscription-guest-checkout", () => {
         const homepage = createHomePage(basicAuthPage)
         const cartpage = createCartPage(basicAuthPage)
         const minicartpage = createMinicartPage(basicAuthPage)
+
+        if (isProd()) {
+            test.skip(true, "Do not checkout flow on PROD env");
+        }
 
         await step('Go to New Arrivals', async () => {
             await homepage.clickMenuItem('newarrivals')
@@ -285,7 +291,7 @@ test.describe("Subscription-register-account", () => {
         const globalnavfooterpage = new GlobalNavFooterPage(basicAuthPage)
         const accountexistMsg = t.globalnavfooter('duplicateemail')
         const emailexistmsg = basicAuthPage.locator(`//footer[@id="footer"]//div[contains(@class,"subscribe-msg accountexists")]`)
-        const newemail = "gloobeauto_" + generateReadableTimeBasedId() + "@mailinator.com"
+        const newemail = "globee_test" + generateReadableTimeBasedId() + "@mailinator.com"
 
         await step('Fill information to form', async () => {
             await registerpage.fillRegisterForm({ email: newemail, phone: `89${generateNumberString(6)}` })
