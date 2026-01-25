@@ -73,23 +73,23 @@ export function generateReadableTimeBasedId(): string {
 }
 
 export function randomInt(min: number, max: number): number {
-    if (min > max) {
-        throw new Error('min must be less than or equal to max');
-    }
-    return Math.floor(Math.random() * (max - min + 1)) + min;
+  if (min > max) {
+    throw new Error('min must be less than or equal to max');
+  }
+  return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
 export function randomFloat(min: number, max: number, decimals = 2): number {
-    if (min > max) {
-        throw new Error('min must be less than max');
-    }
-    const num = Math.random() * (max - min) + min;
-    return Number(num.toFixed(decimals));
+  if (min > max) {
+    throw new Error('min must be less than max');
+  }
+  const num = Math.random() * (max - min) + min;
+  return Number(num.toFixed(decimals));
 }
 
 export function randomAlphaString(length: number): string {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-    return Array.from({ length }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+  return Array.from({ length }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
 }
 
 /**
@@ -239,6 +239,10 @@ export const t = {
   checkoutpage: (key: keyof Translations['checkoutpage']) => I18n.translations.checkoutpage[key],
   bvintegration: (key: keyof Translations['bvintegration']) => I18n.translations.bvintegration[key],
   contactuspage: (key: keyof Translations['contactuspage']) => I18n.translations.contactuspage[key],
+  myorder: (key: keyof Translations['myorder']) => I18n.translations.myorder[key],
+  mymembership: (key: keyof Translations['mymembership']) => I18n.translations.mymembership[key],
+  myprofile: (key: keyof Translations['myprofile']) => I18n.translations.myprofile[key],
+  myaddressbook: (key: keyof Translations['myaddressbook']) => I18n.translations.myaddressbook[key],
 };
 
 /**
@@ -457,6 +461,36 @@ export async function waitForHasBefore(
   return false;
 }
 
+const LOCAL_PHONE_MAP: Record<SupportedLocale, string> = {
+  sg: '81234567',        // Singapore (8 digits, starts with 8/9)
+  jp: '09012345678',     // Japan mobile
+  au: '0412345678',      // Australia mobile
+  hk: '91234567',        // Hong Kong (8 digits)
+  id: '081234567890',    // Indonesia
+  in: '9123456789',      // India
+  nz: '0211234567',      // New Zealand
+  kr: '01012345678',     // South Korea
+  my: '0123456789',      // Malaysia
+  ph: '09123456789',     // Philippines
+  th: '0812345678',      // Thailand
+  tw: '0912345678',      // Taiwan
+};
+
+export function getLocalPhone(): string {
+  const locale = process.env.LOCALE as SupportedLocale | undefined;
+
+  if (!locale) {
+    throw new Error('LOCALE is not defined in environment variables');
+  }
+
+  const phone = LOCAL_PHONE_MAP[locale];
+
+  if (!phone) {
+    throw new Error(`Unsupported locale for phone generation: ${locale}`);
+  }
+
+  return phone;
+}
 
 /**
  * **************************************************************************
@@ -787,3 +821,17 @@ export async function openNewTab(page: Page, action: () => Promise<void>): Promi
 }
 
 type WaitCondition = 'visible' | 'hidden';
+
+type SupportedLocale =
+  | 'sg'
+  | 'jp'
+  | 'au'
+  | 'hk'
+  | 'id'
+  | 'in'
+  | 'nz'
+  | 'kr'
+  | 'my'
+  | 'ph'
+  | 'th'
+  | 'tw';

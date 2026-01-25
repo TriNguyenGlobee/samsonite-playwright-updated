@@ -477,5 +477,26 @@
   "contactuspage": {
     "title": "Contact Us | Samsonite Singapore",
     "successmsg": "Your message has been sent. We will be contacting you shortly."
+  },
+  "myorder": {
+    "title": "My Orders | Samsonite Singapore"
+  },
+  "mymembership": {
+    "title": "My Membership | Samsonite Singapore",
+    "rewardandmembership": "Rewards and Benefits",
+    "mycoupons": "My Coupons",
+    "termsandconditions": "Terms and Conditions"
+  },
+  "myprofile": {
+    "title": "Profile | Samsonite Singapore"   
+  },
+  "myaddressbook": {
+    "title": "Address Book | Samsonite Singapore",
+    "addnewaddressbutton": "Add New Address",
+    "editaddressbutton": "Edit Address",
+    "removeaddressbutton": "Remove Address",
+    "confirmremovemodaltitle": "Are you sure you want to remove this address?",
+    "confirmremovebutton": "Yes, Remove",
+    "cancelremovebutton": "Cancel"
   }
 }
