@@ -56,7 +56,7 @@ export class GlobalNavFooterPage extends BasePage {
         }
     }
 
-    async getLinksGroupsLocatorByLabel(label: string | string []): Promise<Locator> {
+    async getLinksGroupsLocatorByLabel(label: string | string[]): Promise<Locator> {
         const selectedLocator = this.page.locator(`//footer//li[.//a[normalize-space(text())="${label}"] or .//a//span[normalize-space(text())="${label}"]]`)
         return selectedLocator
     }
@@ -64,5 +64,17 @@ export class GlobalNavFooterPage extends BasePage {
     // =========================
     // ✅ Assertions
     // =========================
+    async assertFooterLinksGroups(params: { page: Page; links: { label: string; href: string }[]; }) {
+        const { page, links } = params;
+
+        for (let index = 0; index < links.length; index++) {
+            const { label, href } = links[index];
+
+            await step(`Assert footer link ${index + 1}/${links.length}: ${label}`, async () => {
+                await this.assertNavigatedURLByClickLocator(page, await this.getLinksGroupsLocatorByLabel(label), href, `Assert navigated URL when clicking "${label}" link`, "middle");
+            });
+        }
+    }
+
 
 }
