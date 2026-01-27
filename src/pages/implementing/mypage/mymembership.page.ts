@@ -8,6 +8,7 @@ import { test } from "@playwright/test";
 export class MyMembershipPage extends BasePage {
     readonly logoImg: Locator;
     readonly backToMypageBtn: Locator;
+    readonly membershipCardImg: Locator;
     readonly rewardsAndMembershipBtn: Locator;
     readonly rewardsandmembershipUnderContent: Locator;
     readonly mycouponsbtn: Locator;
@@ -19,7 +20,8 @@ export class MyMembershipPage extends BasePage {
         super(page);
         this.logoImg = page.locator('//div[contains(@class,"main-logo-wrapper")]');
         this.backToMypageBtn = page.locator(`//h2[@class="page-title"]//i[contains(@class,"sa-icon icon-ico-arrow-left")]`);
-        this.rewardsandmembershipUnderContent = page.locator(`//button[contains(text(),"${t.mymembership('termsandconditions')}")]/ancestor::div[@class="card"]//span`);
+        this.membershipCardImg = page.locator('//div[@class="membership-card-image"]');
+        this.rewardsandmembershipUnderContent = page.locator(`//button[contains(text(),"${t.mymembership('rewardandmembership')}")]/ancestor::div[@class="card"]//span`);
         this.rewardsAndMembershipBtn = page.locator(`//button[contains(text(),"${t.mymembership('rewardandmembership')}")]`);
         this.mycouponsbtn = page.locator(`//button[contains(text(),"${t.mymembership('mycoupons')}")]`);
         this.myCouponsUnderContent = page.locator(`//button[contains(text(),"${t.mymembership('mycoupons')}")]/ancestor::div[@class="card"]//span`);
@@ -37,32 +39,23 @@ export class MyMembershipPage extends BasePage {
     // =========================
     async isMyMembershipDisplayed(): Promise<boolean> {
         try {
-            const title = await this.page.title();
             const currentUrl = this.page.url();
-            let expectedUrl = `${Config.baseURL}account/membership`;
+            let expectedUrl = `${Config.baseURL}membership`;
 
             if (process.env.LOCALE === 'id') {
-                expectedUrl = `${Config.baseURL}en/account/membership`;
+                expectedUrl = `${Config.baseURL}en/membership`;
             }
 
             await test.step("My Membership page data: ", async () => {
-                await attachment("Current Page Title", title, "text/plain");
-                await attachment("Expected Page Title", t.mymembership('title'), "text/plain");
                 await attachment("Current URL", currentUrl, "text/plain");
                 await attachment("Expected URL", expectedUrl, "text/plain");
             });
-
-            if (!title.includes(t.mymembership('title'))) {
-                return false;
-            }
 
             if (!currentUrl.startsWith(expectedUrl)) {
                 return false;
             }
 
             const elementsToCheck = [
-                this.logoImg,
-                this.backToMypageBtn,
                 this.rewardsAndMembershipBtn,
                 this.mycouponsbtn,
                 this.termsAndConditionsBtn

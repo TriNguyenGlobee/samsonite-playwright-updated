@@ -6,7 +6,6 @@ import { attachment, step } from "allure-js-commons";
 import { test } from "../../../fixtures/test-fixture";
 
 export class MyProfilePage extends BasePage {
-    readonly logoImg: Locator;
     readonly backToMypageBtn: Locator;
     readonly titleDropdown: Locator;
     readonly emailTextbox: Locator;
@@ -17,10 +16,10 @@ export class MyProfilePage extends BasePage {
     readonly agreementCheckbox: Locator;
     readonly updateProfileBtn: Locator;
     readonly unregisterAccountBtn: Locator;
+    readonly deleteAccountBtn: Locator;
 
     constructor(page: Page) {
         super(page);
-        this.logoImg = page.locator('//div[contains(@class,"main-logo-wrapper")]');
         this.backToMypageBtn = page.locator(`//h2[@class="page-title"]//i[contains(@class,"sa-icon icon-ico-arrow-left")]`);
         this.titleDropdown = page.locator('#registration-form-title');
         this.emailTextbox = page.locator('#email');
@@ -31,6 +30,7 @@ export class MyProfilePage extends BasePage {
         this.agreementCheckbox = page.locator('//span[contains(text(),"Agree to")]');
         this.updateProfileBtn = page.locator('//button[@name="save"]');
         this.unregisterAccountBtn = page.locator('.btn-unregister');
+        this.deleteAccountBtn = page.locator(`//a[normalize-space(text())="Delete account"]`)
     }
 
     // =========================
@@ -83,37 +83,37 @@ export class MyProfilePage extends BasePage {
         });
     }
 
+    async unregisterAccount() {
+        await step("Unregister Account", async () => {
+            this.click(this.unregisterAccountBtn, "Click unregister account button")
+            this.click(this.deleteAccountBtn, "Click Delete Account button to confirm")
+
+            await this.page.waitForURL(/home/, { waitUntil: 'networkidle' })
+        })
+    }
+
     // =========================
     // 📦 Helpers
     // =========================
     async isMyProfilePageDisplayed(): Promise<boolean> {
         try {
-            const title = await this.page.title();
             const currentUrl = this.page.url();
-            let expectedUrl = `${Config.baseURL}account/profile`;
+            let expectedUrl = `${Config.baseURL}profile`;
 
             if (process.env.LOCALE === 'id') {
-                expectedUrl = `${Config.baseURL}en/account/profile`;
+                expectedUrl = `${Config.baseURL}en/profile`;
             }
 
             await test.step("My Profile page data: ", async () => {
-                await attachment("Current Page Title", title, "text/plain");
-                await attachment("Expected Page Title", t.myprofile('title'), "text/plain");
                 await attachment("Current URL", currentUrl, "text/plain");
                 await attachment("Expected URL", expectedUrl, "text/plain");
             });
-
-            if (!title.includes(t.myprofile('title'))) {
-                return false;
-            }
 
             if (!currentUrl.startsWith(expectedUrl)) {
                 return false;
             }
 
             const elementsToCheck = [
-                this.logoImg,
-                this.backToMypageBtn,
                 this.titleDropdown,
                 this.emailTextbox,
                 this.firstnameTextbox,

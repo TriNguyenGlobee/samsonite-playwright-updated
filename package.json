@@ -35,6 +35,7 @@
     "typescript": "^5.9.2"
   },
   "dependencies": {
-    "dotenv": "^17.2.1"
+    "dotenv": "^17.2.1",
+    "mailslurp-client": "^16.0.0"
   }
 }

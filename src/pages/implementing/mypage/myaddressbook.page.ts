@@ -2,7 +2,9 @@ import { Page, Locator } from "@playwright/test";
 import { BasePage } from "../../base.page";
 import {
     t, generateNumberString, generateReadableTimeBasedId, randomAlphaString,
-    getLocalPhone
+    getLocalPhone,
+    PageUtils,
+    delay
 } from "../../../../utils/helpers/helpers";
 import { Config } from "../../../../config/env.config";
 import { step, attachment } from "allure-js-commons";
@@ -19,14 +21,15 @@ export class MyAddressBookPage extends BasePage {
     readonly lastNameTextbox = this.page.locator('#lastName');
     readonly phoneTextbox = this.page.locator('#registration-form-phone');
     readonly postalCodeTextbox = this.page.locator('#customer-postal-code');
-    readonly address1Textbox = this.page.locator('#address1');
+    readonly address1Textbox = this.page.locator('//div[label[normalize-space(text())="Address 1"]]//input');
     readonly setDefaultAddressCheckbox = this.page.locator('label[for="set-default-address"]');
-
+    readonly addAddressButton = this.page.locator(`//button[normalize-space(text())="Add address"]`)
+    readonly confirmDeleteAddress = this.page.locator(`//h4[text()="Delete Address?"]/ancestor::div[@class="modal-content"]//button[normalize-space(text())="Yes"]`)
 
     constructor(page: Page) {
         super(page);
         this.logoImg = page.locator('//div[contains(@class,"main-logo-wrapper")]');
-        this.addressBookRows = page.locator('//div[@class="card"]');
+        this.addressBookRows = page.locator('//div[contains(@class,"list-address")]//div[@class="card"]');
         this.editAddressBtn = page.locator('//span[@class="pull-right"]');
         this.removeAddressBtn = page.locator('.remove-btn i');
         this.addnewAddressBtn = page.locator('//a[normalize-space(text())="Add New"]');
@@ -67,6 +70,17 @@ export class MyAddressBookPage extends BasePage {
         });
     }
 
+    async removeAddress(index: number) {
+        await step("Remove an address book", async () => {
+            this.jsClick(this.removeAddressBtn.nth(index -1), "Click remove button")
+
+            await this.waitFor(this.confirmDeleteAddress)
+            this.click(this.confirmDeleteAddress, "Click confirm delete address button")
+            
+            await delay(1000)
+        })
+    }
+
     // =========================
     // 📦 Helpers
     // =========================
@@ -78,10 +92,10 @@ export class MyAddressBookPage extends BasePage {
         try {
             const title = await this.page.title();
             const currentUrl = this.page.url();
-            let expectedUrl = `${Config.baseURL}account/addressbook`;
+            let expectedUrl = `${Config.baseURL}addressbook`;
 
             if (process.env.LOCALE === 'id') {
-                expectedUrl = `${Config.baseURL}en/account/addressbook`;
+                expectedUrl = `${Config.baseURL}en/addressbook`;
             }
 
             await test.step("My Address Book page data: ", async () => {
@@ -100,7 +114,6 @@ export class MyAddressBookPage extends BasePage {
             }
 
             const elementsToCheck = [
-                this.logoImg,
                 this.addressBookRows.first(),
                 this.editAddressBtn.first(),
                 this.removeAddressBtn.first(),

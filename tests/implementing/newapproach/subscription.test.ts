@@ -14,6 +14,7 @@ import { MyPage } from "../../../src/pages/implementing/mypage/mypage.page";
 import { loadTestData } from "../../../utils/data";
 import { Config } from "../../../config/env.config";
 import { steps } from "../../../utils/helpers/localeStep";
+import { MailSlurp } from 'mailslurp-client';
 
 const isProd = () => process.env.ENV === 'prod';
 
@@ -70,16 +71,28 @@ test.describe("Subscription-homepage", () => {
         `, async ({ basicAuthPage }) => {
         const globalnavfooterpage = new GlobalNavFooterPage(basicAuthPage)
         const email_suffix = generateReadableTimeBasedId()
-        const valid_email = "gloobeauto_" + email_suffix + "@mailinator.com"
+        //const valid_email = "gloobeauto_" + email_suffix + "@mailinator.com"
         const subscribeMsg = t.globalnavfooter('createsuccess')
         const accountexistMsg = t.globalnavfooter('duplicateemail')
         const createdmsg = basicAuthPage.locator(`//footer[@id="footer"]//div[contains(@class,"subscribe-msg accountcreated")]`)
         const successmsg = basicAuthPage.locator(`//div[@class="resp-messages"]//h2[@class="success"]`)
         const emailexistmsg = basicAuthPage.locator(`//footer[@id="footer"]//div[contains(@class,"subscribe-msg accountexists")]`)
         const returnbutton = basicAuthPage.locator(`//button[@class="btn-return"]`)
+        const mailslurp = new MailSlurp({
+            apiKey: process.env.MAILSLURP_API_KEY!,
+        });
+
+        let inbox: any;
+        let emailaddress: string;
+
+        await test.step('Create MailSlurp inbox', async () => {
+            inbox = await mailslurp.createInbox();
+            emailaddress = inbox.emailAddress
+            expect(emailaddress).toBeTruthy();
+        });
 
         await step("Enter the valid-email into the email textbox", async () => {
-            await globalnavfooterpage.type(globalnavfooterpage.emailTextbox, valid_email)
+            await globalnavfooterpage.type(globalnavfooterpage.emailTextbox, emailaddress)
         })
 
         await step("Clicking on the subscribe button", async () => {
@@ -89,7 +102,7 @@ test.describe("Subscription-homepage", () => {
 
             await steps(["au"], "Fill the lastest news", async () => {
                 await globalnavfooterpage.fillLatestNewsForm({
-                    email: valid_email
+                    email: emailaddress
                 })
             })
 
@@ -120,6 +133,13 @@ test.describe("Subscription-homepage", () => {
             await screenshotAndAttach(basicAuthPage, './screenshots/Subscription', '03 - Successful subscription message');
             await globalnavfooterpage.click(returnbutton, "Clicking on Return button")
         })
+
+        await step('Wait for verification email', async () => {
+            const email = await mailslurp.waitForLatestEmail(inbox.id, 30000, true);
+
+            await globalnavfooterpage.assertEqual(email.subject?.toLowerCase(), `Hi there, welcome to the World of Samsonite.`.toLowerCase(),
+                "Assert the email subject")
+        });
 
         await step("Clicking on the subscribe button again", async () => {
             await globalnavfooterpage.click(globalnavfooterpage.subscribeButton,

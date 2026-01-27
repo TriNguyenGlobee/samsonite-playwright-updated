@@ -243,6 +243,8 @@ export const t = {
   mymembership: (key: keyof Translations['mymembership']) => I18n.translations.mymembership[key],
   myprofile: (key: keyof Translations['myprofile']) => I18n.translations.myprofile[key],
   myaddressbook: (key: keyof Translations['myaddressbook']) => I18n.translations.myaddressbook[key],
+  mypayments: (key: keyof Translations['mypayments']) => I18n.translations.mypayments[key],
+  mycoupons: (key: keyof Translations['mycoupons']) => I18n.translations.mycoupons[key],
 };
 
 /**
@@ -461,35 +463,88 @@ export async function waitForHasBefore(
   return false;
 }
 
-const LOCAL_PHONE_MAP: Record<SupportedLocale, string> = {
-  sg: '81234567',        // Singapore (8 digits, starts with 8/9)
-  jp: '09012345678',     // Japan mobile
-  au: '0412345678',      // Australia mobile
-  hk: '91234567',        // Hong Kong (8 digits)
-  id: '081234567890',    // Indonesia
-  in: '9123456789',      // India
-  nz: '0211234567',      // New Zealand
-  kr: '01012345678',     // South Korea
-  my: '0123456789',      // Malaysia
-  ph: '09123456789',     // Philippines
-  th: '0812345678',      // Thailand
-  tw: '0912345678',      // Taiwan
+const FIXED_PHONE_MAP: Record<SupportedLocale, string> = {
+  sg: '81234567',
+  jp: '09012345678',
+  au: '0412345678',
+  hk: '91234567',
+  id: '081234567890',
+  in: '9123456789',
+  nz: '0211234567',
+  kr: '01012345678',
+  my: '0123456789',
+  ph: '09123456789',
+  th: '0812345678',
+  tw: '0912345678',
 };
 
-export function getLocalPhone(): string {
+function randomDigits(length: number): string {
+  return Array.from({ length }, () => Math.floor(Math.random() * 10)).join('');
+}
+
+function randomFromArray<T>(arr: T[]): T {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
+function generateRandomPhone(locale: SupportedLocale): string {
+  switch (locale) {
+    case 'sg':
+      return randomFromArray(['8', '9']) + randomDigits(7);
+
+    case 'hk':
+      return randomFromArray(['5', '6', '9']) + randomDigits(7);
+
+    case 'jp':
+      return randomFromArray(['090', '080', '070']) + randomDigits(8);
+
+    case 'au':
+      return '04' + randomDigits(8);
+
+    case 'id':
+      return '08' + randomDigits(10);
+
+    case 'in':
+      return randomFromArray(['6', '7', '8', '9']) + randomDigits(9);
+
+    case 'nz':
+      return randomFromArray(['021', '022', '027']) + randomDigits(7);
+
+    case 'kr':
+      return '010' + randomDigits(8);
+
+    case 'my':
+      return '01' + randomDigits(9);
+
+    case 'ph':
+      return '09' + randomDigits(9);
+
+    case 'th':
+      return randomFromArray(['08', '09']) + randomDigits(8);
+
+    case 'tw':
+      return '09' + randomDigits(8);
+
+    default:
+      throw new Error(`Unsupported locale for random phone: ${locale}`);
+  }
+}
+
+export function getLocalPhone(random: boolean = false): string {
   const locale = process.env.LOCALE as SupportedLocale | undefined;
 
   if (!locale) {
     throw new Error('LOCALE is not defined in environment variables');
   }
 
-  const phone = LOCAL_PHONE_MAP[locale];
-
-  if (!phone) {
-    throw new Error(`Unsupported locale for phone generation: ${locale}`);
+  if (!random) {
+    const fixedPhone = FIXED_PHONE_MAP[locale];
+    if (!fixedPhone) {
+      throw new Error(`Unsupported locale for phone generation: ${locale}`);
+    }
+    return fixedPhone;
   }
 
-  return phone;
+  return generateRandomPhone(locale);
 }
 
 /**
