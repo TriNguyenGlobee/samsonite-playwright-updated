@@ -9,8 +9,157 @@ import { step } from "allure-js-commons";
 import { CheckoutPage } from "../../../src/pages/implementing/checkout/checkout.page";
 import { loadTestData } from "../../../utils/data";
 import { Config } from "../../../config/env.config";
+import { tests } from "../../../utils/helpers/localeTest";
 
 const isProd = () => process.env.ENV === 'prod';
+
+test.describe("Guest-creditcard-checkout", async () => {
+    test.beforeEach(async ({ basicAuthPage }) => {
+        const newarrivalspage = new NewArrivalsPage(basicAuthPage)
+        const homepage = createHomePage(basicAuthPage)
+        const cartpage = createCartPage(basicAuthPage)
+        const minicartpage = createMinicartPage(basicAuthPage)
+
+        await step('Go to Luggage', async () => {
+            await homepage.clickMenuItem('luggage')
+            await newarrivalspage.logoImg.hover()
+
+            await step('Click on In-stock checkbox', async () => {
+                await homepage.clickCheckbox(basicAuthPage, `${t.homepage('in-stock')}`)
+            })
+        })
+
+        await step("Add a product to cart", async () => {
+            await Promise.all([
+                cartpage.addMultipleProductsToCart(1, "Add a in-stock product to cart"),
+                //expect(minicartpage.minicartRender).toBeVisible({ timeout: 5000 })
+            ]);
+        })
+
+        await step('Go to checkout login page', async () => {
+            await clickUntil(basicAuthPage, homepage.cartIcon, minicartpage.minicartRender, 'visible', {
+                delayMs: 500,
+                maxTries: 3,
+                timeoutMs: 3000
+            })
+
+            await minicartpage.click(minicartpage.checkoutButton,
+                "Click on Checkout button"
+            )
+        })
+    })
+
+    tests(["au"], `
+        1. Checkout page is displayed - Your detail form shows correctly    
+        2. Step 1 is done - Recipient infor form shows correctly
+        3. Step 2 is done - Payment methods section shows correctly
+        4. Payment method is selected - Payment details form shows correctly
+        5. Step 3 is done - Place Order button shows
+        6. Ordering success page is displayed
+        `, async ({ basicAuthPage }) => {
+        const checkoutpage = new CheckoutPage(basicAuthPage)
+        const checkoutloginpage = new CheckoutLoginPage(basicAuthPage)
+        const { checkoutFullData } = loadTestData();
+        const { checkoutShippingData } = loadTestData();
+        const cardNumberIframe = basicAuthPage.locator('input#cardNumber');
+
+        await step("Go to guest checkout page", async () => {
+            await checkoutloginpage.click(checkoutloginpage.guestcheckoutButton,
+                "Clicking on Guest checkout button"
+            )
+        })
+
+        await step("Verify - 1. Checkout page is displayed - Your detail form shows correctly", async () => {
+            expect(await checkoutpage.isCheckoutPageDisplayed()).toBe(true)
+            await screenshotAndAttach(basicAuthPage, './screenshots/Guest-visa-checkout', '01 - Your detail form');
+        })
+
+        await step("Fill your detail with full information", async () => {
+            await checkoutpage.fillCheckoutYourDetailForm(basicAuthPage, checkoutFullData)
+        })
+
+        await checkoutpage.click(checkoutpage.continueButton, "Click on Step 1 Continue button")
+
+        await step("Verify - 2. Step 1 is done - Recipient infor form shows correctly", async () => {
+            await checkoutpage.assertEqual(await checkoutpage.isCheckoutStepDone("Your Details"), true,
+                "Assert current step 1 status is Done: true"
+            )
+
+            await checkoutloginpage.assertVisible(checkoutpage.shippingSection.first(), "Assert recipient infor section visbile")
+
+            await screenshotAndAttach(basicAuthPage, './screenshots/Guest-visa-checkout', '02 - Recipient infor form');
+        })
+
+        await step("Fill recipient info", async () => {
+            await checkoutpage.fillRecipientDetilsForm(basicAuthPage, checkoutShippingData)
+        })
+
+        await step("Click on continue button", async () => {
+            await checkoutpage.click(checkoutpage.recipientContinueBtn, "Click on Step 2 Continue button")
+            await PageUtils.waitForPageLoad(basicAuthPage)
+        })
+
+        await step("Verify - 3. Step 2 is done - Payment methods section shows correctly", async () => {
+            await checkoutpage.assertEqual(await checkoutpage.isCheckoutStepDone("Shipping"), true,
+                "Assert current step 2 status is Done: true"
+            )
+
+            await checkoutloginpage.assertVisible(checkoutpage.creditIcon, "Assert payment method section visbile")
+
+            await screenshotAndAttach(basicAuthPage, './screenshots/Guest-visa-checkout', '03 - Payment methods section');
+        })
+
+        await step("Select Visa payment method", async () => {
+            await checkoutpage.click(checkoutpage.creditIcon, "Select Creditcard payment method")
+        })
+
+        await step("Verify - 4. Payment method is selected - Payment details form shows correctly", async () => {
+            await checkoutpage.assertVisible(checkoutpage.paymentcontinueBtn,
+                "Assert the Payment Continue button is displayed"
+            )
+
+            await checkoutloginpage.assertVisible(cardNumberIframe, "Assert payment detail form visbile")
+
+            await delay(500)
+            await screenshotAndAttach(basicAuthPage, './screenshots/Guest-visa-checkout', '04 - Payment detail form');
+        })
+
+        await step("Fill payment details with Creditcard card", async () => {
+            const { visaCheckoutData } = loadTestData();
+            await checkoutpage.fillVisaPaymentDetails(basicAuthPage, visaCheckoutData.cardNumber,
+                visaCheckoutData.expiryMonth, visaCheckoutData.expiryYear, visaCheckoutData.cvv,
+                "Fill Creditcard card payment details");
+        })
+
+        await step("Click payment continue button", async () => {
+            await checkoutpage.click(checkoutpage.paymentcontinueBtn, "Click on payment continue button")
+        })
+
+        await step("Verify - 5. Step 3 is done - Place Order button shows", async () => {
+            await checkoutpage.assertEqual(await checkoutpage.isCheckoutStepDone("Payment"), true,
+                "Assert current step 3 status is Done: true"
+            )
+
+            await checkoutloginpage.assertVisible(checkoutpage.placeOrderBtn, "Assert place order button visbile")
+
+            await screenshotAndAttach(basicAuthPage, './screenshots/Guest-visa-checkout', '05 - Place Order');
+        })
+
+        if (await !isProd()) {
+            await step("Click place order button", async () => {
+                await checkoutpage.click(checkoutpage.placeOrderBtn, "Click on Place Order button")
+                await basicAuthPage.waitForURL(/orderconfirmation/)
+            })
+
+            await step("Verify - 6. Ordering success page is displayed", async () => {
+                await checkoutpage.assertVisible(checkoutpage.orderSuccessTitle,
+                    "Assert the order success title is visible"
+                )
+                await screenshotAndAttach(basicAuthPage, './screenshots/Guest-visa-checkout', '06 - Ordering success page');
+            })
+        }
+    });
+})
 
 test.describe("Guest-visa-checkout", async () => {
     test.beforeEach(async ({ basicAuthPage }) => {

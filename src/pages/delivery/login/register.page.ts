@@ -69,6 +69,8 @@ export class RegisterPage extends BasePage {
         email?: string;
         password?: string;
         confirmPassword?: string;
+        addmaillist?: boolean;
+        receivenews?: boolean;
         agreePolicy?: boolean;
     }) {
         const {
@@ -82,6 +84,8 @@ export class RegisterPage extends BasePage {
             email = `globee_test${generateReadableTimeBasedId()}@mailinator.com`,
             password = "Test@123",
             confirmPassword = "Test@123",
+            addmaillist = true,
+            receivenews = true,
             agreePolicy = true,
         } = data ?? {};
 
@@ -92,9 +96,13 @@ export class RegisterPage extends BasePage {
             const monthDropdown = this.page.locator(`//select[@name="month"]`)
             const yearDropdown = this.page.locator(`//select[@id="year"]`)
 
-            if (gender != "" && process.env.LOCALE != "jp") {
+            const excludedLocales_genderdropdown = ["au"];
+            const excludedLocales_addmaillist = ["sg"];
+            const excludedLocales_receivenews = ["sg"];
+
+            if (gender != "" && process.env.LOCALE != "jp" && !excludedLocales_genderdropdown.includes(process.env.LOCALE ?? "")) {
                 await selectDropdownOption(this.page, titleDropdown, gender)
-            } else if (gender != "") {
+            } else if (gender != "" && !excludedLocales_genderdropdown.includes(process.env.LOCALE ?? "")) {
                 await selectDropdownOption(this.page, genderDropdown, gender)
             }
 
@@ -111,6 +119,14 @@ export class RegisterPage extends BasePage {
             await this.type(this.emailTexbox, email)
             await this.type(this.passwordTextbox, password)
             await this.type(this.confirmPasswordTextbox, confirmPassword)
+
+            if (addmaillist && !excludedLocales_addmaillist.includes(process.env.LOCALE ?? "")) {
+                await this.clickCheckbox(this.page, t.checkoutpage('newsletter'))
+            }
+
+            if (receivenews && !excludedLocales_receivenews.includes(process.env.LOCALE ?? "")) {
+                await this.clickCheckbox(this.page, t.checkoutpage('receivenews'))
+            }
 
             if (agreePolicy) {
                 await this.clickCheckbox(this.page, t.checkoutpage('terms'))

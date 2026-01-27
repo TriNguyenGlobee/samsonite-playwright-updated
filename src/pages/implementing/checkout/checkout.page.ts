@@ -33,6 +33,7 @@ export class CheckoutPage extends BasePage {
     readonly paymentcontinueBtn: Locator;
     readonly paymentEditBtn: Locator;
     readonly visaIcon: Locator;
+    readonly creditIcon: Locator;
     readonly masterIcon: Locator;
     readonly paypalIcon: Locator;
     readonly atomeIcon: Locator;
@@ -78,6 +79,7 @@ export class CheckoutPage extends BasePage {
         this.paymentEditBtn = page.locator(`//div[h4[normalize-space(text())="Payment"]]//span[normalize-space(text())="Edit"]`)
         this.paymentcontinueBtn = page.locator(`//div[@class="card payment-form"]//button[@type="submit"]`)
         this.visaIcon = page.locator(`//li[@data-method-id="CREDIT_CARD" and @data-card-type="Visa"]//a`)
+        this.creditIcon = page.locator(`//li[@data-method-id="CREDIT_CARD"]//a`)
         this.masterIcon = page.locator(`//li[@data-method-id="CREDIT_CARD" and @data-card-type="MasterCard"]//a`)
         this.paypalIcon = page.locator(`//li[@data-method-id="PayPal"]//a`)
         this.atomeIcon = page.locator(`//li[@data-method-id="ATOME_PAYMENT"]//a`)

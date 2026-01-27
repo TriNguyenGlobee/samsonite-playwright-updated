@@ -3,7 +3,7 @@ import { step } from "allure-js-commons";
 import { createLoginPage } from "../../../src/factories/login.factory";
 import { RegisterPage } from "../../../src/pages/delivery/login/register.page";
 import { MyPage } from "../../../src/pages/implementing/mypage/mypage.page";
-import { screenshotAndAttach, generateNumberString, randomAlphaString } from "../../../utils/helpers/helpers";
+import { screenshotAndAttach, generateNumberString, randomAlphaString, getLocalPhone } from "../../../utils/helpers/helpers";
 import { MailSlurp } from 'mailslurp-client';
 
 test.describe("Clicking create account button with valid information", async () => {
@@ -39,7 +39,7 @@ test.describe("Clicking create account button with valid information", async () 
         })
 
         await step('Fill information to form', async () => {
-            await registerpage.fillRegisterForm({ firstname: firstname, phone: `89${generateNumberString(6)}`, email: emailaddress })
+            await registerpage.fillRegisterForm({ firstname: firstname, phone: getLocalPhone(true), email: emailaddress })
         })
 
         await step('Click Create Account button', async () => {
