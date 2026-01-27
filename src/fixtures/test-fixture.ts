@@ -9,6 +9,7 @@ import { delay, PageUtils } from "../../utils/helpers/helpers";
 type MyFixtures = {
   user: { username: string; password: string };
   basicAuthPage: Page;
+  basicAuthPageNoWatchdog: Page;
   loggedInPage: Page;
   locale: string;
 };
@@ -47,6 +48,31 @@ export const test = base.extend<MyFixtures>({
     await use(page);
 
     await stopWatchdog()
+    await page.close({ runBeforeUnload: false }).catch(() => { });
+    await context.close().catch(() => { });
+  },
+
+  basicAuthPageNoWatchdog: async ({ browser }, use) => {
+    const context = await browser.newContext({
+      ...(Config.basicAuthUser && Config.basicAuthPass
+        ? {
+          httpCredentials: {
+            username: Config.basicAuthUser,
+            password: Config.basicAuthPass,
+          },
+        }
+        : {}),
+      permissions: [],
+    });
+
+    const page = await context.newPage();
+
+    await step("Go to base URL (no watchdog)", async () => {
+      await page.goto(Config.baseURL, { waitUntil: "domcontentloaded" });
+    });
+
+    await use(page);
+
     await page.close({ runBeforeUnload: false }).catch(() => { });
     await context.close().catch(() => { });
   },

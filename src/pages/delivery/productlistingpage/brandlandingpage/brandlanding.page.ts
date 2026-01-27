@@ -25,6 +25,7 @@ export class BrandLandingPage extends BasePage {
     readonly brInforTitle: Locator;
     readonly brInforContent: Locator;
     readonly brInforButton: Locator;
+    readonly viewAllProducts: Locator;
 
     constructor(page: Page) {
         super(page);
@@ -49,6 +50,7 @@ export class BrandLandingPage extends BasePage {
         this.brInforTitle = this.brandInforSection.locator(`xpath=.//h2`)
         this.brInforContent = this.brandInforSection.locator(`xpath=.//p`)
         this.brInforButton = this.brandInforSection.locator(`xpath=.//a[contains(@class,"btn")]`)
+        this.viewAllProducts = page.locator(`.button-view-all`)
     }
 
     // =========================

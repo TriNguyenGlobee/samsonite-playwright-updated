@@ -467,5 +467,32 @@
     "reviewtitle": "レビューのタイトル",
     "nickname": "ニックネーム",
     "email": "電子メール"
+  },
+  "contactuspage": {
+    "title": "Contact Us | Samsonite Singapore",
+    "successmsg": "Your message has been sent. We will be contacting you shortly."
+  },
+  "myorder": {
+    "title": "My Orders | Samsonite Singapore"
+  },
+  "myprofile": {
+    "title": "My Profile | Samsonite Singapore"
+  },
+  "myaddressbook": {
+    "title": "Address Book | Samsonite Singapore",
+    "addnewaddressbutton": "Add New Address",
+    "editaddressbutton": "Edit Address",
+    "removeaddressbutton": "Remove Address",
+    "confirmremovemodaltitle": "Are you sure you want to remove this address?",
+    "confirmremovebutton": "Yes, Remove",
+    "cancelremovebutton": "Cancel"
+  },
+  "mypayments": {
+    "title": "Payment instrument | Samsonite Singapore"
+  },
+  "mycoupons": {
+    "title": "My Coupon",
+    "savedcouponstitle": "Saved Coupons",
+    "appliedcouponstitle": "Applied Coupons"
   }
 }

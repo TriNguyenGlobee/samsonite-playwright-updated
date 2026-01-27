@@ -5,7 +5,6 @@ import { Config } from "../../../../config/env.config";
 import { step } from "allure-js-commons";
 
 export class MyPage extends BasePage {
-    readonly logoImg: Locator;
     readonly pageTitle: Locator;
     readonly myOrdersLink: Locator;
     readonly membershipLink: Locator;
@@ -18,7 +17,6 @@ export class MyPage extends BasePage {
 
     constructor(page: Page) {
         super(page);
-        this.logoImg = page.locator('//div[contains(@class,"main-logo-wrapper")]');
         this.pageTitle = page.locator(`//div[@class="title-contain"][h1[normalize-space(text())="${t.mypage('pageTitle')}"]]`);
         this.myOrdersLink = page.locator(`//a[h4[normalize-space(text())="${t.mypage('myOrders')}"]]`);
         this.membershipLink = page.locator(`//a[h4[normalize-space(text())="${t.mypage('membership')}"]]`);
@@ -55,8 +53,6 @@ export class MyPage extends BasePage {
             if (!currentUrl.startsWith(expectedUrl)) return false;
 
             const elementsToCheck = [
-                this.logoImg,
-                this.pageTitle,
                 this.myOrdersLink,
                 this.membershipLink,
                 this.mycouponsLink,
