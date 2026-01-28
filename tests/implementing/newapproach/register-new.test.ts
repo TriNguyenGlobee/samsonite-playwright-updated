@@ -3,8 +3,10 @@ import { step } from "allure-js-commons";
 import { createLoginPage } from "../../../src/factories/login.factory";
 import { RegisterPage } from "../../../src/pages/delivery/login/register.page";
 import { MyPage } from "../../../src/pages/implementing/mypage/mypage.page";
+import { MyProfilePage } from "../../../src/pages/implementing/mypage/myprofile.page";
 import { screenshotAndAttach, generateNumberString, randomAlphaString, getLocalPhone } from "../../../utils/helpers/helpers";
 import { MailSlurp } from 'mailslurp-client';
+import { Config } from "../../../config/env.config";
 
 test.describe("Clicking create account button with valid information", async () => {
     test.beforeEach(async ({ basicAuthPage }) => {
@@ -58,5 +60,14 @@ test.describe("Clicking create account button with valid information", async () 
             await mypage.assertEqual(email.subject?.toLowerCase(), `Thank you for registering, ${firstname}.`.toLowerCase(),
                 "Assert the email subject")
         });
+    })
+
+    test.afterEach(async ({ basicAuthPage }) => {
+        const mypage = new MyPage(basicAuthPage)
+        const myProfilePage = new MyProfilePage(basicAuthPage);
+
+        await mypage.goto(Config.baseURL + 'profile')
+        await myProfilePage.unregisterAccount()
+        await screenshotAndAttach(basicAuthPage, './screenshots/Register', '03 - AfterEach-Home page');
     })
 })

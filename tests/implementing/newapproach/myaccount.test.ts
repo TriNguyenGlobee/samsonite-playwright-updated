@@ -442,6 +442,15 @@ test.describe("My Account-My Payments", () => {
             })
         }
     );
+
+    test.afterEach(async ({ basicAuthPage }) => {
+        const mypage = new MyPage(basicAuthPage)
+        const myProfilePage = new MyProfilePage(basicAuthPage);
+
+        await mypage.goto(Config.baseURL + 'profile')
+        await myProfilePage.unregisterAccount()
+        await screenshotAndAttach(basicAuthPage, './screenshots/MyAccount-Payment', '03 - AfterEach-Home page');
+    })
 });
 
 test.describe("My Account-My coupon", () => {
