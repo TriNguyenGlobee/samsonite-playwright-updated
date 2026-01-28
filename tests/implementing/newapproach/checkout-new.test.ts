@@ -61,7 +61,9 @@ test.describe("Guest-creditcard-checkout", async () => {
         const checkoutloginpage = new CheckoutLoginPage(basicAuthPage)
         const { checkoutFullData } = loadTestData();
         const { checkoutShippingData } = loadTestData();
-        const cardNumberIframe = basicAuthPage.locator('input#cardNumber');
+        const cardinalFrame = basicAuthPage.frameLocator('#Cardinal-CCA-IFrame');
+        const codeTextbox = cardinalFrame.locator('//input[normalize-space(@placeholder)="Enter Code Here"]')
+        const submitbutton = cardinalFrame.locator('//input[@value="SUBMIT"]')
 
         await step("Go to guest checkout page", async () => {
             await checkoutloginpage.click(checkoutloginpage.guestcheckoutButton,
@@ -71,7 +73,7 @@ test.describe("Guest-creditcard-checkout", async () => {
 
         await step("Verify - 1. Checkout page is displayed - Your detail form shows correctly", async () => {
             expect(await checkoutpage.isCheckoutPageDisplayed()).toBe(true)
-            await screenshotAndAttach(basicAuthPage, './screenshots/Guest-visa-checkout', '01 - Your detail form');
+            await screenshotAndAttach(basicAuthPage, './screenshots/Guest-creditcard-checkout', '01 - Your detail form');
         })
 
         await step("Fill your detail with full information", async () => {
@@ -87,7 +89,7 @@ test.describe("Guest-creditcard-checkout", async () => {
 
             await checkoutloginpage.assertVisible(checkoutpage.shippingSection.first(), "Assert recipient infor section visbile")
 
-            await screenshotAndAttach(basicAuthPage, './screenshots/Guest-visa-checkout', '02 - Recipient infor form');
+            await screenshotAndAttach(basicAuthPage, './screenshots/Guest-creditcard-checkout', '02 - Recipient infor form');
         })
 
         await step("Fill recipient info", async () => {
@@ -106,11 +108,12 @@ test.describe("Guest-creditcard-checkout", async () => {
 
             await checkoutloginpage.assertVisible(checkoutpage.creditIcon, "Assert payment method section visbile")
 
-            await screenshotAndAttach(basicAuthPage, './screenshots/Guest-visa-checkout', '03 - Payment methods section');
+            await screenshotAndAttach(basicAuthPage, './screenshots/Guest-creditcard-checkout', '03 - Payment methods section');
         })
 
         await step("Select Visa payment method", async () => {
             await checkoutpage.click(checkoutpage.creditIcon, "Select Creditcard payment method")
+            await delay(500)
         })
 
         await step("Verify - 4. Payment method is selected - Payment details form shows correctly", async () => {
@@ -118,21 +121,22 @@ test.describe("Guest-creditcard-checkout", async () => {
                 "Assert the Payment Continue button is displayed"
             )
 
-            await checkoutloginpage.assertVisible(cardNumberIframe, "Assert payment detail form visbile")
-
             await delay(500)
-            await screenshotAndAttach(basicAuthPage, './screenshots/Guest-visa-checkout', '04 - Payment detail form');
+            await screenshotAndAttach(basicAuthPage, './screenshots/Guest-creditcard-checkout', '04 - Payment detail form');
         })
 
         await step("Fill payment details with Creditcard card", async () => {
             const { visaCheckoutData } = loadTestData();
-            await checkoutpage.fillVisaPaymentDetails(basicAuthPage, visaCheckoutData.cardNumber,
-                visaCheckoutData.expiryMonth, visaCheckoutData.expiryYear, visaCheckoutData.cvv,
+            await checkoutpage.fillCreditCardPaymentDetails(basicAuthPage, visaCheckoutData.cardNumber,
+                visaCheckoutData.expiryDate, visaCheckoutData.cvv, visaCheckoutData.nameOnCard,
                 "Fill Creditcard card payment details");
         })
 
         await step("Click payment continue button", async () => {
             await checkoutpage.click(checkoutpage.paymentcontinueBtn, "Click on payment continue button")
+
+            await checkoutpage.type(codeTextbox, "1234")
+            await checkoutpage.click(submitbutton, "Click submit OPT button", 100, 10)
         })
 
         await step("Verify - 5. Step 3 is done - Place Order button shows", async () => {
@@ -142,7 +146,7 @@ test.describe("Guest-creditcard-checkout", async () => {
 
             await checkoutloginpage.assertVisible(checkoutpage.placeOrderBtn, "Assert place order button visbile")
 
-            await screenshotAndAttach(basicAuthPage, './screenshots/Guest-visa-checkout', '05 - Place Order');
+            await screenshotAndAttach(basicAuthPage, './screenshots/Guest-creditcard-checkout', '05 - Place Order');
         })
 
         if (await !isProd()) {
@@ -155,7 +159,7 @@ test.describe("Guest-creditcard-checkout", async () => {
                 await checkoutpage.assertVisible(checkoutpage.orderSuccessTitle,
                     "Assert the order success title is visible"
                 )
-                await screenshotAndAttach(basicAuthPage, './screenshots/Guest-visa-checkout', '06 - Ordering success page');
+                await screenshotAndAttach(basicAuthPage, './screenshots/Guest-creditcard-checkout', '06 - Ordering success page');
             })
         }
     });
@@ -197,7 +201,7 @@ test.describe("Guest-visa-checkout", async () => {
         })
     })
 
-    test(`
+    tests(["sg"], `
         1. Checkout page is displayed - Your detail form shows correctly    
         2. Step 1 is done - Recipient infor form shows correctly
         3. Step 2 is done - Payment methods section shows correctly
@@ -345,7 +349,7 @@ test.describe("Guest-mastercard-checkout", async () => {
         })
     })
 
-    test(`
+    tests(["sg"], `
         1. Checkout page is displayed - Your detail form shows correctly    
         2. Step 1 is done - Recipient infor form shows correctly
         3. Step 2 is done - Payment methods section shows correctly

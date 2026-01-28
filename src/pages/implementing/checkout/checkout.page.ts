@@ -194,7 +194,7 @@ export class CheckoutPage extends BasePage {
             const cvvIframe = this.page.locator('input#securityCode');
 
             await this.type(cardNumberIframe, cardNumber, `Fill card number: ${cardNumber}`);
-            await this.type(cvvIframe, cvv, `Fill card number: ${cvv}`);
+            await this.type(cvvIframe, cvv, `Fill cvv number: ${cvv}`);
 
             await selectDropdownOption(page, "select#expirationMonth", cardMonth, "value",
                 `Select card expiration month: ${cardMonth}`
@@ -204,6 +204,43 @@ export class CheckoutPage extends BasePage {
                 `Select card expiration year: ${cardYear}`
             );
         })
+    }
+
+    async fillCreditCardPaymentDetails(page: Page, cardNumber: string, expDate: string, cvv: string, name: string, description?: string): Promise<void> {
+        await step(description || "Fill visa payment details", async () => {
+
+            const cardNumberFrame = page.frameLocator('iframe[name="braintree-hosted-field-number"]');
+
+            const expirationFrame = page.frameLocator('iframe[name="braintree-hosted-field-expirationDate"]');
+
+            const cvvFrame = page.frameLocator('iframe[name="braintree-hosted-field-cvv"]');
+
+            const nameOnCard = page.locator('#braintreeCardOwner');
+
+            await this.type(
+                cardNumberFrame.locator('input#credit-card-number'),
+                cardNumber,
+                `Fill card number: ${cardNumber}`
+            );
+
+            await this.type(
+                expirationFrame.locator('input#expiration'),
+                expDate,
+                `Fill expiration date: ${expDate}`
+            );
+
+            await this.type(
+                cvvFrame.locator('input#cvv'),
+                cvv,
+                `Fill cvv: ${cvv}`
+            );
+
+            await this.type(
+                nameOnCard,
+                name,
+                `Fill name on card: ${name}`
+            );
+        });
     }
 
     // =========================
@@ -217,7 +254,7 @@ export class CheckoutPage extends BasePage {
             const currentUrl = await this.page.url();
             let expectedUrl = Config.baseURL + "checkout?stage=shipping#shipping";
 
-            if (login) {expectedUrl = Config.baseURL + "checkout"}
+            if (login) { expectedUrl = Config.baseURL + "checkout" }
 
             await test.step("Checkout page data: ", async () => {
                 await attachment("Current Page Title", title, "text/plain");
