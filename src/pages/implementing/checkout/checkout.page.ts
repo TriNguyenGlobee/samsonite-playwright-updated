@@ -252,7 +252,7 @@ export class CheckoutPage extends BasePage {
             const title = await this.page.title();
             const expectedTitle = t.checkoutpage('title')
             const currentUrl = await this.page.url();
-            let expectedUrl = Config.baseURL + "checkout?stage=shipping#shipping";
+            let expectedUrl = Config.baseURL + "checkout";
 
             if (login) { expectedUrl = Config.baseURL + "checkout" }
 

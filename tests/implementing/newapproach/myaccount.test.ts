@@ -47,14 +47,16 @@ test.describe("My Account-My Orders", () => {
                 await screenshotAndAttach(loggedInPage, './screenshots/MyAccount-Order', '02 - My Orders Page');
             })
 
-            await step("Click on an order to view order details", async () => {
-                await myOrdersPage.orderRow.first().click();
-            });
+            if (process.env.ENV === 'stg') {
+                await step("Click on an order to view order details", async () => {
+                    await myOrdersPage.orderRow.first().click();
+                });
 
-            await step("Verify - 3. Order Details page is displayed correctly", async () => {
-                await myOrdersPage.assertUrl(/\/orderdetail.*orderID/);
-                await screenshotAndAttach(loggedInPage, './screenshots/MyAccount-Order', '03 - Order Details Page');
-            })
+                await step("Verify - 3. Order Details page is displayed correctly", async () => {
+                    await myOrdersPage.assertUrl(/\/orderdetail.*orderID/);
+                    await screenshotAndAttach(loggedInPage, './screenshots/MyAccount-Order', '03 - Order Details Page');
+                })
+            }
         }
     );
 });

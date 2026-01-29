@@ -18,7 +18,11 @@ test.describe("Clicking create account button with valid information", async () 
         })
     });
 
-    test(`1. Register page is displayed - Register form shows correctly`, async ({ basicAuthPage }) => {
+    test(`
+        1. Register page is displayed - Register form shows correctly
+        2. Register new account success - My page shows
+        3. Wait for verification email
+        `, async ({ basicAuthPage }) => {
         const registerpage = new RegisterPage(basicAuthPage)
         const mypage = new MyPage(basicAuthPage)
         const firstname = `fname ${randomAlphaString(4)} ${randomAlphaString(3)}`
@@ -54,11 +58,15 @@ test.describe("Clicking create account button with valid information", async () 
             await screenshotAndAttach(basicAuthPage, './screenshots/Register', '02 - Mypage');
         })
 
-        await step('Wait for verification email', async () => {
+        await step('Verify - 3. Wait for verification email', async () => {
             const email = await mailslurp.waitForLatestEmail(inbox.id, 30000, true);
 
             await mypage.assertEqual(email.subject?.toLowerCase(), `Thank you for registering, ${firstname}.`.toLowerCase(),
                 "Assert the email subject")
+
+            await basicAuthPage.setContent(email.body || '<p>No email body</p>',{ waitUntil: 'load' });
+
+            await screenshotAndAttach(basicAuthPage,'./screenshots/Register','03 - Email');
         });
     })
 
@@ -68,6 +76,6 @@ test.describe("Clicking create account button with valid information", async () 
 
         await mypage.goto(Config.baseURL + 'profile')
         await myProfilePage.unregisterAccount()
-        await screenshotAndAttach(basicAuthPage, './screenshots/Register', '03 - AfterEach-Home page');
+        await screenshotAndAttach(basicAuthPage, './screenshots/Register', '04 - AfterEach-Home page');
     })
 })

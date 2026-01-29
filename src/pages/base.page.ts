@@ -571,7 +571,7 @@ export class BasePage {
             firstname = `fname ${randomAlphaString(4)} ${randomAlphaString(3)}`,
             lastname = `lname ${randomAlphaString(4)} ${randomAlphaString(3)}`,
             phone = `0499999999`,
-            email = `globee${generateReadableTimeBasedId()}@mailinator.com`,
+            email = `globee${generateReadableTimeBasedId()}@yopmail.com`,
             postcode = `2000`,
             gender = `male`,
             whySamsonite = `I want something super light`

@@ -875,6 +875,15 @@ export async function openNewTab(page: Page, action: () => Promise<void>): Promi
   return newPage
 }
 
+export async function clickBlankAreaToClosePopup(page: Page, description = 'Click blank area to close popup'): Promise<void> {
+  await step(description, async () => {
+    const viewport = page.viewportSize();
+    if (!viewport) return;
+
+    await page.mouse.click(viewport.width - 10, 10);
+  });
+}
+
 type WaitCondition = 'visible' | 'hidden';
 
 type SupportedLocale =

@@ -88,7 +88,7 @@ export class MyProfilePage extends BasePage {
             this.click(this.unregisterAccountBtn, "Click unregister account button")
             this.click(this.deleteAccountBtn, "Click Delete Account button to confirm")
 
-            await this.page.waitForURL(/home/, { waitUntil: 'networkidle' })
+            await this.page.waitForURL(new RegExp(`^${Config.baseURL}(home)?/?$`), { waitUntil: 'networkidle' });
         })
     }
 

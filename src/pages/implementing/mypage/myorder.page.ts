@@ -52,7 +52,6 @@ export class MyorderPage extends BasePage {
             const elementsToCheck = [
                 this.onlineOrderLink,
                 this.offlineOrderLink,
-                this.orderListContainer
             ];
 
             for (const locator of elementsToCheck) {

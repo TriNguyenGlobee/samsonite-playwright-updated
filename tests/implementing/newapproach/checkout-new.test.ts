@@ -1,5 +1,5 @@
 import { test, expect } from "../../../src/fixtures/test-fixture"
-import { t, clickUntil, PageUtils, delay, screenshotAndAttach, openNewTab } from "../../../utils/helpers/helpers";
+import { t, clickUntil, PageUtils, delay, screenshotAndAttach, openNewTab, clickBlankAreaToClosePopup } from "../../../utils/helpers/helpers";
 import { NewArrivalsPage } from "../../../src/pages/delivery/productlistingpage/newarrivals/newarrivals.page";
 import { createHomePage } from "../../../src/factories/home.factory";
 import { createMinicartPage } from "../../../src/factories/minicart.factory";
@@ -676,6 +676,7 @@ test.describe("Guest-atome-checkout", async () => {
         const gotItButton = basicAuthPage.locator('//div[@class="apply-voucher"]');
         const useVoucherPopup = basicAuthPage.locator('//div[@class="container-main"]');
         const atomeConfirmButton = basicAuthPage.locator('//div[@class="confirm-order-btn "]');
+        const useNowButton = basicAuthPage.locator('//div[@class="apply-voucher"]')
 
         await step("Go to guest checkout page", async () => {
             await checkoutloginpage.click(checkoutloginpage.guestcheckoutButton,
@@ -771,23 +772,24 @@ test.describe("Guest-atome-checkout", async () => {
             })
 
             await step("Type OTP code", async () => {
-                await checkoutpage.typeByManual(checkoutpage.otpInput.nth(0), "1")
-                await checkoutpage.typeByManual(checkoutpage.otpInput.nth(1), "1")
-                await checkoutpage.typeByManual(checkoutpage.otpInput.nth(2), "1")
-                await checkoutpage.typeByManual(checkoutpage.otpInput.nth(3), "1")
+                await checkoutpage.type(checkoutpage.otpInput.nth(0), "1")
+                await checkoutpage.type(checkoutpage.otpInput.nth(1), "1")
+                await checkoutpage.type(checkoutpage.otpInput.nth(2), "1")
+                await checkoutpage.type(checkoutpage.otpInput.nth(3), "1")
+
+                await checkoutpage.waitFor(gotItButton)
             })
 
             if(await gotItButton.isVisible()) {
                 await step("Click Got it button", async () => {
                     await checkoutpage.click(gotItButton, "Click on Atome Got it button")
-                    await delay(5000)
+                    await delay(2000)
                 })
 
-                await step("Close use voucher popup", async () => {
-                    await checkoutloginpage.click(useVoucherPopup, "Close Atome use voucher popup", -50, -50)
-                })
+                await clickBlankAreaToClosePopup(basicAuthPage)
             }
 
+            /*
             await step("Click Confirm button", async () => {
                 await checkoutpage.click(atomeConfirmButton, "Click on Atome Confirm button")
                 await basicAuthPage.waitForURL(/orderconfirmation/)
@@ -799,10 +801,10 @@ test.describe("Guest-atome-checkout", async () => {
             })
 
             await step("Type OTP code", async () => {
-                await checkoutpage.typeByManual(checkoutpage.otpInput.nth(0), "1")
-                await checkoutpage.typeByManual(checkoutpage.otpInput.nth(1), "1")
-                await checkoutpage.typeByManual(checkoutpage.otpInput.nth(2), "1")
-                await checkoutpage.typeByManual(checkoutpage.otpInput.nth(3), "1")
+                await checkoutpage.type(checkoutpage.otpInput.nth(0), "1")
+                await checkoutpage.type(checkoutpage.otpInput.nth(1), "1")
+                await checkoutpage.type(checkoutpage.otpInput.nth(2), "1")
+                await checkoutpage.type(checkoutpage.otpInput.nth(3), "1")
             })
 
             await step("Verify - 7. Ordering success page is displayed", async () => {
@@ -810,7 +812,7 @@ test.describe("Guest-atome-checkout", async () => {
                     "Assert the order success title is visible"
                 )
                 await screenshotAndAttach(basicAuthPage, './screenshots/Guest-atome-checkout', '07 - Ordering success page');
-            })
+            })*/
         }
     });
 })

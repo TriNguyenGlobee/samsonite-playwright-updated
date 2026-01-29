@@ -71,7 +71,7 @@ test.describe("Subscription-homepage", () => {
         `, async ({ basicAuthPage }) => {
         const globalnavfooterpage = new GlobalNavFooterPage(basicAuthPage)
         const email_suffix = generateReadableTimeBasedId()
-        //const valid_email = "gloobeauto_" + email_suffix + "@mailinator.com"
+        //const valid_email = "gloobeauto_" + email_suffix + "@yopmail.com"
         const subscribeMsg = t.globalnavfooter('createsuccess')
         const accountexistMsg = t.globalnavfooter('duplicateemail')
         const createdmsg = basicAuthPage.locator(`//footer[@id="footer"]//div[contains(@class,"subscribe-msg accountcreated")]`)
@@ -134,14 +134,24 @@ test.describe("Subscription-homepage", () => {
             await globalnavfooterpage.click(returnbutton, "Clicking on Return button")
         })
 
-        await step('Wait for verification email', async () => {
+        await step('Verify - 4. Wait for verification email', async () => {
             const email = await mailslurp.waitForLatestEmail(inbox.id, 30000, true);
 
             await globalnavfooterpage.assertEqual(email.subject?.toLowerCase(), `Hi there, welcome to the World of Samsonite.`.toLowerCase(),
                 "Assert the email subject")
+
+            await basicAuthPage.setContent(email.body || '<p>No email body</p>', { waitUntil: 'load' });
+
+            await screenshotAndAttach(basicAuthPage, './screenshots/Subscription', '04 - Email');
         });
 
         await step("Clicking on the subscribe button again", async () => {
+            await globalnavfooterpage.goto(Config.baseURL)
+
+            await step("Enter the valid-email into the email textbox", async () => {
+                await globalnavfooterpage.type(globalnavfooterpage.emailTextbox, emailaddress)
+            })
+
             await globalnavfooterpage.click(globalnavfooterpage.subscribeButton,
                 "Clicking on Subscribe button"
             )
@@ -150,13 +160,13 @@ test.describe("Subscription-homepage", () => {
             )
         })
 
-        await step("Verify - 4. Duplicate subscription handling - Duplicate subscription message shown", async () => {
+        await step("Verify - 5. Duplicate subscription handling - Duplicate subscription message shown", async () => {
             await globalnavfooterpage.assertText(emailexistmsg, accountexistMsg,
                 "Assert invalid-feedback: Account exists"
             )
         })
 
-        await screenshotAndAttach(basicAuthPage, './screenshots/Subscription', '04 - Duplicate subscription message');
+        await screenshotAndAttach(basicAuthPage, './screenshots/Subscription', '05 - Duplicate subscription message');
     })
 });
 
@@ -311,7 +321,7 @@ test.describe("Subscription-register-account", () => {
         const globalnavfooterpage = new GlobalNavFooterPage(basicAuthPage)
         const accountexistMsg = t.globalnavfooter('duplicateemail')
         const emailexistmsg = basicAuthPage.locator(`//footer[@id="footer"]//div[contains(@class,"subscribe-msg accountexists")]`)
-        const newemail = "globee_test" + generateReadableTimeBasedId() + "@mailinator.com"
+        const newemail = "globee_test" + generateReadableTimeBasedId() + "@yopmail.com"
 
         await step('Fill information to form', async () => {
             await registerpage.fillRegisterForm({ email: newemail, phone: `89${generateNumberString(6)}` })
