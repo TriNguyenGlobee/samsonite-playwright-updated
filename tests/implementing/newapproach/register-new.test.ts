@@ -30,6 +30,18 @@ test.describe("Clicking create account button with valid information", async () 
         2. Register new account success - My page shows
         3. Wait for verification email
         4. Type Registered email and submit Subscribe button - Duplicate subscription message shown
+        5. My Payment Page is displayed - Payment methods list shows correctly
+        6. Remove a payment method - Payment method is removed
+        7. Checkout page is displayed - Checkout page shows
+        8. Apply a coupon - Coupon is added
+        9. Remove a coupon - Coupon is removed
+        10. Remove product modal is displayed - Remove product modal shows corrctly
+        11. Remove product model is closed
+        12. Product is removed - Cart page is empty
+        13. My Profile Page is displayed - Your profile form shows correctly
+        14. Update account success - My page shows
+        15. Updated information is correct - My updated profile
+        16. Unregister Account - Home page
         `, async ({ basicAuthPage }) => {
         const registerpage = new RegisterPage(basicAuthPage)
         const globalnavfooterpage = new GlobalNavFooterPage(basicAuthPage)
