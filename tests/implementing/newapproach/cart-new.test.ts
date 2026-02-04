@@ -360,7 +360,7 @@ test.describe("Cartpage-add/remove products", () => {
             await screenshotAndAttach(basicAuthPage, './screenshots/Cartpage-product-added', '06 - Remove product modal');
         })
 
-        await step('Verify - 7. Remove prodcut model is closed', async () => {
+        await step('Verify - 7. Remove product model is closed', async () => {
             await cartpage.click(cartpage.removeProdModalCloseButton, 'Close remove product modal')
 
             await cartpage.assertHidden(cartpage.removeProductModal, 'Assert remove product modal is closed')

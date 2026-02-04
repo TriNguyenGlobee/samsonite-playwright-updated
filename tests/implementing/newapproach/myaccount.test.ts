@@ -187,8 +187,8 @@ test.describe("My Account-My Profile", () => {
             const myAccountPage = new MyPage(basicAuthPage);
             const myProfilePage = new MyProfilePage(basicAuthPage);
             const confirmPassword = "Test@123"
-            const updateFirstName = `fname ${randomAlphaString(4)} ${randomAlphaString(3)}`
-            const updateLastName = `lname ${randomAlphaString(4)} ${randomAlphaString(3)}`
+            const updateFirstName = `fname ${randomAlphaString(4)} Updated`
+            const updateLastName = `lname ${randomAlphaString(4)} Updated`
             const mypage = new MyPage(basicAuthPage)
 
             await step("Click on My Profile link", async () => {
