@@ -8,6 +8,7 @@ git clone https://github.com/TriNguyenGlobee/samsonite-playwright.git
 cd samsonite-playwright
 npm install
 npx playwright install
+npm install --save mailslurp-client
 ```
 
 # Generate a single result file to Allure Report
@@ -97,3 +98,6 @@ npm run test:stg-webkit
 | KR | dev | Active | 
 | PH | dev | Active |
 | SG | dev | Active |
+
+## API KEY
+api_key_home=MAILSLURP_API_KEY=sk_NEgxzWosA27kwxTx_UmfDbQZ8XFUnx7yURAJoCPisWewmiJj63YMrkjIaKOrzLx9T3XPjYKeg62huiJx5

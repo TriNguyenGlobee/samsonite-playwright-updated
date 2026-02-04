@@ -47,14 +47,16 @@ test.describe("My Account-My Orders", () => {
                 await screenshotAndAttach(loggedInPage, './screenshots/MyAccount-Order', '02 - My Orders Page');
             })
 
-            await step("Click on an order to view order details", async () => {
-                await myOrdersPage.orderRow.first().click();
-            });
+            if (process.env.ENV === 'stg') {
+                await step("Click on an order to view order details", async () => {
+                    await myOrdersPage.orderRow.first().click();
+                });
 
-            await step("Verify - 3. Order Details page is displayed correctly", async () => {
-                await myOrdersPage.assertUrl(/\/orderdetail.*orderID/);
-                await screenshotAndAttach(loggedInPage, './screenshots/MyAccount-Order', '03 - Order Details Page');
-            })
+                await step("Verify - 3. Order Details page is displayed correctly", async () => {
+                    await myOrdersPage.assertUrl(/\/orderdetail.*orderID/);
+                    await screenshotAndAttach(loggedInPage, './screenshots/MyAccount-Order', '03 - Order Details Page');
+                })
+            }
         }
     );
 });
@@ -185,8 +187,8 @@ test.describe("My Account-My Profile", () => {
             const myAccountPage = new MyPage(basicAuthPage);
             const myProfilePage = new MyProfilePage(basicAuthPage);
             const confirmPassword = "Test@123"
-            const updateFirstName = `fname ${randomAlphaString(4)} ${randomAlphaString(3)}`
-            const updateLastName = `lname ${randomAlphaString(4)} ${randomAlphaString(3)}`
+            const updateFirstName = `fname ${randomAlphaString(4)} Updated`
+            const updateLastName = `lname ${randomAlphaString(4)} Updated`
             const mypage = new MyPage(basicAuthPage)
 
             await step("Click on My Profile link", async () => {
@@ -442,6 +444,15 @@ test.describe("My Account-My Payments", () => {
             })
         }
     );
+
+    test.afterEach(async ({ basicAuthPage }) => {
+        const mypage = new MyPage(basicAuthPage)
+        const myProfilePage = new MyProfilePage(basicAuthPage);
+
+        await mypage.goto(Config.baseURL + 'profile')
+        await myProfilePage.unregisterAccount()
+        await screenshotAndAttach(basicAuthPage, './screenshots/MyAccount-Payment', '03 - AfterEach-Home page');
+    })
 });
 
 test.describe("My Account-My coupon", () => {

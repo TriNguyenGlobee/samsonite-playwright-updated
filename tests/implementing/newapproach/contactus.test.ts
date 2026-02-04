@@ -1,5 +1,5 @@
 import { test } from "../../../src/fixtures/test-fixture"
-import { screenshotAndAttach, generateNumberString, delay } from "../../../utils/helpers/helpers";
+import { screenshotAndAttach, delay, getLocalPhone } from "../../../utils/helpers/helpers";
 import { ContactUS } from "../../../src/pages/delivery/contactus/contactus.page";
 import { step } from "allure-js-commons";
 import { Config } from "../../../config/env.config";
@@ -23,7 +23,7 @@ test.describe("Contact Us", async () => {
 
         await step('Verify - 2. Submit contact us form - Success message is displayed', async () => {
             const contactUsPage = new ContactUS(basicAuthPage);
-            await contactUsPage.fillContactUsForm({ phone: `8${generateNumberString(7)}` });
+            await contactUsPage.fillContactUsForm({ phone: getLocalPhone(true) });
             await contactUsPage.click(contactUsPage.submitButton, "Click on Submit button on Contact Us form");
             await delay(500)
 

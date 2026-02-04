@@ -33,6 +33,7 @@ export class CheckoutPage extends BasePage {
     readonly paymentcontinueBtn: Locator;
     readonly paymentEditBtn: Locator;
     readonly visaIcon: Locator;
+    readonly creditIcon: Locator;
     readonly masterIcon: Locator;
     readonly paypalIcon: Locator;
     readonly atomeIcon: Locator;
@@ -78,6 +79,7 @@ export class CheckoutPage extends BasePage {
         this.paymentEditBtn = page.locator(`//div[h4[normalize-space(text())="Payment"]]//span[normalize-space(text())="Edit"]`)
         this.paymentcontinueBtn = page.locator(`//div[@class="card payment-form"]//button[@type="submit"]`)
         this.visaIcon = page.locator(`//li[@data-method-id="CREDIT_CARD" and @data-card-type="Visa"]//a`)
+        this.creditIcon = page.locator(`//li[@data-method-id="CREDIT_CARD"]//a`)
         this.masterIcon = page.locator(`//li[@data-method-id="CREDIT_CARD" and @data-card-type="MasterCard"]//a`)
         this.paypalIcon = page.locator(`//li[@data-method-id="PayPal"]//a`)
         this.atomeIcon = page.locator(`//li[@data-method-id="ATOME_PAYMENT"]//a`)
@@ -192,7 +194,7 @@ export class CheckoutPage extends BasePage {
             const cvvIframe = this.page.locator('input#securityCode');
 
             await this.type(cardNumberIframe, cardNumber, `Fill card number: ${cardNumber}`);
-            await this.type(cvvIframe, cvv, `Fill card number: ${cvv}`);
+            await this.type(cvvIframe, cvv, `Fill cvv number: ${cvv}`);
 
             await selectDropdownOption(page, "select#expirationMonth", cardMonth, "value",
                 `Select card expiration month: ${cardMonth}`
@@ -204,6 +206,43 @@ export class CheckoutPage extends BasePage {
         })
     }
 
+    async fillCreditCardPaymentDetails(page: Page, cardNumber: string, expDate: string, cvv: string, name: string, description?: string): Promise<void> {
+        await step(description || "Fill visa payment details", async () => {
+
+            const cardNumberFrame = page.frameLocator('iframe[name="braintree-hosted-field-number"]');
+
+            const expirationFrame = page.frameLocator('iframe[name="braintree-hosted-field-expirationDate"]');
+
+            const cvvFrame = page.frameLocator('iframe[name="braintree-hosted-field-cvv"]');
+
+            const nameOnCard = page.locator('#braintreeCardOwner');
+
+            await this.type(
+                cardNumberFrame.locator('input#credit-card-number'),
+                cardNumber,
+                `Fill card number: ${cardNumber}`
+            );
+
+            await this.type(
+                expirationFrame.locator('input#expiration'),
+                expDate,
+                `Fill expiration date: ${expDate}`
+            );
+
+            await this.type(
+                cvvFrame.locator('input#cvv'),
+                cvv,
+                `Fill cvv: ${cvv}`
+            );
+
+            await this.type(
+                nameOnCard,
+                name,
+                `Fill name on card: ${name}`
+            );
+        });
+    }
+
     // =========================
     // 📦 Helpers
     // =========================
@@ -213,9 +252,9 @@ export class CheckoutPage extends BasePage {
             const title = await this.page.title();
             const expectedTitle = t.checkoutpage('title')
             const currentUrl = await this.page.url();
-            let expectedUrl = Config.baseURL + "checkout?stage=shipping#shipping";
+            let expectedUrl = Config.baseURL + "checkout";
 
-            if (login) {expectedUrl = Config.baseURL + "checkout"}
+            if (login) { expectedUrl = Config.baseURL + "checkout" }
 
             await test.step("Checkout page data: ", async () => {
                 await attachment("Current Page Title", title, "text/plain");

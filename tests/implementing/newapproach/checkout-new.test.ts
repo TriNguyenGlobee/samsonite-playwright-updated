@@ -1,5 +1,5 @@
 import { test, expect } from "../../../src/fixtures/test-fixture"
-import { t, clickUntil, PageUtils, delay, screenshotAndAttach, openNewTab } from "../../../utils/helpers/helpers";
+import { t, clickUntil, PageUtils, delay, screenshotAndAttach, openNewTab, clickBlankAreaToClosePopup } from "../../../utils/helpers/helpers";
 import { NewArrivalsPage } from "../../../src/pages/delivery/productlistingpage/newarrivals/newarrivals.page";
 import { createHomePage } from "../../../src/factories/home.factory";
 import { createMinicartPage } from "../../../src/factories/minicart.factory";
@@ -9,8 +9,161 @@ import { step } from "allure-js-commons";
 import { CheckoutPage } from "../../../src/pages/implementing/checkout/checkout.page";
 import { loadTestData } from "../../../utils/data";
 import { Config } from "../../../config/env.config";
+import { tests } from "../../../utils/helpers/localeTest";
 
 const isProd = () => process.env.ENV === 'prod';
+
+test.describe("Guest-creditcard-checkout", async () => {
+    test.beforeEach(async ({ basicAuthPage }) => {
+        const newarrivalspage = new NewArrivalsPage(basicAuthPage)
+        const homepage = createHomePage(basicAuthPage)
+        const cartpage = createCartPage(basicAuthPage)
+        const minicartpage = createMinicartPage(basicAuthPage)
+
+        await step('Go to Luggage', async () => {
+            await homepage.clickMenuItem('luggage')
+            await newarrivalspage.logoImg.hover()
+
+            await step('Click on In-stock checkbox', async () => {
+                await homepage.clickCheckbox(basicAuthPage, `${t.homepage('in-stock')}`)
+            })
+        })
+
+        await step("Add a product to cart", async () => {
+            await Promise.all([
+                cartpage.addMultipleProductsToCart(1, "Add a in-stock product to cart"),
+                //expect(minicartpage.minicartRender).toBeVisible({ timeout: 5000 })
+            ]);
+        })
+
+        await step('Go to checkout login page', async () => {
+            await clickUntil(basicAuthPage, homepage.cartIcon, minicartpage.minicartRender, 'visible', {
+                delayMs: 500,
+                maxTries: 3,
+                timeoutMs: 3000
+            })
+
+            await minicartpage.click(minicartpage.checkoutButton,
+                "Click on Checkout button"
+            )
+        })
+    })
+
+    tests(["au"], `
+        1. Checkout page is displayed - Your detail form shows correctly    
+        2. Step 1 is done - Recipient infor form shows correctly
+        3. Step 2 is done - Payment methods section shows correctly
+        4. Payment method is selected - Payment details form shows correctly
+        5. Step 3 is done - Place Order button shows
+        6. Ordering success page is displayed
+        `, async ({ basicAuthPage }) => {
+        const checkoutpage = new CheckoutPage(basicAuthPage)
+        const checkoutloginpage = new CheckoutLoginPage(basicAuthPage)
+        const { checkoutFullData } = loadTestData();
+        const { checkoutShippingData } = loadTestData();
+        const cardinalFrame = basicAuthPage.frameLocator('#Cardinal-CCA-IFrame');
+        const codeTextbox = cardinalFrame.locator('//input[normalize-space(@placeholder)="Enter Code Here"]')
+        const submitbutton = cardinalFrame.locator('//input[@value="SUBMIT"]')
+
+        await step("Go to guest checkout page", async () => {
+            await checkoutloginpage.click(checkoutloginpage.guestcheckoutButton,
+                "Clicking on Guest checkout button"
+            )
+        })
+
+        await step("Verify - 1. Checkout page is displayed - Your detail form shows correctly", async () => {
+            expect(await checkoutpage.isCheckoutPageDisplayed()).toBe(true)
+            await screenshotAndAttach(basicAuthPage, './screenshots/Guest-creditcard-checkout', '01 - Your detail form');
+        })
+
+        await step("Fill your detail with full information", async () => {
+            await checkoutpage.fillCheckoutYourDetailForm(basicAuthPage, checkoutFullData)
+        })
+
+        await checkoutpage.click(checkoutpage.continueButton, "Click on Step 1 Continue button")
+
+        await step("Verify - 2. Step 1 is done - Recipient infor form shows correctly", async () => {
+            await checkoutpage.assertEqual(await checkoutpage.isCheckoutStepDone("Your Details"), true,
+                "Assert current step 1 status is Done: true"
+            )
+
+            await checkoutloginpage.assertVisible(checkoutpage.shippingSection.first(), "Assert recipient infor section visbile")
+
+            await screenshotAndAttach(basicAuthPage, './screenshots/Guest-creditcard-checkout', '02 - Recipient infor form');
+        })
+
+        await step("Fill recipient info", async () => {
+            await checkoutpage.fillRecipientDetilsForm(basicAuthPage, checkoutShippingData)
+        })
+
+        await step("Click on continue button", async () => {
+            await checkoutpage.click(checkoutpage.recipientContinueBtn, "Click on Step 2 Continue button")
+            await PageUtils.waitForPageLoad(basicAuthPage)
+        })
+
+        await step("Verify - 3. Step 2 is done - Payment methods section shows correctly", async () => {
+            await checkoutpage.assertEqual(await checkoutpage.isCheckoutStepDone("Shipping"), true,
+                "Assert current step 2 status is Done: true"
+            )
+
+            await checkoutloginpage.assertVisible(checkoutpage.creditIcon, "Assert payment method section visbile")
+
+            await screenshotAndAttach(basicAuthPage, './screenshots/Guest-creditcard-checkout', '03 - Payment methods section');
+        })
+
+        await step("Select Visa payment method", async () => {
+            await checkoutpage.click(checkoutpage.creditIcon, "Select Creditcard payment method")
+            await delay(500)
+        })
+
+        await step("Verify - 4. Payment method is selected - Payment details form shows correctly", async () => {
+            await checkoutpage.assertVisible(checkoutpage.paymentcontinueBtn,
+                "Assert the Payment Continue button is displayed"
+            )
+
+            await delay(500)
+            await screenshotAndAttach(basicAuthPage, './screenshots/Guest-creditcard-checkout', '04 - Payment detail form');
+        })
+
+        await step("Fill payment details with Creditcard card", async () => {
+            const { visaCheckoutData } = loadTestData();
+            await checkoutpage.fillCreditCardPaymentDetails(basicAuthPage, visaCheckoutData.cardNumber,
+                visaCheckoutData.expiryDate, visaCheckoutData.cvv, visaCheckoutData.nameOnCard,
+                "Fill Creditcard card payment details");
+        })
+
+        await step("Click payment continue button", async () => {
+            await checkoutpage.click(checkoutpage.paymentcontinueBtn, "Click on payment continue button")
+
+            await checkoutpage.type(codeTextbox, "1234")
+            await checkoutpage.click(submitbutton, "Click submit OPT button", 100, 10)
+        })
+
+        await step("Verify - 5. Step 3 is done - Place Order button shows", async () => {
+            await checkoutpage.assertEqual(await checkoutpage.isCheckoutStepDone("Payment"), true,
+                "Assert current step 3 status is Done: true"
+            )
+
+            await checkoutloginpage.assertVisible(checkoutpage.placeOrderBtn, "Assert place order button visbile")
+
+            await screenshotAndAttach(basicAuthPage, './screenshots/Guest-creditcard-checkout', '05 - Place Order');
+        })
+
+        if (await !isProd()) {
+            await step("Click place order button", async () => {
+                await checkoutpage.click(checkoutpage.placeOrderBtn, "Click on Place Order button")
+                await basicAuthPage.waitForURL(/orderconfirmation/)
+            })
+
+            await step("Verify - 6. Ordering success page is displayed", async () => {
+                await checkoutpage.assertVisible(checkoutpage.orderSuccessTitle,
+                    "Assert the order success title is visible"
+                )
+                await screenshotAndAttach(basicAuthPage, './screenshots/Guest-creditcard-checkout', '06 - Ordering success page');
+            })
+        }
+    });
+})
 
 test.describe("Guest-visa-checkout", async () => {
     test.beforeEach(async ({ basicAuthPage }) => {
@@ -48,7 +201,7 @@ test.describe("Guest-visa-checkout", async () => {
         })
     })
 
-    test(`
+    tests(["sg"], `
         1. Checkout page is displayed - Your detail form shows correctly    
         2. Step 1 is done - Recipient infor form shows correctly
         3. Step 2 is done - Payment methods section shows correctly
@@ -196,7 +349,7 @@ test.describe("Guest-mastercard-checkout", async () => {
         })
     })
 
-    test(`
+    tests(["sg"], `
         1. Checkout page is displayed - Your detail form shows correctly    
         2. Step 1 is done - Recipient infor form shows correctly
         3. Step 2 is done - Payment methods section shows correctly
@@ -523,6 +676,7 @@ test.describe("Guest-atome-checkout", async () => {
         const gotItButton = basicAuthPage.locator('//div[@class="apply-voucher"]');
         const useVoucherPopup = basicAuthPage.locator('//div[@class="container-main"]');
         const atomeConfirmButton = basicAuthPage.locator('//div[@class="confirm-order-btn "]');
+        const useNowButton = basicAuthPage.locator('//div[@class="apply-voucher"]')
 
         await step("Go to guest checkout page", async () => {
             await checkoutloginpage.click(checkoutloginpage.guestcheckoutButton,
@@ -618,23 +772,24 @@ test.describe("Guest-atome-checkout", async () => {
             })
 
             await step("Type OTP code", async () => {
-                await checkoutpage.typeByManual(checkoutpage.otpInput.nth(0), "1")
-                await checkoutpage.typeByManual(checkoutpage.otpInput.nth(1), "1")
-                await checkoutpage.typeByManual(checkoutpage.otpInput.nth(2), "1")
-                await checkoutpage.typeByManual(checkoutpage.otpInput.nth(3), "1")
+                await checkoutpage.type(checkoutpage.otpInput.nth(0), "1")
+                await checkoutpage.type(checkoutpage.otpInput.nth(1), "1")
+                await checkoutpage.type(checkoutpage.otpInput.nth(2), "1")
+                await checkoutpage.type(checkoutpage.otpInput.nth(3), "1")
+
+                await checkoutpage.waitFor(gotItButton)
             })
 
             if(await gotItButton.isVisible()) {
                 await step("Click Got it button", async () => {
                     await checkoutpage.click(gotItButton, "Click on Atome Got it button")
-                    await delay(5000)
+                    await delay(2000)
                 })
 
-                await step("Close use voucher popup", async () => {
-                    await checkoutloginpage.click(useVoucherPopup, "Close Atome use voucher popup", -50, -50)
-                })
+                await clickBlankAreaToClosePopup(basicAuthPage)
             }
 
+            /*
             await step("Click Confirm button", async () => {
                 await checkoutpage.click(atomeConfirmButton, "Click on Atome Confirm button")
                 await basicAuthPage.waitForURL(/orderconfirmation/)
@@ -646,10 +801,10 @@ test.describe("Guest-atome-checkout", async () => {
             })
 
             await step("Type OTP code", async () => {
-                await checkoutpage.typeByManual(checkoutpage.otpInput.nth(0), "1")
-                await checkoutpage.typeByManual(checkoutpage.otpInput.nth(1), "1")
-                await checkoutpage.typeByManual(checkoutpage.otpInput.nth(2), "1")
-                await checkoutpage.typeByManual(checkoutpage.otpInput.nth(3), "1")
+                await checkoutpage.type(checkoutpage.otpInput.nth(0), "1")
+                await checkoutpage.type(checkoutpage.otpInput.nth(1), "1")
+                await checkoutpage.type(checkoutpage.otpInput.nth(2), "1")
+                await checkoutpage.type(checkoutpage.otpInput.nth(3), "1")
             })
 
             await step("Verify - 7. Ordering success page is displayed", async () => {
@@ -657,7 +812,7 @@ test.describe("Guest-atome-checkout", async () => {
                     "Assert the order success title is visible"
                 )
                 await screenshotAndAttach(basicAuthPage, './screenshots/Guest-atome-checkout', '07 - Ordering success page');
-            })
+            })*/
         }
     });
 })

@@ -1,9 +1,13 @@
 import { test, expect } from "../../../src/fixtures/test-fixture";
 import { createMinicartPage } from '../../../src/factories/minicart.factory'
 import { createCartPage } from '../../../src/factories/cart.factory'
+import { createLoginPage } from "../../../src/factories/login.factory";
+import { RegisterPage } from "../../../src/pages/delivery/login/register.page";
+import { MyPage } from "../../../src/pages/implementing/mypage/mypage.page";
+import { MyProfilePage } from "../../../src/pages/implementing/mypage/myprofile.page";
 import { Config } from "../../../config/env.config";
 import { step } from "allure-js-commons";
-import { t, clickUntil, extractNumber, delay, lazyLoad, screenshotAndAttach } from "../../../utils/helpers/helpers";
+import { t, clickUntil, extractNumber, delay, lazyLoad, screenshotAndAttach, generateReadableTimeBasedId, getLocalPhone } from "../../../utils/helpers/helpers";
 import { createHomePage } from "../../../src/factories/home.factory"
 import { NewArrivalsPage } from "../../../src/pages/delivery/productlistingpage/newarrivals/newarrivals.page";
 
@@ -46,7 +50,7 @@ test.describe("Cartpage-empty", () => {
         await step("Verify - 2. Minicart can be closed by Start Shopping button - Minicart closed", async () => {
             await minicartPage.assertEqual(await minicartPage.isMinicartShown(), false, "Minicart should be closed")
             await screenshotAndAttach(basicAuthPage, './screenshots/Cartpage-empty', '02 - Minicart-closed');
-            await delay(1500)
+            await delay(3000)
         })
 
         await step("Verify - 3. Minicart Explore by category URL navigation", async () => {
@@ -78,7 +82,29 @@ test.describe("Cartpage-empty", () => {
 
 test.describe("Cartpage-add/remove products", () => {
     let cartPageURL = `${Config.baseURL}cart`
+    const newemail = "globee_test" + generateReadableTimeBasedId() + "@yopmail.com"
+    const newpass = "Test@123"
 
+    test.beforeEach(async ({ basicAuthPage }) => {
+        const loginPage = createLoginPage(basicAuthPage);
+        const registerpage = new RegisterPage(basicAuthPage)
+
+        await step('Register page', async () => {
+            await loginPage.goToLoginRegisterPage();
+            await loginPage.goToRegisterPage()
+        })
+
+        await step('Fill information to form', async () => {
+            await registerpage.fillRegisterForm({ email: newemail, password: newpass, phone: getLocalPhone(true) })
+        })
+
+        await step('Click Create Account button', async () => {
+            await registerpage.click(registerpage.createAccountButton)
+            await basicAuthPage.waitForURL(/account/, { waitUntil: 'networkidle' })
+        })
+    });
+
+    /*
     test(`
         1. Minicart is displayed - Product added
         2. Prodcollection and prodname are correct in the minicart
@@ -217,14 +243,16 @@ test.describe("Cartpage-add/remove products", () => {
             await screenshotAndAttach(basicAuthPage, './screenshots/Cartpage-product-added', '07 - Cartpage-minicart-empty');
         })
     })
-
+    */
     test(`
-        8. Prodcollection and prodname are displayed - Number of products in Cart page
-        9. Checkout login page is displayed - Checkout page shows
-        10. Total amount payable - The total amount payable is correct
-        11. Remove product modal is displayed - Remove product modal shows corrctly
-        12. Remove prodcut model is closed
-        13. Product is removed - Cart page is empty
+        1. Prodcollection and prodname are displayed - Number of products in Cart page
+        2. Checkout login page is displayed - Checkout page shows
+        3. Total amount payable - The total amount payable is correct
+        4. Apply a coupon - Coupon is added
+        5. Remove a coupon - Coupon is removed
+        6. Remove product modal is displayed - Remove product modal shows corrctly
+        7. Remove prodcut model is closed
+        8. Product is removed - Cart page is empty
         `, async ({ basicAuthPage }) => {
         const homePage = createHomePage(basicAuthPage);
         const cartpage = createCartPage(basicAuthPage)
@@ -270,7 +298,7 @@ test.describe("Cartpage-add/remove products", () => {
             await basicAuthPage.goto(cartPageURL)
         })
 
-        await step('Verify - 8. Prodcollection and prodname are displayed - Number of products in Cart page', async () => {
+        await step('Verify - 1. Prodcollection and prodname are displayed - Number of products in Cart page', async () => {
             const cartPageProdName = await cartpage.getCartPageProdName(prodIndex)
             const cartPageProdCollection = await cartpage.getCartPageProdCollection(prodIndex)
 
@@ -278,15 +306,15 @@ test.describe("Cartpage-add/remove products", () => {
             expect(cartPageProdName).toBe(prodName)
             expect(await cartpage.getNumberOfProducts()).toBe(2)
 
-            await screenshotAndAttach(basicAuthPage, './screenshots/Cartpage-product-added', '08 - Number of products');
+            await screenshotAndAttach(basicAuthPage, './screenshots/Cartpage-product-added', '01 - Number of products');
         })
 
-        await step('Verify - 9. Checkout login page is displayed - Checkout page shows', async () => {
-            await cartpage.assertNavigatedURLByClickLocator(basicAuthPage, cartpage.checkoutButton, `checkoutlogin`,
+        await step('Verify - 2. Checkout page is displayed - Checkout page shows', async () => {
+            await cartpage.assertNavigatedURLByClickLocator(basicAuthPage, cartpage.checkoutButton, `checkout`,
                 "Click on Checkout button and check Checkout Login page is displayed"
             )
 
-            await screenshotAndAttach(basicAuthPage, './screenshots/Cartpage-product-added', '09 - Checkout page');
+            await screenshotAndAttach(basicAuthPage, './screenshots/Cartpage-product-added', '02 - Checkout page');
         })
 
         const firstMinicartProductPrice = await extractNumber(await cartpage.getCartPageProdPrice(prodIndexes[0]));
@@ -295,22 +323,44 @@ test.describe("Cartpage-add/remove products", () => {
         const shippingCost = await extractNumber(await cartpage.getShippingCost());
         const totalPrice = await extractNumber(await cartpage.getTotalPrice());
 
-        await step('Verify - 10. Total amount payable - The total amount payable is correct', async () => {
+        await step('Verify - 3. Total amount payable - The total amount payable is correct', async () => {
             expect(firstProductPrice).toBe(firstMinicartProductPrice)
             expect(secondProductPrice).toBe(secondMinicartProductPrice)
             expect(totalPrice).toBe(firstProductPrice + secondProductPrice + shippingCost - shippingDiscount)
 
-            await screenshotAndAttach(basicAuthPage, './screenshots/Cartpage-product-added', '10 - The total amount payable');
+            await screenshotAndAttach(basicAuthPage, './screenshots/Cartpage-product-added', '03 - The total amount payable');
         })
 
-        await step('Verify - 11. Remove product modal is displayed - Remove product modal shows corrctly', async () => {
+        await step('Click on Please select a coupon button', async () => {
+            await cartpage.click(cartpage.selectCouponButton)
+        })
+
+        await step('Verify - 4. Apply a coupon - Coupon is added', async () => {
+            await cartpage.click(cartpage.couponApplyLink.first(),
+                "Click apply coupon link")
+
+            await cartpage.assertVisible(cartpage.couponCodeAdded,
+                "Assert the coupon is added"
+            )
+
+            await screenshotAndAttach(basicAuthPage, './screenshots/Cartpage-product-added', '04 - Coupon added');
+        })
+
+        await step('Verify -  5. Remove a coupon - Coupon is removed', async () => {
+            await cartpage.removeCoupon()
+
+            await cartpage.assertHidden(cartpage.couponCodeAdded)
+            await screenshotAndAttach(basicAuthPage, './screenshots/Cartpage-product-added', '05 - Coupon removed');
+        })
+
+        await step('Verify - 6. Remove product modal is displayed - Remove product modal shows corrctly', async () => {
             await cartpage.click(cartpage.removeProductButton.first(), 'Click remove product button in Cart page')
 
             await cartpage.assertVisible(cartpage.removeProductModal, 'Assert remove product modal is displayed')
-            await screenshotAndAttach(basicAuthPage, './screenshots/Cartpage-product-added', '11 - Remove product modal');
+            await screenshotAndAttach(basicAuthPage, './screenshots/Cartpage-product-added', '06 - Remove product modal');
         })
 
-        await step('Verify - 12. Remove prodcut model is closed', async () => {
+        await step('Verify - 7. Remove product model is closed', async () => {
             await cartpage.click(cartpage.removeProdModalCloseButton, 'Close remove product modal')
 
             await cartpage.assertHidden(cartpage.removeProductModal, 'Assert remove product modal is closed')
@@ -321,17 +371,26 @@ test.describe("Cartpage-add/remove products", () => {
 
             await cartpage.assertHidden(cartpage.removeProductModal, 'Assert remove product modal is closed')
 
-            await screenshotAndAttach(basicAuthPage, './screenshots/Cartpage-product-added', '12 - Remove product modal closed');
+            await screenshotAndAttach(basicAuthPage, './screenshots/Cartpage-product-added', '07 - Remove product modal closed');
         })
 
-        await step('Verify - 13. Product is removed - Cart page is empty', async () => {
+        await step('Verify - 8. Product is removed - Cart page is empty', async () => {
             await cartpage.removeAllProducts()
 
             const numberOfProd = await cartpage.getNumberOfProducts()
 
             expect(numberOfProd).toBe(0)
 
-            await screenshotAndAttach(basicAuthPage, './screenshots/Cartpage-product-added', '13 - Cartpage-empty-cart');
+            await screenshotAndAttach(basicAuthPage, './screenshots/Cartpage-product-added', '08 - Cartpage-empty-cart');
         })
+    })
+
+    test.afterEach(async ({ basicAuthPage }) => {
+        const mypage = new MyPage(basicAuthPage)
+        const myProfilePage = new MyProfilePage(basicAuthPage);
+
+        await mypage.goto(Config.baseURL + 'profile')
+        await myProfilePage.unregisterAccount()
+        await screenshotAndAttach(basicAuthPage, './screenshots/Cartpage-product-added', '09 - AfterEach-Home page');
     })
 });

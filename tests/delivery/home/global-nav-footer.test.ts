@@ -75,7 +75,7 @@ test.describe("Newsletter", () => {
         `, async ({ basicAuthPage }) => {
         const globalnavfooterpage = new GlobalNavFooterPage(basicAuthPage)
         const email_suffix = generateReadableTimeBasedId()
-        const valid_email = "gloobeauto_" + email_suffix + "@mailinator.com"
+        const valid_email = "gloobeauto_" + email_suffix + "@yopmail.com"
         const subscribeMsg = t.globalnavfooter('createsuccess')
         const accountexistMsg = t.globalnavfooter('duplicateemail')
         const createdmsg = basicAuthPage.locator(`//footer[@id="footer"]//div[contains(@class,"subscribe-msg accountcreated")]`)

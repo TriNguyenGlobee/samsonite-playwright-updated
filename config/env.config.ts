@@ -393,7 +393,7 @@ const environments: Record<EnvironmentName, Record<Locale, EnvironmentConfig>> =
             basicAuthPass: process.env.PROD_BASIC_AUTH_PASS,
         },
         au: {
-            baseURL: 'https://ssau.stg.samsonite-asia.com/',
+            baseURL: 'https://www.samsonite.com.au/',
             credentials: {
                 username: process.env.PROD_USERNAME_AU as string,
                 password: process.env.PROD_PASSWORD_AU as string,

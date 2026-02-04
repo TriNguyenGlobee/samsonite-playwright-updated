@@ -24,6 +24,12 @@ export abstract class CartPage extends BasePage {
     readonly removeGiftServiceButton: Locator;
     readonly selectAddonItenModal: Locator;
     readonly selectAddonItenModalBtn: Locator;
+    readonly selectCouponButton: Locator;
+    readonly couponItem: Locator;
+    readonly couponApplyLink: Locator;
+    readonly couponCodeAdded: Locator;
+    readonly couponCodeRemoveButton: Locator;
+    readonly removeCouponModalYesBtn: Locator;
 
     constructor(page: Page) {
         super(page);
@@ -47,6 +53,12 @@ export abstract class CartPage extends BasePage {
         this.removeGiftServiceButton = this.prodGiftRow.locator(`xpath=.//button[contains(@class,"remove-gift")]`)
         this.selectAddonItenModal = page.locator(`//div[@class="modal-content" and .//span[text()="選擇加價購商品"]]`)
         this.selectAddonItenModalBtn = this.selectAddonItenModal.locator(`xpath=.//button[@data-dismiss="modal"]`)
+        this.selectCouponButton = page.locator(`//div[@class="coupon-dropdown"]//button`)
+        this.couponItem = page.locator(`//li[@class="coupon-item"]`)
+        this.couponApplyLink = page.locator(`//li[@class="coupon-item"]//a`)
+        this.couponCodeAdded = page.locator(`//div[contains(@class,"cart-page")]//div[@class="coupon-code"]`)
+        this.couponCodeRemoveButton = page.locator(`//div[contains(@class,"cart-page")]//div[@class="coupon-code"]//button[@class="remove-coupon"]//span`)
+        this.removeCouponModalYesBtn = page.locator(`//h4[normalize-space(text())="Remove Coupon?"]/ancestor::div[@class="modal-content"]//button[normalize-space(text())="Yes"]`)
     }
 
     // =========================
@@ -95,7 +107,7 @@ export abstract class CartPage extends BasePage {
 
         for (const i of indices) {
             await PageUtils.waitForPageLoad(this.page)
-            
+
             const addButton = this.page.locator(`(//div[contains(@class,"product-tile")]//button[normalize-space(text())="${t.homepage('addtocart')}"])[${i}]`);
 
             await addButton.scrollIntoViewIfNeeded()
@@ -103,7 +115,7 @@ export abstract class CartPage extends BasePage {
             await delay(300)
 
             await this.click(addButton, `Add product at index ${i} to cart`)
-            
+
             await handlePwpModalIfPresent(this.page);
 
             await expect(this.minicartRender).toBeVisible({ timeout: 10000 })
@@ -201,6 +213,20 @@ export abstract class CartPage extends BasePage {
         await delay(1000)
     }
 
+    async removeCoupon(): Promise<void> {
+        await step('Remove a coupon', async () => {
+            await this.click(this.couponCodeRemoveButton, 
+                "Click on remove coupon button"
+            )
+
+            await this.click(this.removeCouponModalYesBtn, 
+                "Click on confirm button: YES"
+            )
+
+            await PageUtils.waitForPageLoad(this.page)
+        })
+    }
+
     // =========================
     // 📦 Helpers
     // =========================
@@ -258,7 +284,7 @@ export abstract class CartPage extends BasePage {
 
     async getNumberOfProducts(): Promise<number> {
         await PageUtils.waitForDomAvailable(this.page)
-        
+
         const prod = this.page.locator(`(//div[contains(@class,"cart-page")]//div[contains(@class,"card product-info")])`)
 
         return (await prod.count())

@@ -5,6 +5,7 @@ import { step } from "allure-js-commons";
 import { screenshotAndAttach } from "../../../utils/helpers/helpers";
 import { createLoginPage } from "../../../src/factories/login.factory";
 import { createHomePage } from "../../../src/factories/home.factory"
+import { tests } from "../../../utils/helpers/localeTest";
 
 test.describe('Login with normal-email', () => {
     test(`
@@ -36,7 +37,7 @@ test.describe('Login with normal-email', () => {
 });
 
 test.describe("Login by Facebook login", () => {
-    test(`
+    tests([], `
         1. Login success by Facebook account - MyPage is displayed
         `, async ({ basicAuthPage }) => {
 

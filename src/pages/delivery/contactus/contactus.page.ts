@@ -41,7 +41,7 @@ export class ContactUS extends BasePage {
         const {
             gender = `Mr.`,
             name = `name ${randomAlphaString(4)} ${randomAlphaString(3)}`,
-            email = `globee_test${generateReadableTimeBasedId()}@mailinator.com`,
+            email = `globee_test${generateReadableTimeBasedId()}@yopmail.com`,
             phone = `${generateNumberString(8)}`,
             subject = `globee test subject${generateReadableTimeBasedId()}`,
             message = `globee test ${generateSentence(20)}`
