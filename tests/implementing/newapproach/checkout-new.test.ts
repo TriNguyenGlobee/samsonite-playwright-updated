@@ -1,5 +1,5 @@
 import { test, expect } from "../../../src/fixtures/test-fixture"
-import { t, clickUntil, PageUtils, delay, screenshotAndAttach, openNewTab, clickBlankAreaToClosePopup } from "../../../utils/helpers/helpers";
+import { t, clickUntil, PageUtils, delay, screenshotAndAttach, openNewTab, clickBlankAreaToClosePopup, generateReadableTimeBasedId, scrollToBottom } from "../../../utils/helpers/helpers";
 import { NewArrivalsPage } from "../../../src/pages/delivery/productlistingpage/newarrivals/newarrivals.page";
 import { createHomePage } from "../../../src/factories/home.factory";
 import { createMinicartPage } from "../../../src/factories/minicart.factory";
@@ -10,6 +10,8 @@ import { CheckoutPage } from "../../../src/pages/implementing/checkout/checkout.
 import { loadTestData } from "../../../utils/data";
 import { Config } from "../../../config/env.config";
 import { tests } from "../../../utils/helpers/localeTest";
+import { MyPage } from "../../../src/pages/implementing/mypage/mypage.page";
+import { GlobalNavFooterPage } from "../../../src/pages/delivery/home/global-nav-footer.page";
 
 const isProd = () => process.env.ENV === 'prod';
 
@@ -208,12 +210,19 @@ test.describe("Guest-visa-checkout", async () => {
         4. Payment method is selected - Payment details form shows correctly
         5. Step 3 is done - Place Order button shows
         6. Ordering success page is displayed
+        7. Type Checkout email and submit Subscribe button - Duplicate subscription message shown
         `, async ({ basicAuthPage }) => {
         const checkoutpage = new CheckoutPage(basicAuthPage)
         const checkoutloginpage = new CheckoutLoginPage(basicAuthPage)
+        const mypage = new MyPage(basicAuthPage)
+        const globalnavfooterpage = new GlobalNavFooterPage(basicAuthPage)
         const { checkoutFullData } = loadTestData();
         const { checkoutShippingData } = loadTestData();
+        const accountexistMsg = t.globalnavfooter('duplicateemail')
+        const emailexistmsg = basicAuthPage.locator(`//footer[@id="footer"]//div[contains(@class,"subscribe-msg accountexists")]`)
         const cardNumberIframe = basicAuthPage.locator('input#cardNumber');
+        const email_suffix = generateReadableTimeBasedId()
+        const valid_email = "gloobeauto_" + email_suffix + "@yopmail.com"
 
         await step("Go to guest checkout page", async () => {
             await checkoutloginpage.click(checkoutloginpage.guestcheckoutButton,
@@ -227,7 +236,16 @@ test.describe("Guest-visa-checkout", async () => {
         })
 
         await step("Fill your detail with full information", async () => {
-            await checkoutpage.fillCheckoutYourDetailForm(basicAuthPage, checkoutFullData)
+            await checkoutpage.fillCheckoutYourDetailForm(basicAuthPage,
+                {
+                    email: valid_email,
+                    firstName: checkoutFullData.firstName,
+                    lastName: checkoutFullData.lastName,
+                    newsletter: checkoutFullData.newsletter,
+                    phone: checkoutFullData.phone,
+                    terms: checkoutFullData.terms
+                }
+            )
         })
 
         await checkoutpage.click(checkoutpage.continueButton, "Click on Step 1 Continue button")
@@ -310,6 +328,30 @@ test.describe("Guest-visa-checkout", async () => {
                 await screenshotAndAttach(basicAuthPage, './screenshots/Guest-visa-checkout', '06 - Ordering success page');
             })
         }
+
+        await step('Go to Home Page', async () => {
+            await mypage.goto(`${Config.baseURL}`)
+            await scrollToBottom(basicAuthPage)
+        })
+
+        await step("Veriy - 7. Type Checkout email and submit Subscribe button - Duplicate subscription message shown", async () => {
+            await step("Enter the Registered-email into the email textbox", async () => {
+                await globalnavfooterpage.type(globalnavfooterpage.emailTextbox, valid_email)
+            })
+
+            await globalnavfooterpage.click(globalnavfooterpage.subscribeButton,
+                "Clicking on Subscribe button"
+            )
+            await globalnavfooterpage.assertHidden(globalnavfooterpage.underlay,
+                "Waiting for underlay screen hidden"
+            )
+
+            await globalnavfooterpage.assertText(emailexistmsg, accountexistMsg,
+                "Assert invalid-feedback: Account exists"
+            )
+
+            await screenshotAndAttach(basicAuthPage, './screenshots/Guest-visa-checkout', '07 - Duplicate subscription message');
+        })
     });
 })
 
@@ -780,7 +822,7 @@ test.describe("Guest-atome-checkout", async () => {
                 await checkoutpage.waitFor(gotItButton)
             })
 
-            if(await gotItButton.isVisible()) {
+            if (await gotItButton.isVisible()) {
                 await step("Click Got it button", async () => {
                     await checkoutpage.click(gotItButton, "Click on Atome Got it button")
                     await delay(2000)

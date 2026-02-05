@@ -16,7 +16,7 @@ test.describe("Subscription-homepage", () => {
         await globalnavfooterpage.footerLogo.scrollIntoViewIfNeeded()
     });
 
-    test("1. Submit button without email address - Invalid feedback shows", async ({ basicAuthPage }) => {
+    test(`1. Submit button without email address - Invalid feedback shows`, async ({ basicAuthPage }) => {
         const globalnavfooterpage = new GlobalNavFooterPage(basicAuthPage)
         const invalid_Feedback = t.globalnavfooter('completethisfield')
 

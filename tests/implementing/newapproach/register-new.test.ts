@@ -10,7 +10,7 @@ import { createHomePage } from "../../../src/factories/home.factory";
 import { createCartPage } from "../../../src/factories/cart.factory";
 import { CheckoutPage } from "../../../src/pages/implementing/checkout/checkout.page";
 import { MyPaymentsPage } from "../../../src/pages/implementing/mypage/mypayments.page";
-import { screenshotAndAttach, t, randomAlphaString, getLocalPhone, scrollToBottom, PageUtils } from "../../../utils/helpers/helpers";
+import { screenshotAndAttach, t, randomAlphaString, getLocalPhone, scrollToBottom, PageUtils, delay } from "../../../utils/helpers/helpers";
 import { MailSlurp } from 'mailslurp-client';
 import { Config } from "../../../config/env.config";
 import { loadTestData } from "../../../utils/data";
@@ -152,7 +152,7 @@ test.describe("Clicking create account button with valid information", async () 
                 homepage.goto(`${Config.baseURL}checkout?stage=shipping#shipping`)
             })
         })
-
+        
         await step('Fill checkout information', async () => {
             await step("Fill recipient info", async () => {
                 await checkoutpage.fillRecipientDetilsForm(basicAuthPage, checkoutShippingData)
@@ -226,6 +226,8 @@ test.describe("Clicking create account button with valid information", async () 
         await step('Verify - 8. Apply a coupon - Coupon is added', async () => {
             await cartpage.click(cartpage.couponApplyLink.first(),
                 "Click apply coupon link")
+
+            await delay(2000)
 
             await cartpage.assertVisible(cartpage.couponCodeAdded,
                 "Assert the coupon is added"
@@ -310,18 +312,16 @@ test.describe("Clicking create account button with valid information", async () 
             await screenshotAndAttach(basicAuthPage, './screenshots/Register', '15 - Updated information');
         })
 
-        await step("Verify - 16. Unregister Account - Home page", async () => {
-            await myProfilePage.unregisterAccount()
-            await screenshotAndAttach(basicAuthPage, './screenshots/Register', '16 - Home page');
-        })
+
     })
 
     test.afterEach(async ({ basicAuthPage }) => {
         const mypage = new MyPage(basicAuthPage)
         const myProfilePage = new MyProfilePage(basicAuthPage);
-
-        await mypage.goto(Config.baseURL + 'profile')
-        await myProfilePage.unregisterAccount()
-        await screenshotAndAttach(basicAuthPage, './screenshots/Register', '04 - AfterEach-Home page');
+        await step("Verify - 16. Unregister Account - Home page", async () => {
+            await mypage.goto(Config.baseURL + 'profile')
+            await myProfilePage.unregisterAccount()
+            await screenshotAndAttach(basicAuthPage, './screenshots/Register', '16 - AfterEach-Home page');
+        })
     })
 })
