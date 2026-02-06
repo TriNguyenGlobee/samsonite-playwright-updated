@@ -13,11 +13,20 @@ test.describe("Footer links Groups", async () => {
 
     test(`
         1. All links groups are displayed - Footer logo is displayed - Copyright and current year correct
+        2. Support links groups
+        3. Our Company links groups
+        4. Account links groups
+        5. Bottom navigation links
         `, async ({ basicAuthPage }) => {
         const globalnavfooterpage = new GlobalNavFooterPage(basicAuthPage)
         const now = new Date
         const currentYear = now.getFullYear()
         const copyrightContent = `Copyright © ${currentYear} Samsonite IP Holdings S.àr.l. All rights reserved.`
+        const { supportLinksGroups } = loadTestData();
+        const { ourCompanyLinksGroups } = loadTestData();
+        const loginpage = createLoginPage(basicAuthPage)
+        const { accountLinksGroups } = loadTestData();
+        const { bottomLinksGroups } = loadTestData();
 
         await step("Verify that links groups are displayed", async () => {
             await globalnavfooterpage.assertVisible(globalnavfooterpage.supportLinksGroups,
@@ -50,11 +59,6 @@ test.describe("Footer links Groups", async () => {
         await step("Screenshot footer section", async () => {
             await screenshotAndAttach(basicAuthPage, './screenshots/Footer', '01 - Footer')
         })
-    })
-
-    test("2. Support links groups", async ({ basicAuthPage }) => {
-        const globalnavfooterpage = new GlobalNavFooterPage(basicAuthPage)
-        const { supportLinksGroups } = loadTestData();
 
         await step("Verify Support Links Groups", async () => {
             await globalnavfooterpage.assertFooterLinksGroups({
@@ -62,11 +66,6 @@ test.describe("Footer links Groups", async () => {
                 links: supportLinksGroups
             })
         })
-    })
-
-    test("3. Our Company links groups", async ({ basicAuthPage }) => {
-        const globalnavfooterpage = new GlobalNavFooterPage(basicAuthPage)
-        const { ourCompanyLinksGroups } = loadTestData();
 
         await step("Verify Our Company Links Groups", async () => {
             await globalnavfooterpage.assertFooterLinksGroups({
@@ -74,12 +73,6 @@ test.describe("Footer links Groups", async () => {
                 links: ourCompanyLinksGroups
             })
         })
-    })
-
-    test("4. Account links groups", async ({ basicAuthPage }) => {
-        const globalnavfooterpage = new GlobalNavFooterPage(basicAuthPage)
-        const loginpage = createLoginPage(basicAuthPage)
-        const { accountLinksGroups } = loadTestData();
 
         await step("Login with valid account", async () => {
             await globalnavfooterpage.goToLoginRegisterPage()
@@ -92,11 +85,6 @@ test.describe("Footer links Groups", async () => {
                 links: accountLinksGroups
             })
         })
-    })
-
-    test("5. Bottom navigation links", async ({ basicAuthPage }) => {
-        const globalnavfooterpage = new GlobalNavFooterPage(basicAuthPage)
-        const { bottomLinksGroups } = loadTestData();
 
         await step("Verify Bottom Links Groups", async () => {
             await globalnavfooterpage.assertFooterLinksGroups({
