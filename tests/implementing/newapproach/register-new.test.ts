@@ -226,8 +226,8 @@ test.describe("Clicking create account button with valid information", async () 
         await step('Verify - 8. Apply a coupon - Coupon is added', async () => {
             await cartpage.click(cartpage.couponApplyLink.first(),
                 "Click apply coupon link")
-
             await delay(2000)
+            await cartpage.waitFor(cartpage.couponCodeAdded)
 
             await cartpage.assertVisible(cartpage.couponCodeAdded,
                 "Assert the coupon is added"
@@ -311,8 +311,6 @@ test.describe("Clicking create account button with valid information", async () 
             await expect(myProfilePage.lastnameTextbox).toHaveValue(updateLastName);
             await screenshotAndAttach(basicAuthPage, './screenshots/Register', '15 - Updated information');
         })
-
-
     })
 
     test.afterEach(async ({ basicAuthPage }) => {
