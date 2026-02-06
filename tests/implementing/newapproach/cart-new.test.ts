@@ -5,6 +5,7 @@ import { Config } from "../../../config/env.config";
 import { step } from "allure-js-commons";
 import { t, clickUntil, delay, screenshotAndAttach } from "../../../utils/helpers/helpers";
 import { createHomePage } from "../../../src/factories/home.factory"
+import { stepsWithReport } from "../../../utils/helpers/stepsWithReport";
 
 test.describe("Cartpage-empty", () => {
     test(`
@@ -12,28 +13,28 @@ test.describe("Cartpage-empty", () => {
         2. Minicart can be closed by Start Shopping button - Minicart closed
         3. Minicart Explore by category URL navigation
         4. Cart page is displayed - Empty cart
-        `, async ({ basicAuthPage }) => {
+        `, async ({ basicAuthPage }, testInfo) => {
         const homePage = createHomePage(basicAuthPage);
         const minicartPage = createMinicartPage(basicAuthPage)
         const amountOfFooterCategoryItem = await minicartPage.getAmountFooterCategoryItems()
 
-        await step("Click on Cart icon", async () => {
+        await stepsWithReport(basicAuthPage, testInfo, ["sg"], "Click on Cart icon to show Minicart", async()=>{
             await homePage.click(homePage.cartIcon)
         })
 
-        await step("Verify - 1. Minicart is displayed - Empty cart", async () => {
-            await minicartPage.assertEqual(await minicartPage.isMinicartShown(), true, "Minicart should be shown")
-            await minicartPage.assertText(minicartPage.emptyCartMsg, t.minicart('emptymsg'), "Verify empty cart message text")
-            await minicartPage.assertVisible(minicartPage.startShoppingButton, "Verify Start Shopping button is visible")
-            await minicartPage.assertVisible(minicartPage.exploreByCategoryText, "Verify Explore by Category text is visible")
-            await minicartPage.assertEqual(await minicartPage.footerCategoryItem.count(), amountOfFooterCategoryItem, "Verify amount of footer category items")
+        await stepsWithReport(basicAuthPage, testInfo, ["sg"], "Verify - 1. Minicart is displayed - Empty cart", async()=>{
+            await minicartPage.assertEqual(await minicartPage.isMinicartShown(), true, "Assert minicart is shown")
+            await minicartPage.assertText(minicartPage.emptyCartMsg, t.minicart('emptymsg'), "Assert Empty cart message is shown")
+            await minicartPage.assertVisible(minicartPage.startShoppingButton, "Assert Start Shopping button is visibled")
+            await minicartPage.assertVisible(minicartPage.exploreByCategoryText, "Assert Explore by Category text is visibled")
+            await minicartPage.assertEqual(await minicartPage.footerCategoryItem.count(), amountOfFooterCategoryItem, "Assert amount of footer category items is correct")
             await expect(minicartPage.minicartModal).toBeVisible({ timeout: 2000 });
 
             await screenshotAndAttach(basicAuthPage, './screenshots/Cartpage-empty', '01 - Minicart-empty-cart');
             await delay(1500)
         })
 
-        await step("Click Shopping Cart button", async () => {
+        await stepsWithReport(basicAuthPage, testInfo, ["sg"], "Click Shopping Cart Button to close Minicart", async()=>{
             await clickUntil(basicAuthPage, homePage.cartIcon, minicartPage.minicartRender, 'visible', {
                 delayMs: 500,
                 maxTries: 3,
