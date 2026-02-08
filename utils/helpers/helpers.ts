@@ -413,17 +413,25 @@ export async function screenshotAndAttach(
   folderPath: string,
   fileName: string
 ) {
-  const dir = path.resolve(folderPath);
+  await step('[SCREENSHOT]', async () => {
+    const dir = path.resolve(folderPath);
 
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
-  }
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
 
-  const filePath = path.join(dir, `${fileName}.png`);
+    const filePath = path.join(dir, `${fileName}.png`);
 
-  const buffer = await page.screenshot({ path: filePath, fullPage: true });
+    const buffer = await page.screenshot({
+      path: filePath,
+      fullPage: true,
+    });
 
-  await attachment(fileName, buffer, 'image/png');
+    await test.info().attach(fileName, {
+      body: buffer,
+      contentType: 'image/png',
+    });
+  });
 }
 
 /**
