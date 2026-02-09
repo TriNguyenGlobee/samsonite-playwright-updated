@@ -18,6 +18,9 @@ screenshots/
 allure-report*/
 allure-results*/
 
+# Excel report
+excel-report/
+
 # Runable file
 run-multi-parallel.ps1
 run-multi.ps1
