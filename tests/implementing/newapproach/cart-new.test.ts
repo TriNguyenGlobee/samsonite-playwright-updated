@@ -26,17 +26,22 @@ test.describe("Cartpage-empty", () => {
             await expect(minicartPage.minicartModal).toBeVisible({ timeout: 2000 });
 
             await screenshotAndAttach(basicAuthPage, './screenshots/Cartpage-empty', '01 - Minicart-empty-cart');
-            await delay(1500)
+            await delay(2000)
         })
 
         await step("[STEP] Click Start Shopping Now button on minicart to close minicart", async () => {
-            await step("[ChSTEP] Click on Cart icon to show minicart", async () => {
+            /*await step("[ChSTEP] Click on Cart icon to show minicart", async () => {
                 await clickUntil(basicAuthPage, homePage.cartIcon, minicartPage.minicartRender, 'visible', {
                     delayMs: 500,
                     maxTries: 3,
                     timeoutMs: 3000
                 })
+            })*/
+
+            await step("[ChSTEP] Click on Cart icon to show minicart", async () => {
+                await homePage.click(homePage.cartIcon)
             })
+
             await step("[ChSTEP] Click Start Shopping Now button to close minicart", async () => {
                 await minicartPage.click(minicartPage.startShoppingButton)
             })
@@ -49,7 +54,7 @@ test.describe("Cartpage-empty", () => {
             await delay(3000)
         })
 
-        await step("[STEP] Verify - 3. Minicart Explore By Category URL navigation is correct", async () => {
+        await step("[STEP] Verify - 3. Minicart Explore By Category First URL navigation is correct", async () => {
             await step("[ChSTEP] Click on Cart icon to show minicart", async () => {
                 await clickUntil(basicAuthPage, homePage.cartIcon, minicartPage.minicartRender, 'visible', {
                     delayMs: 500,
@@ -59,10 +64,10 @@ test.describe("Cartpage-empty", () => {
             })
             await delay(500)
 
-            const expectedURL = await homePage.getLocatorURL(minicartPage.footerCategoryItem.nth(1))
+            const expectedURL = await homePage.getLocatorURL(minicartPage.footerCategoryItem.nth(0))
 
             await step("[ChSTEP] Click on first category item in minicart footer and check URL navigation", async () => {
-                await minicartPage.assertNavigatedURLByClickLocator(basicAuthPage, minicartPage.footerCategoryItem.nth(1), expectedURL!)
+                await minicartPage.assertNavigatedURLByClickLocator(basicAuthPage, minicartPage.footerCategoryItem.nth(0), expectedURL!)
                 await screenshotAndAttach(basicAuthPage, './screenshots/Cartpage-empty', '03 - URL navigation');
             })
         })

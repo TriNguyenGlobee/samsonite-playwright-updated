@@ -4,8 +4,8 @@
 
 ## 🚀 Setting Guide
 ```bash
-git clone https://github.com/TriNguyenGlobee/samsonite-playwright.git
-cd samsonite-playwright
+git clone https://github.com/TriNguyenGlobee/samsonite-playwright-updated.git
+cd samsonite-playwright-updated
 npm install
 npx playwright install
 npm install --save mailslurp-client

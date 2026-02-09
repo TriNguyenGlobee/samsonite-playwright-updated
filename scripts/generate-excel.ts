@@ -23,7 +23,8 @@ function collectSteps(steps: any[] = [], result: any[] = []) {
     for (const step of steps) {
         if (
             typeof step.name === 'string' &&
-            (step.name.startsWith('[STEP]') || step.name.startsWith('[ChSTEP]'))
+            step.name.startsWith('[STEP]')
+            //(step.name.startsWith('[STEP]') || step.name.startsWith('[ChSTEP]'))
         ) {
             result.push(step);
         }
@@ -71,12 +72,12 @@ async function generateExcel() {
 
     sheet.columns = [
         { header: 'Test Case', key: 'testCase', width: 45 },
-        { header: 'Test Status', key: 'testStatus', width: 14 },
+        //{ header: 'Test Status', key: 'testStatus', width: 14 },
         { header: 'Step', key: 'step', width: 55 },
-        { header: 'Child Step', key: 'childStep', width: 55 },
+        //{ header: 'Child Step', key: 'childStep', width: 55 },
         { header: 'Step Status', key: 'stepStatus', width: 14 },
         { header: 'Screenshot', key: 'screenshot', width: 22 },
-        { header: 'Note', key: 'note', width: 55 },
+        //{ header: 'Note', key: 'note', width: 55 },
     ];
 
     sheet.getRow(1).eachCell(cell => {
@@ -88,7 +89,7 @@ async function generateExcel() {
         vertical: 'middle',
         horizontal: 'center',
     };
-    sheet.getColumn('note').alignment = { wrapText: true };
+    //sheet.getColumn('note').alignment = { wrapText: true };
 
     let currentTestCase = '';
     let testCaseStartRow = 2;
@@ -119,7 +120,7 @@ async function generateExcel() {
             const isParent = step.name.startsWith('[STEP]');
             const stepName = step.name
                 .replace('[STEP]', '')
-                .replace('[ChSTEP]', '')
+                //.replace('[ChSTEP]', '')
                 .trim();
 
             const note =
@@ -131,14 +132,14 @@ async function generateExcel() {
 
             const row = sheet.addRow({
                 testCase: testName,
-                testStatus,
+                //testStatus,
                 step: isParent ? stepName : '',
-                childStep: !isParent ? stepName : '',
+                //childStep: !isParent ? stepName : '',
                 stepStatus: step.status,
-                note,
+                //note,
             });
 
-            applyStatusStyle(row.getCell('testStatus'), testStatus);
+            //applyStatusStyle(row.getCell('testStatus'), testStatus);
             applyStatusStyle(row.getCell('stepStatus'), step.status);
 
             const screenshot = findScreenshotFromStep(step);
@@ -152,7 +153,7 @@ async function generateExcel() {
                     });
 
                     sheet.addImage(imageId, {
-                        tl: { col: 5, row: row.number - 1 },
+                        tl: { col: 3, row: row.number - 1 },
                         ext: { width: 140, height: 120 },
                     });
 
