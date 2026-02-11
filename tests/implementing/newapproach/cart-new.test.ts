@@ -19,11 +19,11 @@ test.describe("Cartpage-empty", () => {
         const amountOfFooterCategoryItem = await minicartPage.getAmountFooterCategoryItems()
         const cartpage = createCartPage(basicAuthPage)
 
-        await step("[STEP] Verify - 1. Minicart is displayed - minicart is empty", async () => {
-             await step("[ChSTEP] Click on Cart icon to show minicart", async () => {
+        await step("[STEP] Verify - 1. Click on Cart icon to show minicart", async () => {
                 await homePage.click(homePage.cartIcon);
             });
 
+        await step("[STEP] Verify - 1. Minicart is displayed - minicart is empty", async () => {
              await step("[ChSTEP] Minicart should be shown", async () => {
                 await minicartPage.assertEqual(await minicartPage.isMinicartShown(),true,"Minicart should be shown");
             });
@@ -52,6 +52,10 @@ test.describe("Cartpage-empty", () => {
             await delay(2000)
         })
 
+        await step("[STEP] Verify - 2. Click on Cart icon to show minicart", async () => {
+                await homePage.click(homePage.cartIcon)
+        })
+
         await step("[STEP] Verify - 2. Click Start Shopping Now button on minicart to close minicart", async () => {
             /*await step("[ChSTEP] Click on Cart icon to show minicart", async () => {
                 await clickUntil(basicAuthPage, homePage.cartIcon, minicartPage.minicartRender, 'visible', {
@@ -61,44 +65,38 @@ test.describe("Cartpage-empty", () => {
                 })
             })*/
 
-            await step("[ChSTEP] Click on Cart icon to show minicart", async () => {
-                await homePage.click(homePage.cartIcon)
-            })
-
             await step("[ChSTEP] Click Start Shopping Now button to close minicart", async () => {
                 await minicartPage.click(minicartPage.startShoppingButton)
             })
             await delay(500)
-
-            await step("[ChSTEP] Minicart should be closed", async () => {
-                await minicartPage.assertEqual(await minicartPage.isMinicartShown(), false, "Minicart should be closed")
-                await screenshotAndAttach(basicAuthPage, './screenshots/Cartpage-empty', '02 - Minicart-closed');
-            })
-            await delay(3000)
         })
 
-        await step("[STEP] Verify - 3. Click on first cateogry item in minicart footer and check URL navigation", async () => {
-            await step("[ChSTEP] Click on Cart icon to show minicart", async () => {
+        await step("[STEP] Verify - 2. Verify Minicart in closed", async () => {
+                await minicartPage.assertEqual(await minicartPage.isMinicartShown(), false, "Minicart should be closed")
+                await screenshotAndAttach(basicAuthPage, './screenshots/Cartpage-empty', '02 - Minicart-closed');
+                await delay(3000)
+        })
+
+        await step("[STEP] Verify -3. Click on Cart icon to show minicart", async () => {
                 await clickUntil(basicAuthPage, homePage.cartIcon, minicartPage.minicartRender, 'visible', {
                     delayMs: 500,
                     maxTries: 3,
                     timeoutMs: 3000
                 })
-            })
-            await delay(500)
-
-            const expectedURL = await homePage.getLocatorURL(minicartPage.footerCategoryItem.nth(0))
-
-            await step("[ChSTEP] Click on first category item in minicart footer and check URL navigation", async () => {
-                await minicartPage.assertNavigatedURLByClickLocator(basicAuthPage, minicartPage.footerCategoryItem.nth(0), expectedURL!)
-                await screenshotAndAttach(basicAuthPage, './screenshots/Cartpage-empty', '03 - URL navigation');
-            })
+                await delay(500)
         })
 
-        await step("[STEP] Verify - 4. Cart page is displayed - Empty cart", async () => {
-            await step("[ChSTEP] Go to Cart page by URL", async () => {
+        await step("[STEP] Verify - 3. Click on first cateogry item in minicart footer and check URL navigation", async () => {
+            const expectedURL = await homePage.getLocatorURL(minicartPage.footerCategoryItem.nth(0))
+            await minicartPage.assertNavigatedURLByClickLocator(basicAuthPage, minicartPage.footerCategoryItem.nth(0), expectedURL!)
+            await screenshotAndAttach(basicAuthPage, './screenshots/Cartpage-empty', '03 - URL navigation');
+        })
+
+        await step("[STEP] Verify - 4. Go to Cart page by URL", async () => {
                 await basicAuthPage.goto(`${Config.baseURL}cart`)
-            })
+        })
+
+        await step("[STEP] Verify - 4. Verify Cart page is displayed - Empty cart", async () => {
             await step("[ChSTEP] Cart page should be displayed", async () => {
                 await cartpage.assertEqual(await cartpage.isCartPageDisplayed(), true, "Cart page should be displayed")
             })
