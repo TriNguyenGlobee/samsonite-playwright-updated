@@ -19,7 +19,7 @@ test.describe("Cartpage-empty", () => {
         const amountOfFooterCategoryItem = await minicartPage.getAmountFooterCategoryItems()
         const cartpage = createCartPage(basicAuthPage)
 
-        await step("[STEP] Verify - 1. Click on Cart icon to show minicart", async () => {
+        await step("[STEP] Click on Cart icon to show minicart", async () => {
                 await homePage.click(homePage.cartIcon);
             });
 
@@ -52,11 +52,11 @@ test.describe("Cartpage-empty", () => {
             await delay(2000)
         })
 
-        await step("[STEP] Verify - 2. Click on Cart icon to show minicart", async () => {
+        await step("[STEP] Click on Cart icon to show minicart", async () => {
                 await homePage.click(homePage.cartIcon)
         })
 
-        await step("[STEP] Verify - 2. Click Start Shopping Now button on minicart to close minicart", async () => {
+        await step("[STEP] Click Start Shopping Now button on minicart to close minicart", async () => {
             /*await step("[ChSTEP] Click on Cart icon to show minicart", async () => {
                 await clickUntil(basicAuthPage, homePage.cartIcon, minicartPage.minicartRender, 'visible', {
                     delayMs: 500,
@@ -77,7 +77,7 @@ test.describe("Cartpage-empty", () => {
                 await delay(3000)
         })
 
-        await step("[STEP] Verify -3. Click on Cart icon to show minicart", async () => {
+        await step("[STEP] Click on Cart icon to show minicart", async () => {
                 await clickUntil(basicAuthPage, homePage.cartIcon, minicartPage.minicartRender, 'visible', {
                     delayMs: 500,
                     maxTries: 3,
@@ -92,7 +92,7 @@ test.describe("Cartpage-empty", () => {
             await screenshotAndAttach(basicAuthPage, './screenshots/Cartpage-empty', '03 - URL navigation');
         })
 
-        await step("[STEP] Verify - 4. Go to Cart page by URL", async () => {
+        await step("[STEP] Go to Cart page by URL", async () => {
                 await basicAuthPage.goto(`${Config.baseURL}cart`)
         })
 
