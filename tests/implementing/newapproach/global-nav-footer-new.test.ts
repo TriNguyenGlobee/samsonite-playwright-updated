@@ -33,19 +33,19 @@ test.describe("Footer links Groups", async () => {
                 await globalnavfooterpage.assertVisible(globalnavfooterpage.supportLinksGroups,"Assert Support link groups displayed")
             });
 
-            await step("[ChSTEP] Support link groups displayed", async () => {
+            await step("[ChSTEP] Our company link groups displayed", async () => {
                 await globalnavfooterpage.assertVisible(globalnavfooterpage.ourcompanyLinksGroups, "Assert Our company link groups displayed")
             });
            
-            await step("[ChSTEP] Support link groups displayed", async () => {
+            await step("[ChSTEP] Account link groups displayed", async () => {
                 await globalnavfooterpage.assertVisible(globalnavfooterpage.accountLinksGroups,"Assert Account link groups displayed")
             });
 
-            await step("[ChSTEP] Support link groups displayed", async () => {
+            await step("[ChSTEP] Follow link groups displayed", async () => {
                 await globalnavfooterpage.assertVisible(globalnavfooterpage.followusLinksGroups,"Assert Follow link groups displayed")
             });
             
-            await step("[ChSTEP] Verify copyright content", async () => {
+            await step("[ChSTEP] Verify copyright content and current year", async () => {
                 await globalnavfooterpage.assertText(globalnavfooterpage.copyright, copyrightContent,"Assert copyright content and current year")
             });
 
