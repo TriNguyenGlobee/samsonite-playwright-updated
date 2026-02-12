@@ -571,13 +571,15 @@ test.describe("Guest-paypal-checkout", async () => {
     })
 
     test(`
-        1. Checkout page is displayed - Your detail form shows correctly    
-        2. Step 1 is done - Recipient infor form shows correctly
-        3. Step 2 is done - Payment methods section shows correctly
-        4. Payment method is selected - Payment details form shows correctly
-        5. Step 3 is done - Paypal checkout button shows
-        6. Type paypal infor and review order
-        7. Ordering success page is displayed
+        1. Verify Checkout page is displayed when clicking on Guest checkout button    
+        2. User can fill your detail information and go to next step
+        3. User can fill recipient information and go to next step
+        4. User can select Paypal payment method
+        5. Click Payment Continue button to go to next step
+        6. Click on Paypal checkout button (Staging only)
+        7. User can complete the entering paypal username step
+        8. User can complete the entering paypal password step
+        9. Click Continue button to complete order (Staging only)
         `, async ({ basicAuthPage }) => {
         const checkoutpage = new CheckoutPage(basicAuthPage)
         const checkoutloginpage = new CheckoutLoginPage(basicAuthPage)
@@ -585,57 +587,62 @@ test.describe("Guest-paypal-checkout", async () => {
         const { checkoutShippingData } = loadTestData();
         const cardNumberIframe = basicAuthPage.locator('input#cardNumber');
 
-        await step("Go to guest checkout page", async () => {
+        await step("[STEP] Click on Guest Checkout button", async () => {
             await checkoutloginpage.click(checkoutloginpage.guestcheckoutButton,
                 "Clicking on Guest checkout button"
             )
         })
 
-        await step("Verify - 1. Checkout page is displayed - Your detail form shows correctly", async () => {
+        await step("[STEP] Verify - 1. Checkout page is displayed - Your detail form shows correctly", async () => {
             expect(await checkoutpage.isCheckoutPageDisplayed()).toBe(true)
             await screenshotAndAttach(basicAuthPage, './screenshots/Guest-paypal-checkout', '01 - Your detail form');
         })
 
-        await step("Fill your detail with full information", async () => {
+        await step("[STEP] Fill your detail with full information", async () => {
             await checkoutpage.fillCheckoutYourDetailForm(basicAuthPage, checkoutFullData)
         })
 
-        await checkoutpage.click(checkoutpage.continueButton, "Click on Step 1 Continue button")
-
-        await step("Verify - 2. Step 1 is done - Recipient infor form shows correctly", async () => {
-            await checkoutpage.assertEqual(await checkoutpage.isCheckoutStepDone("Your Details"), true,
-                "Assert current step 1 status is Done: true"
-            )
-
-            await checkoutloginpage.assertVisible(checkoutpage.shippingSection.first(), "Assert recipient infor section visbile")
-
-            await screenshotAndAttach(basicAuthPage, './screenshots/Guest-paypal-checkout', '02 - Recipient infor form');
+        await step("[STEP] Verify - 2. Step 1 is done - Recipient infor form shows correctly", async () => {
+            await step("[ChSTEP] Click on Step 1 Continue button",async () => {
+                await checkoutpage.click(checkoutpage.continueButton, "Click on Step 1 Continue button")
+            })
+            
+            await step("[ChSTEP] Assert current step 1 status is Done: true",async () => {
+                await checkoutpage.assertEqual(await checkoutpage.isCheckoutStepDone("Your Details"), true,"Assert current step 1 status is Done: true")   
+            })
+           
+            await step("[ChSTEP] Assert recipient infor section visbile",async () => {
+                await checkoutloginpage.assertVisible(checkoutpage.shippingSection.first(), "Assert recipient infor section visbile")
+                await screenshotAndAttach(basicAuthPage, './screenshots/Guest-paypal-checkout', '02 - Recipient infor form');
+            })
         })
 
-        await step("Fill recipient info", async () => {
+        await step("[STEP] Fill recipient info", async () => {
             await checkoutpage.fillRecipientDetilsForm(basicAuthPage, checkoutShippingData)
         })
 
-        await step("Click on continue button", async () => {
-            await checkoutpage.click(checkoutpage.recipientContinueBtn, "Click on Step 2 Continue button")
-            await PageUtils.waitForPageLoad(basicAuthPage)
+
+        await step("[STEP] Verify - 3. Click on Continue button to done Step 2 and go to Step 3", async () => {
+            await step("[ChSTEP] Click on continue button", async () => {
+                await checkoutpage.click(checkoutpage.recipientContinueBtn, "Click on Step 2 Continue button")
+                await PageUtils.waitForPageLoad(basicAuthPage)
+            })
+            
+            await step("[ChSTEP] Assert current step 2 status is Done: true",async () => {
+                await checkoutpage.assertEqual(await checkoutpage.isCheckoutStepDone("Shipping"), true,"Assert current step 2 status is Done: true")  
+            })
+            
+            await step("[ChSTEP] Assert payment method section visbile",async () => {
+                await checkoutloginpage.assertVisible(checkoutpage.visaIcon, "Assert payment method section visbile")
+                await screenshotAndAttach(basicAuthPage, './screenshots/Guest-paypal-checkout', '03 - Payment methods section');   
+            })
         })
 
-        await step("Verify - 3. Step 2 is done - Payment methods section shows correctly", async () => {
-            await checkoutpage.assertEqual(await checkoutpage.isCheckoutStepDone("Shipping"), true,
-                "Assert current step 2 status is Done: true"
-            )
-
-            await checkoutloginpage.assertVisible(checkoutpage.visaIcon, "Assert payment method section visbile")
-
-            await screenshotAndAttach(basicAuthPage, './screenshots/Guest-paypal-checkout', '03 - Payment methods section');
-        })
-
-        await step("Select Paypal payment method", async () => {
+        await step("[STEP] Select Paypal payment method", async () => {
             await checkoutpage.click(checkoutpage.paypalIcon, "Select Paypal payment method")
         })
 
-        await step("Verify - 4. Payment method is selected - Continue button shows", async () => {
+        await step("[STEP] Verify - 4. Verify Paypal paymet method is selected", async () => {
             await checkoutpage.assertVisible(checkoutpage.paymentcontinueBtn,
                 "Assert the Payment Continue button is displayed"
             )
@@ -644,56 +651,81 @@ test.describe("Guest-paypal-checkout", async () => {
             await screenshotAndAttach(basicAuthPage, './screenshots/Guest-paypal-checkout', '04 - Continue button');
         })
 
-        await step("Click payment continue button", async () => {
+        await step("[STEP] Click Payment Continue button", async () => {
             await checkoutpage.click(checkoutpage.paymentcontinueBtn, "Click on payment continue button")
         })
 
-        await step("Verify - 5. Step 3 is done - Paypal checkout button shows", async () => {
-            await checkoutpage.assertEqual(await checkoutpage.isCheckoutStepDone("Payment"), true,
-                "Assert current step 3 status is Done: true"
-            )
+        await step("[STEP] Verify - 5. Step 3 is done - Paypal checkout button shows", async () => {
+            await step("[ChSTEP] Assert current step 3 status is Done: true",async () => {
+                await checkoutpage.assertEqual(await checkoutpage.isCheckoutStepDone("Payment"), true,"Assert current step 3 status is Done: true") 
+            })
 
-            await checkoutloginpage.assertVisible(checkoutpage.paypalCheckoutBtn, "Assert Paypal Checkout button visbile")
+            await step("[ChSTEP] Assert Paypal Checkout button visbile",async () => {
+                 await checkoutloginpage.assertVisible(checkoutpage.paypalCheckoutBtn, "Assert Paypal Checkout button visbile")
+            })
 
-            await checkoutloginpage.assertEnabled(checkoutpage.paypalCheckoutBtn, "Assert Paypal Checkout is enabled")
-
-            await screenshotAndAttach(basicAuthPage, './screenshots/Guest-paypal-checkout', '05 - Paypal Checkout Button');
+            await step("[ChSTEP] Assert Paypal Checkout is enabled",async () => {
+                await checkoutloginpage.assertEnabled(checkoutpage.paypalCheckoutBtn, "Assert Paypal Checkout is enabled")
+                await screenshotAndAttach(basicAuthPage, './screenshots/Guest-paypal-checkout', '05 - Paypal Checkout Button');
+            })
         })
 
         if (await !isProd()) {
-            await step("Verify - 6. Type paypal infor and review order", async () => {
-                const paypalPage = await openNewTab(basicAuthPage, () =>
+            let paypalPage: any;
+            
+            await step("[STEP] Verify - 6. Click on Paypal checkout button (Staging only)",async () => {
+                paypalPage =  await openNewTab(basicAuthPage, () =>
                     checkoutpage.click(checkoutpage.paypalCheckoutBtn, "Click on Paypal checkout button")
                 )
+            })
 
-                const { paypalCheckoutData } = loadTestData();
+            const { paypalCheckoutData } = loadTestData();
                 const emailInput = paypalPage.locator('input#email')
                 const nextButton = paypalPage.locator('button#btnNext')
                 const passwordInput = paypalPage.locator('input#password')
                 const loginButton = paypalPage.locator('button#btnLogin')
                 const continueButton = paypalPage.locator('//button[@data-id="payment-submit-btn"]')
 
+            await step("[STEP] Type email into email field", async () => {
                 await emailInput.fill(paypalCheckoutData.email)
-                await screenshotAndAttach(basicAuthPage, './screenshots/Guest-paypal-checkout', '06 - 1 - Paypal Checkout email field');
+                await screenshotAndAttach(basicAuthPage, './screenshots/Guest-paypal-checkout', '06 - 1 - Paypal Checkout email field'); 
+            })
+            
+            await step("[STEP] Verify - 7. Click next button (Staging only)", async () => {
                 await nextButton.click()
-                await delay(2000)
+            })
+            await delay(2000)    
+
+            await step("[STEP] Type password into password field", async () => {
                 await passwordInput.fill(paypalCheckoutData.pass)
                 await screenshotAndAttach(basicAuthPage, './screenshots/Guest-paypal-checkout', '06 - 2 - Paypal Checkout password field');
+            })
+                
+            await step("[STEP] Verify - 8. Click next button(Staging only)", async () => {
                 await loginButton.click()
                 await delay(5000)
                 await screenshotAndAttach(basicAuthPage, './screenshots/Guest-paypal-checkout', '06 - 3 - Paypal continue button');
-
-                await continueButton.click()
-                await paypalPage.close()
             })
 
-            await step("Verify - 7. Ordering success page is displayed", async () => {
-                await checkoutpage.assertVisible(checkoutpage.orderSuccessTitle,
-                    "Assert the order success title is visible"
-                )
-                await screenshotAndAttach(basicAuthPage, './screenshots/Guest-paypal-checkout', '07 - Ordering success page');
+            await step("[STEP] Verify - 9. Ordering success when clicking Continue button (Staging only)", async () => {
+                await step("[ChSTEP]  Click next button", async () => {
+                    await continueButton.click()
+                })
+                
+                await paypalPage.close()
+
+                await step("[ChSTEP] Assert the order success title is visible",async () => {
+                    await checkoutpage.assertVisible(checkoutpage.orderSuccessTitle,"Assert the order success title is visible")
+                    await screenshotAndAttach(basicAuthPage, './screenshots/Guest-paypal-checkout', '07 - Ordering success page');
+                })
             })
         }
+    });
+
+    test.afterEach(async ({ basicAuthPage }) => {
+        await step('[STEP] [FINAL STATE]', async () => {
+            await screenshotAndAttach(basicAuthPage, './screenshots/Guest-paypal-checkout', 'Final State');
+        });
     });
 })
 
