@@ -98,7 +98,7 @@ export class BasePage {
         this.plpProductSizeDropdown = this.prodItem.locator(`xpath=///div[@data-attr="productSize"]`);
         this.plpProductSizeOption = this.plpProductSizeDropdown.locator(`xpath=.//div[@class="variant-item "]`);
         this.searchForm = page.locator(`//div[contains(@class,"site-search")]`)
-        this.searchFormCloseButton = page.locator('//div[contains(@class,"site-search") and contains(@class,"desktop-mode")]//span[contains(@class,"close-search")]');
+        this.searchFormCloseButton = page.locator(`//div[@class="site-search desktop-mode row"]//span[text()="Close"]`);
         this.popularSearchTermList = this.searchForm.locator(`//div[contains(@class,"collection-search") and not(contains(@class,"recent-search"))]`);
         this.recentSearchTermList = this.searchForm.locator(`.collection-search.recent-search`);
         this.popularSearchTermItem = this.popularSearchTermList.locator(`xpath=.//div[@class="item"]`);

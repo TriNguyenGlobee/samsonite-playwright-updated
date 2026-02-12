@@ -59,7 +59,7 @@ test.describe("Browse-search", async () => {
         await delay(5000)
 
         await step("[STEP] Verify - 3. URL of search result page is correct", async () => {
-            await homepage.assertUrl(new RegExp(`^${Config.baseURL}(?:[a-zA-Z_-]+/)?search\\?q=${popularSearchTerm}`), `Search results page is displayed`);
+            await homepage.assertUrl(`${Config.baseURL}search?q=${popularSearchTerm}`, `Search results page is displayed`);
             await screenshotAndAttach(basicAuthPageNoWatchdog, './screenshots/Search', '03 - Search results page')
         })
 
