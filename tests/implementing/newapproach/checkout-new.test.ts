@@ -621,7 +621,6 @@ test.describe("Guest-paypal-checkout", async () => {
             await checkoutpage.fillRecipientDetilsForm(basicAuthPage, checkoutShippingData)
         })
 
-
         await step("[STEP] Verify - 3. Click on Continue button to done Step 2 and go to Step 3", async () => {
             await step("[ChSTEP] Click on continue button", async () => {
                 await checkoutpage.click(checkoutpage.recipientContinueBtn, "Click on Step 2 Continue button")
@@ -766,13 +765,12 @@ test.describe("Guest-atome-checkout", async () => {
     })
 
     test(`
-        1. Checkout page is displayed - Your detail form shows correctly    
-        2. Step 1 is done - Recipient infor form shows correctly
-        3. Step 2 is done - Payment methods section shows correctly
-        4. Payment method is selected - Payment details form shows correctly
-        5. Step 3 is done - Paypal checkout button shows
-        6. Click place order button - Atome payment flow is displayed
-        7. Ordering success page is displayed
+        1. Verify Checkout page is displayed when clicking on Guest checkout button   
+        2. User can fill your detail information and go to next step
+        3. User can fill recipient information and go to next step
+        4. User can select Atome payment method
+        5. Click Payment Continue button to go to next step
+        6. Atome payment page is displayed when clicking Place Order button
         `, async ({ basicAuthPage }) => {
         const checkoutpage = new CheckoutPage(basicAuthPage)
         const checkoutloginpage = new CheckoutLoginPage(basicAuthPage)
@@ -783,57 +781,61 @@ test.describe("Guest-atome-checkout", async () => {
         const atomeConfirmButton = basicAuthPage.locator('//div[@class="confirm-order-btn "]');
         const useNowButton = basicAuthPage.locator('//div[@class="apply-voucher"]')
 
-        await step("Go to guest checkout page", async () => {
+        await step("[STEP] Click on Guest Checkout button", async () => {
             await checkoutloginpage.click(checkoutloginpage.guestcheckoutButton,
                 "Clicking on Guest checkout button"
             )
         })
 
-        await step("Verify - 1. Checkout page is displayed - Your detail form shows correctly", async () => {
+        await step("[STEP] Verify - 1. Checkout page is displayed - Your detail form shows correctly", async () => {
             expect(await checkoutpage.isCheckoutPageDisplayed()).toBe(true)
             await screenshotAndAttach(basicAuthPage, './screenshots/Guest-atome-checkout', '01 - Your detail form');
         })
 
-        await step("Fill your detail with full information", async () => {
+        await step("[STEP] Fill your detail with full information", async () => {
             await checkoutpage.fillCheckoutYourDetailForm(basicAuthPage, checkoutFullData)
         })
 
-        await checkoutpage.click(checkoutpage.continueButton, "Click on Step 1 Continue button")
-
-        await step("Verify - 2. Step 1 is done - Recipient infor form shows correctly", async () => {
-            await checkoutpage.assertEqual(await checkoutpage.isCheckoutStepDone("Your Details"), true,
-                "Assert current step 1 status is Done: true"
-            )
-
-            await checkoutloginpage.assertVisible(checkoutpage.shippingSection.first(), "Assert recipient infor section visbile")
-
-            await screenshotAndAttach(basicAuthPage, './screenshots/Guest-atome-checkout', '02 - Recipient infor form');
+        await step("[STEP] Verify - 2. Click on Continue button to done Step 1 and go to step 2", async () => {
+            await step("[ChSTEP] Click on Step 1 Continue button",async () => {
+                await checkoutpage.click(checkoutpage.continueButton, "Click on Step 1 Continue button")
+            })
+             
+            await step("[ChSTEP] Assert current step 1 status is Done: true",async () => {
+                await checkoutpage.assertEqual(await checkoutpage.isCheckoutStepDone("Your Details"), true,"Assert current step 1 status is Done: true")    
+            })
+           
+            await step("[ChSTEP] Assert recipient infor section visbile",async () => {
+                await checkoutloginpage.assertVisible(checkoutpage.shippingSection.first(), "Assert recipient infor section visbile")
+                await screenshotAndAttach(basicAuthPage, './screenshots/Guest-atome-checkout', '02 - Recipient infor form');    
+            })
         })
 
-        await step("Fill recipient info", async () => {
+        await step("[STEP] Fill recipient info", async () => {
             await checkoutpage.fillRecipientDetilsForm(basicAuthPage, checkoutShippingData)
         })
 
-        await step("Click on continue button", async () => {
-            await checkoutpage.click(checkoutpage.recipientContinueBtn, "Click on Step 2 Continue button")
-            await PageUtils.waitForPageLoad(basicAuthPage)
+        await step("[STEP] Verify - 3. Click on Continue button to done Step 2 and go to Step 3", async () => {
+            await step("[ChSTEP] Click on continue button", async () => {
+                await checkoutpage.click(checkoutpage.recipientContinueBtn, "Click on Step 2 Continue button")
+                await PageUtils.waitForPageLoad(basicAuthPage)
+            })
+
+            await step("[ChSTEP] Assert current step 2 status is Done: true", async () => {
+                await checkoutpage.assertEqual(await checkoutpage.isCheckoutStepDone("Shipping"), true,"Assert current step 2 status is Done: true")
+            })
+           
+            await step("[ChSTEP] Assert payment method section visbile", async () => {
+                await checkoutloginpage.assertVisible(checkoutpage.visaIcon, "Assert payment method section visbile")
+                await screenshotAndAttach(basicAuthPage, './screenshots/Guest-atome-checkout', '03 - Payment methods section');             
+            })
         })
 
-        await step("Verify - 3. Step 2 is done - Payment methods section shows correctly", async () => {
-            await checkoutpage.assertEqual(await checkoutpage.isCheckoutStepDone("Shipping"), true,
-                "Assert current step 2 status is Done: true"
-            )
-
-            await checkoutloginpage.assertVisible(checkoutpage.visaIcon, "Assert payment method section visbile")
-
-            await screenshotAndAttach(basicAuthPage, './screenshots/Guest-atome-checkout', '03 - Payment methods section');
-        })
-
-        await step("Select Atome payment method", async () => {
+        await step("[STEP] Select Atome payment method", async () => {
             await checkoutpage.click(checkoutpage.atomeIcon, "Select Atome payment method")
         })
 
-        await step("Verify - 4. Payment method is selected - Continue button shows", async () => {
+        await step("[STEP] Verify - 4. Atome payment method is selected", async () => {
             await checkoutpage.assertVisible(checkoutpage.paymentcontinueBtn,
                 "Assert the Payment Continue button is displayed"
             )
@@ -842,26 +844,31 @@ test.describe("Guest-atome-checkout", async () => {
             await screenshotAndAttach(basicAuthPage, './screenshots/Guest-atome-checkout', '04 - Continue button');
         })
 
-        await step("Click payment continue button", async () => {
+        await step("[STEP] Click payment continue button", async () => {
             await checkoutpage.click(checkoutpage.paymentcontinueBtn, "Click on payment continue button")
         })
 
-        await step("Verify - 5. Step 3 is done - Place Order button shows", async () => {
-            await checkoutpage.assertEqual(await checkoutpage.isCheckoutStepDone("Payment"), true,
-                "Assert current step 3 status is Done: true"
-            )
-
-            await checkoutloginpage.assertVisible(checkoutpage.placeOrderBtn, "Assert place order button visbile")
-
-            await screenshotAndAttach(basicAuthPage, './screenshots/Guest-atome-checkout', '05 - Place Order');
+        await step("[STEP] Verify - 5. Step is done and Place Order button shows", async () => {
+            await step("[ChSTEP] Assert current step 3 status is Done: true", async () => {
+                await checkoutpage.assertEqual(await checkoutpage.isCheckoutStepDone("Payment"), true, "Assert current step 3 status is Done: true")
+            })
+           
+            await step("[ChSTEP] Assert place order button visbile", async () => {
+                await checkoutloginpage.assertVisible(checkoutpage.placeOrderBtn, "Assert place order button visbile")
+                await screenshotAndAttach(basicAuthPage, './screenshots/Guest-atome-checkout', '05 - Place Order');
+            })
         })
 
         if (await !isProd()) {
-            await step("Verify - 6. Click place order button - Atome payment flow is displayed", async () => {
+            await step("[STEP] Click place order button (Staging only)", async () => {
                 await checkoutpage.click(checkoutpage.placeOrderBtn, "Click on Place Order button")
-                await screenshotAndAttach(basicAuthPage, './screenshots/Guest-atome-checkout', '06 - Atome payment flow');
+                
             })
 
+            await step("[STEP] Verify - 6.  Atome payment page is displayed", async () => {
+                await screenshotAndAttach(basicAuthPage, './screenshots/Guest-atome-checkout', '06 - Atome payment flow');
+            })
+            
             await step("Type phone number", async () => {
                 await checkoutpage.typeByManual(checkoutpage.atomePhoneTextbox, "99000161")
             })
@@ -893,7 +900,7 @@ test.describe("Guest-atome-checkout", async () => {
 
                 await clickBlankAreaToClosePopup(basicAuthPage)
             }
-
+            
             /*
             await step("Click Confirm button", async () => {
                 await checkoutpage.click(atomeConfirmButton, "Click on Atome Confirm button")
@@ -919,6 +926,12 @@ test.describe("Guest-atome-checkout", async () => {
                 await screenshotAndAttach(basicAuthPage, './screenshots/Guest-atome-checkout', '07 - Ordering success page');
             })*/
         }
+    });
+
+    test.afterEach(async ({ basicAuthPage }) => {
+        await step('[STEP] [FINAL STATE]', async () => {
+            await screenshotAndAttach(basicAuthPage, './screenshots/Guest-atome-checkout', 'Final State');
+        });
     });
 })
 
