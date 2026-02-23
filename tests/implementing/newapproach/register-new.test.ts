@@ -332,7 +332,7 @@ test.describe("Clicking create account button with valid information", async () 
             })
         })
 
-        await step("[STEP] - Go to my Profile by URL", async () => {
+        await step("[STEP] Go to my Profile by URL", async () => {
             await mypage.goto(Config.baseURL + 'profile')
         }) 
 

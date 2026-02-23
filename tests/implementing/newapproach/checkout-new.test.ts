@@ -251,10 +251,10 @@ test.describe("Guest-visa-checkout", async () => {
         await step("[STEP] Verify - 2. Click on Continue button to done Step 1 and go to step 2", async () => {
             await step("[ChSTEP] Click on Step 1 Continue button", async () => {
                 await checkoutpage.click(checkoutpage.continueButton, "Click on Step 1 Continue button")
-            }) 
+            })
 
             await step("[ChSTEP] Assert current step 1 status is Done: true", async () => {
-                await checkoutpage.assertEqual(await checkoutpage.isCheckoutStepDone("Your Details"), true,"Assert current step 1 status is Done: true")
+                await checkoutpage.assertEqual(await checkoutpage.isCheckoutStepDone("Your Details"), true, "Assert current step 1 status is Done: true")
             })
 
             await step("[ChSTEP] Assert recipient infor section visbile", async () => {
@@ -273,13 +273,13 @@ test.describe("Guest-visa-checkout", async () => {
                 await PageUtils.waitForPageLoad(basicAuthPage)
             })
 
-            await step ("[ChSTEP] Assert current step 2 status is Done: true", async () => {
-                await checkoutpage.assertEqual(await checkoutpage.isCheckoutStepDone("Shipping"), true,"Assert current step 2 status is Done: true")
+            await step("[ChSTEP] Assert current step 2 status is Done: true", async () => {
+                await checkoutpage.assertEqual(await checkoutpage.isCheckoutStepDone("Shipping"), true, "Assert current step 2 status is Done: true")
             })
 
-            await step ("[ChSTEP] Assert payment method section visbile", async () => {
+            await step("[ChSTEP] Assert payment method section visbile", async () => {
                 await checkoutloginpage.assertVisible(checkoutpage.visaIcon, "Assert payment method section visbile")
-                await screenshotAndAttach(basicAuthPage, './screenshots/Guest-visa-checkout', '03 - Payment methods section');   
+                await screenshotAndAttach(basicAuthPage, './screenshots/Guest-visa-checkout', '03 - Payment methods section');
             })
         })
 
@@ -288,14 +288,14 @@ test.describe("Guest-visa-checkout", async () => {
         })
 
         await step("[STEP] Verify - 4. Payment method is selected - Payment details form shows correctly", async () => {
-            await step ("[ChSTEP] Assert the Payment Continue button is displayed", async () => {
-                await checkoutpage.assertVisible(checkoutpage.paymentcontinueBtn,"Assert the Payment Continue button is displayed")
+            await step("[ChSTEP] Assert the Payment Continue button is displayed", async () => {
+                await checkoutpage.assertVisible(checkoutpage.paymentcontinueBtn, "Assert the Payment Continue button is displayed")
             })
 
-            await step ("[ChSTEP] Assert payment detail form visbile", async () => {
-               await checkoutloginpage.assertVisible(cardNumberIframe, "Assert payment detail form visbile") 
+            await step("[ChSTEP] Assert payment detail form visbile", async () => {
+                await checkoutloginpage.assertVisible(cardNumberIframe, "Assert payment detail form visbile")
             })
-            
+
             await delay(500)
             await screenshotAndAttach(basicAuthPage, './screenshots/Guest-visa-checkout', '04 - Payment detail form');
         })
@@ -312,11 +312,11 @@ test.describe("Guest-visa-checkout", async () => {
                 await checkoutpage.click(checkoutpage.paymentcontinueBtn, "Click on payment continue button")
             })
 
-             await step ("[ChSTEP] Assert current step 3 status is Done: true", async () => {
-                await checkoutpage.assertEqual(await checkoutpage.isCheckoutStepDone("Payment"), true,"Assert current step 3 status is Done: true")
+            await step("[ChSTEP] Assert current step 3 status is Done: true", async () => {
+                await checkoutpage.assertEqual(await checkoutpage.isCheckoutStepDone("Payment"), true, "Assert current step 3 status is Done: true")
             })
 
-             await step ("[ChSTEP] Assert place order button visbile", async () => {
+            await step("[ChSTEP] Assert place order button visbile", async () => {
                 await checkoutloginpage.assertVisible(checkoutpage.placeOrderBtn, "Assert place order button visbile")
                 await screenshotAndAttach(basicAuthPage, './screenshots/Guest-visa-checkout', '05 - Place Order');
             })
@@ -328,15 +328,15 @@ test.describe("Guest-visa-checkout", async () => {
                     await checkoutpage.click(checkoutpage.placeOrderBtn, "Click on Place Order button")
                     await basicAuthPage.waitForURL(/orderconfirmation/)
                 })
-                
+
                 await step("[ChSTEP] Assert the order success title is visible", async () => {
-                    await checkoutpage.assertVisible(checkoutpage.orderSuccessTitle,"Assert the order success title is visible")
+                    await checkoutpage.assertVisible(checkoutpage.orderSuccessTitle, "Assert the order success title is visible")
                     await screenshotAndAttach(basicAuthPage, './screenshots/Guest-visa-checkout', '06 - Ordering success page');
                 })
             })
         }
 
-        await step ("[STEP] Go to Homepage and enter the used email into Subscribe textbox", async () => {
+        await step("[STEP] Go to Homepage and enter the used email into Subscribe textbox", async () => {
             await step('[ChSTEP] - Go to Home Page', async () => {
                 await mypage.goto(`${Config.baseURL}`)
                 await scrollToBottom(basicAuthPage)
@@ -347,21 +347,21 @@ test.describe("Guest-visa-checkout", async () => {
             })
         }),
 
-        await step("Veriy - 7. Click subscribe button and check duplicate subscription message shown", async () => {
-            await step("[ChSTEP] Clicking on Subscribe button", async () => {
-                await globalnavfooterpage.click(globalnavfooterpage.subscribeButton,"Clicking on Subscribe button")
-            })
-           
-            await globalnavfooterpage.assertHidden(globalnavfooterpage.underlay,
-                "Waiting for underlay screen hidden"
-            )
+            await step("Veriy - 7. Click subscribe button and check duplicate subscription message shown", async () => {
+                await step("[ChSTEP] Clicking on Subscribe button", async () => {
+                    await globalnavfooterpage.click(globalnavfooterpage.subscribeButton, "Clicking on Subscribe button")
+                })
 
-            await step("[ChSTEP] Assert invalid-feedback: Account exists", async () => {
-                await globalnavfooterpage.assertText(emailexistmsg, accountexistMsg,"Assert invalid-feedback: Account exists")
-                await screenshotAndAttach(basicAuthPage, './screenshots/Guest-visa-checkout', '07 - Duplicate subscription message');
+                await globalnavfooterpage.assertHidden(globalnavfooterpage.underlay,
+                    "Waiting for underlay screen hidden"
+                )
+
+                await step("[ChSTEP] Assert invalid-feedback: Account exists", async () => {
+                    await globalnavfooterpage.assertText(emailexistmsg, accountexistMsg, "Assert invalid-feedback: Account exists")
+                    await screenshotAndAttach(basicAuthPage, './screenshots/Guest-visa-checkout', '07 - Duplicate subscription message');
+                })
+
             })
-            
-        })
     });
 
     test.afterEach(async ({ basicAuthPage }) => {
@@ -442,14 +442,14 @@ test.describe("Guest-mastercard-checkout", async () => {
             })
 
             await step("[ChSTEP] Assert current step 1 status is Done: true", async () => {
-                await checkoutpage.assertEqual(await checkoutpage.isCheckoutStepDone("Your Details"), true,"Assert current step 1 status is Done: true")
-            }) 
-            
+                await checkoutpage.assertEqual(await checkoutpage.isCheckoutStepDone("Your Details"), true, "Assert current step 1 status is Done: true")
+            })
+
             await step("[ChSTEP] Assert recipient infor section visbile", async () => {
                 await checkoutloginpage.assertVisible(checkoutpage.shippingSection.first(), "Assert recipient infor section visbile")
                 await screenshotAndAttach(basicAuthPage, './screenshots/Guest-mastercard-checkout', '02 - Recipient infor form');
-            }) 
-            
+            })
+
         })
 
         await step("[STEP] Fill recipient info", async () => {
@@ -463,13 +463,13 @@ test.describe("Guest-mastercard-checkout", async () => {
             })
 
             await step("[ChSTEP] Assert current step 2 status is Done: true", async () => {
-               await checkoutpage.assertEqual(await checkoutpage.isCheckoutStepDone("Shipping"), true,"Assert current step 2 status is Done: true")
-            }) 
-            
+                await checkoutpage.assertEqual(await checkoutpage.isCheckoutStepDone("Shipping"), true, "Assert current step 2 status is Done: true")
+            })
+
             await step("[ChSTEP] Assert recipient infor section visbile", async () => {
                 await checkoutloginpage.assertVisible(checkoutpage.visaIcon, "Assert payment method section visbile")
                 await screenshotAndAttach(basicAuthPage, './screenshots/Guest-mastercard-checkout', '03 - Payment methods section');
-            }) 
+            })
         })
 
         await step("[STEP] Select Mastercard payment method", async () => {
@@ -478,12 +478,12 @@ test.describe("Guest-mastercard-checkout", async () => {
 
         await step("[STEP] Verify - 4. Verify Master card paymet method is selected and payment detail form shows correctly", async () => {
             await step("[ChSTEP] Assert the Payment Continue button is displayed", async () => {
-                await checkoutpage.assertVisible(checkoutpage.paymentcontinueBtn,"Assert the Payment Continue button is displayed")
-            }) 
-            
+                await checkoutpage.assertVisible(checkoutpage.paymentcontinueBtn, "Assert the Payment Continue button is displayed")
+            })
+
             await step("[ChSTEP] Assert payment detail form visbile", async () => {
                 await checkoutloginpage.assertVisible(cardNumberIframe, "Assert payment detail form visbile")
-            }) 
+            })
 
             await delay(500)
             await screenshotAndAttach(basicAuthPage, './screenshots/Guest-mastercard-checkout', '04 - Payment detail form');
@@ -502,14 +502,14 @@ test.describe("Guest-mastercard-checkout", async () => {
             })
 
             await step("[ChSTEP] Assert current step 3 status is Done: true", async () => {
-                await checkoutpage.assertEqual(await checkoutpage.isCheckoutStepDone("Payment"), true,"Assert current step 3 status is Done: true")
+                await checkoutpage.assertEqual(await checkoutpage.isCheckoutStepDone("Payment"), true, "Assert current step 3 status is Done: true")
             })
 
             await step("[ChSTEP] Assert place order button visbile", async () => {
                 await checkoutloginpage.assertVisible(checkoutpage.placeOrderBtn, "Assert place order button visbile")
                 await screenshotAndAttach(basicAuthPage, './screenshots/Guest-mastercard-checkout', '05 - Place Order');
             })
-            
+
         })
 
         if (await !isProd()) {
@@ -517,10 +517,10 @@ test.describe("Guest-mastercard-checkout", async () => {
                 await step("[ChSTEP] Click place order button", async () => {
                     await checkoutpage.click(checkoutpage.placeOrderBtn, "Click on Place Order button")
                     await basicAuthPage.waitForURL(/orderconfirmation/)
-                 })
+                })
 
                 await step("[ChSTEP] Assert the order success title is visible", async () => {
-                    await checkoutpage.assertVisible(checkoutpage.orderSuccessTitle,"Assert the order success title is visible")
+                    await checkoutpage.assertVisible(checkoutpage.orderSuccessTitle, "Assert the order success title is visible")
                     await screenshotAndAttach(basicAuthPage, './screenshots/Guest-mastercard-checkout', '06 - Ordering success page');
                 })
             })
@@ -603,15 +603,15 @@ test.describe("Guest-paypal-checkout", async () => {
         })
 
         await step("[STEP] Verify - 2. Step 1 is done - Recipient infor form shows correctly", async () => {
-            await step("[ChSTEP] Click on Step 1 Continue button",async () => {
+            await step("[ChSTEP] Click on Step 1 Continue button", async () => {
                 await checkoutpage.click(checkoutpage.continueButton, "Click on Step 1 Continue button")
             })
-            
-            await step("[ChSTEP] Assert current step 1 status is Done: true",async () => {
-                await checkoutpage.assertEqual(await checkoutpage.isCheckoutStepDone("Your Details"), true,"Assert current step 1 status is Done: true")   
+
+            await step("[ChSTEP] Assert current step 1 status is Done: true", async () => {
+                await checkoutpage.assertEqual(await checkoutpage.isCheckoutStepDone("Your Details"), true, "Assert current step 1 status is Done: true")
             })
-           
-            await step("[ChSTEP] Assert recipient infor section visbile",async () => {
+
+            await step("[ChSTEP] Assert recipient infor section visbile", async () => {
                 await checkoutloginpage.assertVisible(checkoutpage.shippingSection.first(), "Assert recipient infor section visbile")
                 await screenshotAndAttach(basicAuthPage, './screenshots/Guest-paypal-checkout', '02 - Recipient infor form');
             })
@@ -626,14 +626,14 @@ test.describe("Guest-paypal-checkout", async () => {
                 await checkoutpage.click(checkoutpage.recipientContinueBtn, "Click on Step 2 Continue button")
                 await PageUtils.waitForPageLoad(basicAuthPage)
             })
-            
-            await step("[ChSTEP] Assert current step 2 status is Done: true",async () => {
-                await checkoutpage.assertEqual(await checkoutpage.isCheckoutStepDone("Shipping"), true,"Assert current step 2 status is Done: true")  
+
+            await step("[ChSTEP] Assert current step 2 status is Done: true", async () => {
+                await checkoutpage.assertEqual(await checkoutpage.isCheckoutStepDone("Shipping"), true, "Assert current step 2 status is Done: true")
             })
-            
-            await step("[ChSTEP] Assert payment method section visbile",async () => {
+
+            await step("[ChSTEP] Assert payment method section visbile", async () => {
                 await checkoutloginpage.assertVisible(checkoutpage.visaIcon, "Assert payment method section visbile")
-                await screenshotAndAttach(basicAuthPage, './screenshots/Guest-paypal-checkout', '03 - Payment methods section');   
+                await screenshotAndAttach(basicAuthPage, './screenshots/Guest-paypal-checkout', '03 - Payment methods section');
             })
         })
 
@@ -655,15 +655,15 @@ test.describe("Guest-paypal-checkout", async () => {
         })
 
         await step("[STEP] Verify - 5. Step 3 is done - Paypal checkout button shows", async () => {
-            await step("[ChSTEP] Assert current step 3 status is Done: true",async () => {
-                await checkoutpage.assertEqual(await checkoutpage.isCheckoutStepDone("Payment"), true,"Assert current step 3 status is Done: true") 
+            await step("[ChSTEP] Assert current step 3 status is Done: true", async () => {
+                await checkoutpage.assertEqual(await checkoutpage.isCheckoutStepDone("Payment"), true, "Assert current step 3 status is Done: true")
             })
 
-            await step("[ChSTEP] Assert Paypal Checkout button visbile",async () => {
-                 await checkoutloginpage.assertVisible(checkoutpage.paypalCheckoutBtn, "Assert Paypal Checkout button visbile")
+            await step("[ChSTEP] Assert Paypal Checkout button visbile", async () => {
+                await checkoutloginpage.assertVisible(checkoutpage.paypalCheckoutBtn, "Assert Paypal Checkout button visbile")
             })
 
-            await step("[ChSTEP] Assert Paypal Checkout is enabled",async () => {
+            await step("[ChSTEP] Assert Paypal Checkout is enabled", async () => {
                 await checkoutloginpage.assertEnabled(checkoutpage.paypalCheckoutBtn, "Assert Paypal Checkout is enabled")
                 await screenshotAndAttach(basicAuthPage, './screenshots/Guest-paypal-checkout', '05 - Paypal Checkout Button');
             })
@@ -671,35 +671,35 @@ test.describe("Guest-paypal-checkout", async () => {
 
         if (await !isProd()) {
             let paypalPage: any;
-            
-            await step("[STEP] Verify - 6. Click on Paypal checkout button (Staging only)",async () => {
-                paypalPage =  await openNewTab(basicAuthPage, () =>
+
+            await step("[STEP] Verify - 6. Click on Paypal checkout button (Staging only)", async () => {
+                paypalPage = await openNewTab(basicAuthPage, () =>
                     checkoutpage.click(checkoutpage.paypalCheckoutBtn, "Click on Paypal checkout button")
                 )
             })
 
             const { paypalCheckoutData } = loadTestData();
-                const emailInput = paypalPage.locator('input#email')
-                const nextButton = paypalPage.locator('button#btnNext')
-                const passwordInput = paypalPage.locator('input#password')
-                const loginButton = paypalPage.locator('button#btnLogin')
-                const continueButton = paypalPage.locator('//button[@data-id="payment-submit-btn"]')
+            const emailInput = paypalPage.locator('input#email')
+            const nextButton = paypalPage.locator('button#btnNext')
+            const passwordInput = paypalPage.locator('input#password')
+            const loginButton = paypalPage.locator('button#btnLogin')
+            const continueButton = paypalPage.locator('//button[@data-id="payment-submit-btn"]')
 
             await step("[STEP] Type email into email field", async () => {
                 await emailInput.fill(paypalCheckoutData.email)
-                await screenshotAndAttach(basicAuthPage, './screenshots/Guest-paypal-checkout', '06 - 1 - Paypal Checkout email field'); 
+                await screenshotAndAttach(basicAuthPage, './screenshots/Guest-paypal-checkout', '06 - 1 - Paypal Checkout email field');
             })
-            
+
             await step("[STEP] Verify - 7. Click next button (Staging only)", async () => {
                 await nextButton.click()
             })
-            await delay(2000)    
+            await delay(2000)
 
             await step("[STEP] Type password into password field", async () => {
                 await passwordInput.fill(paypalCheckoutData.pass)
                 await screenshotAndAttach(basicAuthPage, './screenshots/Guest-paypal-checkout', '06 - 2 - Paypal Checkout password field');
             })
-                
+
             await step("[STEP] Verify - 8. Click next button(Staging only)", async () => {
                 await loginButton.click()
                 await delay(5000)
@@ -710,11 +710,11 @@ test.describe("Guest-paypal-checkout", async () => {
                 await step("[ChSTEP]  Click next button", async () => {
                     await continueButton.click()
                 })
-                
+
                 await paypalPage.close()
 
-                await step("[ChSTEP] Assert the order success title is visible",async () => {
-                    await checkoutpage.assertVisible(checkoutpage.orderSuccessTitle,"Assert the order success title is visible")
+                await step("[ChSTEP] Assert the order success title is visible", async () => {
+                    await checkoutpage.assertVisible(checkoutpage.orderSuccessTitle, "Assert the order success title is visible")
                     await screenshotAndAttach(basicAuthPage, './screenshots/Guest-paypal-checkout', '07 - Ordering success page');
                 })
             })
@@ -797,17 +797,17 @@ test.describe("Guest-atome-checkout", async () => {
         })
 
         await step("[STEP] Verify - 2. Click on Continue button to done Step 1 and go to step 2", async () => {
-            await step("[ChSTEP] Click on Step 1 Continue button",async () => {
+            await step("[ChSTEP] Click on Step 1 Continue button", async () => {
                 await checkoutpage.click(checkoutpage.continueButton, "Click on Step 1 Continue button")
             })
-             
-            await step("[ChSTEP] Assert current step 1 status is Done: true",async () => {
-                await checkoutpage.assertEqual(await checkoutpage.isCheckoutStepDone("Your Details"), true,"Assert current step 1 status is Done: true")    
+
+            await step("[ChSTEP] Assert current step 1 status is Done: true", async () => {
+                await checkoutpage.assertEqual(await checkoutpage.isCheckoutStepDone("Your Details"), true, "Assert current step 1 status is Done: true")
             })
-           
-            await step("[ChSTEP] Assert recipient infor section visbile",async () => {
+
+            await step("[ChSTEP] Assert recipient infor section visbile", async () => {
                 await checkoutloginpage.assertVisible(checkoutpage.shippingSection.first(), "Assert recipient infor section visbile")
-                await screenshotAndAttach(basicAuthPage, './screenshots/Guest-atome-checkout', '02 - Recipient infor form');    
+                await screenshotAndAttach(basicAuthPage, './screenshots/Guest-atome-checkout', '02 - Recipient infor form');
             })
         })
 
@@ -822,12 +822,12 @@ test.describe("Guest-atome-checkout", async () => {
             })
 
             await step("[ChSTEP] Assert current step 2 status is Done: true", async () => {
-                await checkoutpage.assertEqual(await checkoutpage.isCheckoutStepDone("Shipping"), true,"Assert current step 2 status is Done: true")
+                await checkoutpage.assertEqual(await checkoutpage.isCheckoutStepDone("Shipping"), true, "Assert current step 2 status is Done: true")
             })
-           
+
             await step("[ChSTEP] Assert payment method section visbile", async () => {
                 await checkoutloginpage.assertVisible(checkoutpage.visaIcon, "Assert payment method section visbile")
-                await screenshotAndAttach(basicAuthPage, './screenshots/Guest-atome-checkout', '03 - Payment methods section');             
+                await screenshotAndAttach(basicAuthPage, './screenshots/Guest-atome-checkout', '03 - Payment methods section');
             })
         })
 
@@ -852,7 +852,7 @@ test.describe("Guest-atome-checkout", async () => {
             await step("[ChSTEP] Assert current step 3 status is Done: true", async () => {
                 await checkoutpage.assertEqual(await checkoutpage.isCheckoutStepDone("Payment"), true, "Assert current step 3 status is Done: true")
             })
-           
+
             await step("[ChSTEP] Assert place order button visbile", async () => {
                 await checkoutloginpage.assertVisible(checkoutpage.placeOrderBtn, "Assert place order button visbile")
                 await screenshotAndAttach(basicAuthPage, './screenshots/Guest-atome-checkout', '05 - Place Order');
@@ -862,13 +862,13 @@ test.describe("Guest-atome-checkout", async () => {
         if (await !isProd()) {
             await step("[STEP] Click place order button (Staging only)", async () => {
                 await checkoutpage.click(checkoutpage.placeOrderBtn, "Click on Place Order button")
-                
+
             })
 
             await step("[STEP] Verify - 6.  Atome payment page is displayed", async () => {
                 await screenshotAndAttach(basicAuthPage, './screenshots/Guest-atome-checkout', '06 - Atome payment flow');
             })
-            
+            /*
             await step("Type phone number", async () => {
                 await checkoutpage.typeByManual(checkoutpage.atomePhoneTextbox, "99000161")
             })
@@ -901,7 +901,7 @@ test.describe("Guest-atome-checkout", async () => {
                 await clickBlankAreaToClosePopup(basicAuthPage)
             }
             
-            /*
+            
             await step("Click Confirm button", async () => {
                 await checkoutpage.click(atomeConfirmButton, "Click on Atome Confirm button")
                 await basicAuthPage.waitForURL(/orderconfirmation/)
@@ -993,23 +993,23 @@ test.describe("Logged-checkout", async () => {
     })
 
     test(`
-        1. Checkout page is displayed - Your detail form shows correctly    
-        2. Step 1 is done - Recipient infor form shows correctly
-        3. Step 2 is done - Payment methods section shows correctly
-        4. Payment method is selected - Payment details form shows correctly
-        5. Step 3 is done - Place Order button shows
-        6. Ordering success page is displayed
+        1. Verify Checkout page is displayed when clicking on Checkout button
+        2. User can fill your detail information and go to next step
+        3. User can fill recipient information and go to next step
+        4. User can select Visa payment method
+        5. User can fill payment detail information and go to next step
+        6. Click Place Order button to complete order
         `, async ({ loggedInPage }) => {
         const checkoutpage = new CheckoutPage(loggedInPage)
         const checkoutloginpage = new CheckoutLoginPage(loggedInPage)
         const cardNumberIframe = loggedInPage.locator('input#cardNumber');
 
-        await step("Verify - 1. Checkout page is displayed - Your detail form shows correctly", async () => {
+        await step("[STEP] Verify - 1. Checkout page is displayed - Your detail form shows correctly", async () => {
             expect(await checkoutpage.isCheckoutPageDisplayed(true)).toBe(true)
             await screenshotAndAttach(loggedInPage, './screenshots/Logged-checkout', '01 - Your detail section');
         })
         /*
-        await step("Verify - 2. Step 1 is done - Recipient infor shows correctly", async () => {
+        await step("[STEP] Verify - 2. Step 1 is done - Recipient infor shows correctly", async () => {
             await checkoutpage.assertEqual(await checkoutpage.isCheckoutStepDone("Your Details"), true,
                 "Assert current step 1 status is Done: true"
             )
@@ -1024,12 +1024,12 @@ test.describe("Logged-checkout", async () => {
         const isShippingContinueBtnExist = await checkoutpage.shippingContinueBtn.isVisible()
 
         if (isShippingContinueBtnExist) {
-            await step("Click on shipping continue button", async () => {
+            await step("[STEP] Click on shipping continue button", async () => {
                 await checkoutpage.click(checkoutpage.shippingContinueBtn, "Click on Step 2 Continue button")
                 await PageUtils.waitForPageLoad(loggedInPage)
             })
 
-            await step("Verify - 3. Step 2 is done - Payment methods section shows correctly", async () => {
+            await step("[STEP] Verify - 3. Step 2 is done - Payment methods section shows correctly", async () => {
                 await checkoutpage.assertEqual(await checkoutpage.isCheckoutStepDone("Shipping"), true,
                     "Assert current step 2 status is Done: true"
                 )
@@ -1039,63 +1039,77 @@ test.describe("Logged-checkout", async () => {
                 await screenshotAndAttach(loggedInPage, './screenshots/Logged-checkout', '03 - Payment methods section');
             })
 
-            await step("Select Visa payment method", async () => {
+            await step("[STEP] Select Visa payment method", async () => {
                 await checkoutpage.click(checkoutpage.visaIcon, "Select Visa payment method")
             })
 
-            await step("Verify - 4. Payment method is selected - Payment details form shows correctly", async () => {
-                await checkoutpage.assertVisible(checkoutpage.paymentcontinueBtn,
-                    "Assert the Payment Continue button is displayed"
-                )
+            await step("[STEP] Verify - 4. Verify Visa paymet method is selected and payment detail form shows correctly", async () => {
+                await step("[ChSTEP] Assert the Payment Continue button is displayed", async () => {
+                    await checkoutpage.assertVisible(checkoutpage.paymentcontinueBtn,
+                        "Assert the Payment Continue button is displayed"
+                    )
+                })
 
-                await checkoutloginpage.assertVisible(cardNumberIframe, "Assert payment detail form visbile")
+                await step("[ChSTEP] Assert payment detail form visbile", async () => {
+                    await checkoutloginpage.assertVisible(cardNumberIframe, "Assert payment detail form visbile")
+                })
 
                 await delay(500)
                 await screenshotAndAttach(loggedInPage, './screenshots/Logged-checkout', '04 - Payment detail form');
             })
 
-            await step("Fill payment details with Visa card", async () => {
+            await step("[STEP] Fill payment details with Visa card", async () => {
                 const { visaCheckoutData } = loadTestData();
                 await checkoutpage.fillVisaPaymentDetails(loggedInPage, visaCheckoutData.cardNumber,
                     visaCheckoutData.expiryMonth, visaCheckoutData.expiryYear, visaCheckoutData.cvv,
                     "Fill Visa card payment details");
             })
 
-            await step("Click payment continue button", async () => {
+            await step("[STEP] Click Payment Continue button", async () => {
                 await checkoutpage.click(checkoutpage.paymentcontinueBtn, "Click on payment continue button")
             })
 
-            await step("Verify - 5. Step 3 is done - Place Order button shows", async () => {
-                await checkoutpage.assertEqual(await checkoutpage.isCheckoutStepDone("Payment"), true,
-                    "Assert current step 3 status is Done: true"
-                )
+            await step("[STEP] Verify - 5. Step 3 is done - Place Order button shows", async () => {
+                await step("[ChSTEP] Assert current step 3 status is Done: true", async () => {
+                    await checkoutpage.assertEqual(await checkoutpage.isCheckoutStepDone("Payment"), true,
+                        "Assert current step 3 status is Done: true"
+                    )
+                })
 
-                await checkoutloginpage.assertVisible(checkoutpage.placeOrderBtn, "Assert place order button visbile")
+                await step("[ChSTEP] Assert place order button visbile", async () => {
+                    await checkoutloginpage.assertVisible(checkoutpage.placeOrderBtn, "Assert place order button visbile")
+                })
 
                 await screenshotAndAttach(loggedInPage, './screenshots/Logged-checkout', '05 - Place Order');
             })
         }
 
-        await step("Click Agree to Privacy Policy checkbox", async () => {
+        await step("[STEP] Click Agree to Privacy Policy checkbox", async () => {
             await checkoutpage.clickCheckbox(loggedInPage, t.checkoutpage('terms'),
                 `Need to click ${t.checkoutpage('terms')} checkbox`
             )
         })
 
         if (await !isProd()) {
-            await step("Click place order button then input cvv to textbox", async () => {
+            await step("[STEP] Ordering success when clicking place order button (Staging only)", async () => {
                 await checkoutpage.click(checkoutpage.placeOrderBtn, "Click on Place Order button")
                 await checkoutpage.type(checkoutpage.cvvModalCVVTextbox, "123", "Enter CVV to CVV textbox")
                 await checkoutpage.click(checkoutpage.cvvModalSubmitButton, "Click on Yes button")
                 await loggedInPage.waitForURL(/orderconfirmation/)
             })
 
-            await step("Verify - 6. Ordering success page is displayed", async () => {
+            await step("[STEP] Verify - 6. Ordering success page is displayed", async () => {
                 await checkoutpage.assertVisible(checkoutpage.orderSuccessTitle,
                     "Assert the order success title is visible"
                 )
                 await screenshotAndAttach(loggedInPage, './screenshots/Logged-checkout', '06 - Ordering success page');
             })
         }
+    });
+
+    test.afterEach(async ({ basicAuthPage }) => {
+        await step('[STEP] [FINAL STATE]', async () => {
+            await screenshotAndAttach(basicAuthPage, './screenshots/Logged-checkout', 'Final State');
+        });
     });
 })
