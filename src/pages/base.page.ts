@@ -1,7 +1,7 @@
 import { Page, Locator, expect } from "@playwright/test";
 import { step } from "allure-js-commons";
 import { Translations } from "../../config/i18n.config";
-import { t, extractNumber, PageUtils, delay, splitString, escapeXPathText, isSorted, selectDropdownOption, scrollToTop, lazyLoad, scrollDownUntilVisible } from "../../utils/helpers/helpers";
+import { t, extractNumber, PageUtils, delay, splitString, escapeXPathText, isSorted, selectDropdownOption, scrollToTop, lazyLoad, scrollDownUntilVisible, randomAlphaString, generateNumberString, generateReadableTimeBasedId } from "../../utils/helpers/helpers";
 import { loadTestData } from "../../utils/data";
 
 type RightNavbarItem = 'search' | 'wishlist' | 'login' | 'location' | 'cart' | 'news';
@@ -45,6 +45,16 @@ export class BasePage {
     readonly decimalRatingPoint: Locator
     readonly plpProductSizeDropdown: Locator;
     readonly plpProductSizeOption: Locator;
+    readonly searchForm: Locator;
+    readonly searchFormCloseButton: Locator;
+    readonly popularSearchTermList: Locator;
+    readonly recentSearchTermList: Locator;
+    readonly popularSearchTermItem: Locator;
+    readonly searchtextbox: Locator;
+    readonly viewAllResultsButton: Locator;
+    readonly recentSearchTermItem: Locator;
+    readonly clearSearchButton: Locator;
+    readonly latestNewsSubmitButton: Locator;
 
     protected testData: ReturnType<typeof loadTestData>;
 
@@ -87,6 +97,16 @@ export class BasePage {
         this.decimalRatingPoint = this.prodItem.locator(`xpath=.//span[@class="bv-rating-decimal"]`);
         this.plpProductSizeDropdown = this.prodItem.locator(`xpath=///div[@data-attr="productSize"]`);
         this.plpProductSizeOption = this.plpProductSizeDropdown.locator(`xpath=.//div[@class="variant-item "]`);
+        this.searchForm = page.locator(`//div[contains(@class,"site-search")]`)
+        this.searchFormCloseButton = page.locator(`//div[@class="site-search desktop-mode row"]//span[text()="Close"]`);
+        this.popularSearchTermList = this.searchForm.locator(`//div[contains(@class,"collection-search") and not(contains(@class,"recent-search"))]`);
+        this.recentSearchTermList = this.searchForm.locator(`.collection-search.recent-search`);
+        this.popularSearchTermItem = this.popularSearchTermList.locator(`xpath=.//div[@class="item"]`);
+        this.searchtextbox = this.searchForm.locator(`#search-box`);
+        this.viewAllResultsButton = this.searchForm.locator(`.view-all-result`);
+        this.recentSearchTermItem = this.recentSearchTermList.locator(`.item`);
+        this.clearSearchButton = this.searchForm.locator(`xpath=.//span[contains(@class,"clear-search")]`);
+        this.latestNewsSubmitButton = page.locator(`//button[@class="btn-submit"]`);
 
         this.testData = loadTestData();
     }
@@ -100,10 +120,15 @@ export class BasePage {
         });
     }
 
-    async click(locator: Locator, description?: string) {
-        await step(description || "Click on locator", async () => {
-            await PageUtils.waitForPageLoad(this.page)
-            await locator.click();
+    async click(locator: Locator, description?: string, x?: number, y?: number) {
+        await step(description || 'Click on locator', async () => {
+            await PageUtils.waitForPageLoad(this.page);
+
+            if (x !== undefined && y !== undefined) {
+                await locator.click({ position: { x, y } });
+            } else {
+                await locator.click();
+            }
         });
     }
 
@@ -141,7 +166,7 @@ export class BasePage {
             try {
                 await locator.waitFor({ state: 'visible', timeout })
                 await this.type(locator, text)
-            } catch {}
+            } catch { }
         })
     }
 
@@ -506,6 +531,74 @@ export class BasePage {
             await delay(1000)
             await this.click(sizeOption, `Select size option at index ${sizeIndex}`)
             await PageUtils.waitForDomAvailable(this.page)
+        })
+    }
+
+    async removeAllRecentSearchTerms(description?: string) {
+        await step(description || `Remove all recent search terms`, async () => {
+            const recentTermCount = await this.recentSearchTermItem.count()
+            console.log(`Total recent search terms: ${recentTermCount}`)
+
+            for (let i = recentTermCount; i >= 1; i--) {
+                const termItem = this.recentSearchTermItem.nth(i - 1)
+                const deleteButton = termItem.locator(`span`)
+
+                const termText = (await termItem.textContent())?.trim()
+                console.log(`Deleting recent search term: ${termText}`)
+
+                if (!await termItem.isVisible()) {
+                    await this.click(this.searchIcon, `Click on Search Icon to open search form`)
+                }
+
+                await this.hover(termItem, `Hover on recent search term: ${termText}`)
+                await delay(1000)
+                await this.click(deleteButton, `Click on delete button of recent search term: ${termText}`, 10, 10)
+                await delay(1000)
+            }
+        })
+    }
+
+    async fillLatestNewsForm(data?: {
+        firstname?: string;
+        lastname?: string;
+        phone?: string;
+        email?: string;
+        postcode?: string;
+        gender?: string;
+        whySamsonite?: string;
+    }) {
+        const {
+            firstname = `fname ${randomAlphaString(4)} ${randomAlphaString(3)}`,
+            lastname = `lname ${randomAlphaString(4)} ${randomAlphaString(3)}`,
+            phone = `0499999999`,
+            email = `globee${generateReadableTimeBasedId()}@yopmail.com`,
+            postcode = `2000`,
+            gender = `male`,
+            whySamsonite = `I want something super light`
+        } = data ?? {};
+
+        await step('Fill register form', async () => {
+            const firstNameTextbox = this.page.locator(`//input[@id="newsletter-firstname"]`)
+            const lastNameTextbox = this.page.locator(`//input[@id="newsletter-lastname"]`)
+            const phoneNumberTextbox = this.page.locator(`//input[@id="newsletter-phone"]`)
+            const emailTextbox = this.page.locator(`//input[@id="newsletter-email"]`)
+            const postcodeTextbox = this.page.locator(`//input[@id="newsletter-postalCode"]`)
+            const genderDropdown = this.page.locator(`//select[@id="form-gender"]`)
+            const whySamsoniteDropdown = this.page.locator(`//select[@id="why-samsonite-select"]`)
+
+            if (gender != "") {
+                await selectDropdownOption(this.page, genderDropdown, gender)
+            }
+
+            if (whySamsonite != "") {
+                await selectDropdownOption(this.page, whySamsoniteDropdown, whySamsonite)
+            }
+
+            await this.type(firstNameTextbox, firstname)
+            await this.type(lastNameTextbox, lastname)
+            await this.type(phoneNumberTextbox, phone)
+            await this.type(emailTextbox, email)
+            await this.type(postcodeTextbox, postcode)
         })
     }
 
@@ -932,6 +1025,52 @@ export class BasePage {
 
             console.log(`Review point array: ${decimalPointArr.toString()}`)
             expect(isSorted(decimalPointArr, order)).toBe(true)
+        })
+    }
+
+    // Assert locator shows in viewport
+    async assertLocatorInViewport(locator: Locator,
+        options?: {
+            fullyVisible?: boolean;
+            tolerance?: number;
+        },
+        description?: string
+    ) {
+        await step(description || `Assert locator in viewport`, async () => {
+            await delay(1000)
+            const { fullyVisible = false, tolerance = 0 } = options || {};
+
+            await this.assertVisible(locator, `Ensure locator is visible before checking viewport`);
+
+            const isInViewport = await locator.evaluate(
+                (el, args) => {
+                    const rect = el.getBoundingClientRect();
+                    const tolerance = args.tolerance;
+
+                    const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+                    const viewportWidth = window.innerWidth || document.documentElement.clientWidth;
+
+                    if (args.fullyVisible) {
+                        return (
+                            rect.top >= 0 + tolerance &&
+                            rect.left >= 0 + tolerance &&
+                            rect.bottom <= viewportHeight - tolerance &&
+                            rect.right <= viewportWidth - tolerance
+                        );
+                    }
+
+                    // Partial visibility (default)
+                    return (
+                        rect.bottom > 0 + tolerance &&
+                        rect.right > 0 + tolerance &&
+                        rect.top < viewportHeight - tolerance &&
+                        rect.left < viewportWidth - tolerance
+                    );
+                },
+                { fullyVisible, tolerance }
+            );
+
+            await this.assertEqual(isInViewport, true, `Locator should be in viewport`);
         })
     }
 }

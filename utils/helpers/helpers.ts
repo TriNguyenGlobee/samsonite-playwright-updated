@@ -73,23 +73,23 @@ export function generateReadableTimeBasedId(): string {
 }
 
 export function randomInt(min: number, max: number): number {
-    if (min > max) {
-        throw new Error('min must be less than or equal to max');
-    }
-    return Math.floor(Math.random() * (max - min + 1)) + min;
+  if (min > max) {
+    throw new Error('min must be less than or equal to max');
+  }
+  return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
 export function randomFloat(min: number, max: number, decimals = 2): number {
-    if (min > max) {
-        throw new Error('min must be less than max');
-    }
-    const num = Math.random() * (max - min) + min;
-    return Number(num.toFixed(decimals));
+  if (min > max) {
+    throw new Error('min must be less than max');
+  }
+  const num = Math.random() * (max - min) + min;
+  return Number(num.toFixed(decimals));
 }
 
 export function randomAlphaString(length: number): string {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-    return Array.from({ length }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+  return Array.from({ length }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
 }
 
 /**
@@ -238,6 +238,13 @@ export const t = {
   globalnavfooter: (key: keyof Translations['globalnavfooter']) => I18n.translations.globalnavfooter[key],
   checkoutpage: (key: keyof Translations['checkoutpage']) => I18n.translations.checkoutpage[key],
   bvintegration: (key: keyof Translations['bvintegration']) => I18n.translations.bvintegration[key],
+  contactuspage: (key: keyof Translations['contactuspage']) => I18n.translations.contactuspage[key],
+  myorder: (key: keyof Translations['myorder']) => I18n.translations.myorder[key],
+  mymembership: (key: keyof Translations['mymembership']) => I18n.translations.mymembership[key],
+  myprofile: (key: keyof Translations['myprofile']) => I18n.translations.myprofile[key],
+  myaddressbook: (key: keyof Translations['myaddressbook']) => I18n.translations.myaddressbook[key],
+  mypayments: (key: keyof Translations['mypayments']) => I18n.translations.mypayments[key],
+  mycoupons: (key: keyof Translations['mycoupons']) => I18n.translations.mycoupons[key],
 };
 
 /**
@@ -406,17 +413,25 @@ export async function screenshotAndAttach(
   folderPath: string,
   fileName: string
 ) {
-  const dir = path.resolve(folderPath);
+  await step('[SCREENSHOT]', async () => {
+    const dir = path.resolve(folderPath);
 
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
-  }
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
 
-  const filePath = path.join(dir, `${fileName}.png`);
+    const filePath = path.join(dir, `${fileName}.png`);
 
-  const buffer = await page.screenshot({ path: filePath, fullPage: true });
+    const buffer = await page.screenshot({
+      path: filePath,
+      fullPage: true,
+    });
 
-  await attachment(fileName, buffer, 'image/png');
+    await test.info().attach(fileName, {
+      body: buffer,
+      contentType: 'image/png',
+    });
+  });
 }
 
 /**
@@ -456,6 +471,89 @@ export async function waitForHasBefore(
   return false;
 }
 
+const FIXED_PHONE_MAP: Record<SupportedLocale, string> = {
+  sg: '81234567',
+  jp: '09012345678',
+  au: '0412345678',
+  hk: '91234567',
+  id: '081234567890',
+  in: '9123456789',
+  nz: '0211234567',
+  kr: '01012345678',
+  my: '0123456789',
+  ph: '09123456789',
+  th: '0812345678',
+  tw: '0912345678',
+};
+
+function randomDigits(length: number): string {
+  return Array.from({ length }, () => Math.floor(Math.random() * 10)).join('');
+}
+
+function randomFromArray<T>(arr: T[]): T {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
+function generateRandomPhone(locale: SupportedLocale): string {
+  switch (locale) {
+    case 'sg':
+      return randomFromArray(['8', '9']) + randomDigits(7);
+
+    case 'hk':
+      return randomFromArray(['5', '6', '9']) + randomDigits(7);
+
+    case 'jp':
+      return randomFromArray(['090', '080', '070']) + randomDigits(8);
+
+    case 'au':
+      return '04' + randomDigits(8);
+
+    case 'id':
+      return '08' + randomDigits(10);
+
+    case 'in':
+      return randomFromArray(['6', '7', '8', '9']) + randomDigits(9);
+
+    case 'nz':
+      return randomFromArray(['021', '022', '027']) + randomDigits(7);
+
+    case 'kr':
+      return '010' + randomDigits(8);
+
+    case 'my':
+      return '01' + randomDigits(9);
+
+    case 'ph':
+      return '09' + randomDigits(9);
+
+    case 'th':
+      return randomFromArray(['08', '09']) + randomDigits(8);
+
+    case 'tw':
+      return '09' + randomDigits(8);
+
+    default:
+      throw new Error(`Unsupported locale for random phone: ${locale}`);
+  }
+}
+
+export function getLocalPhone(random: boolean = false): string {
+  const locale = process.env.LOCALE as SupportedLocale | undefined;
+
+  if (!locale) {
+    throw new Error('LOCALE is not defined in environment variables');
+  }
+
+  if (!random) {
+    const fixedPhone = FIXED_PHONE_MAP[locale];
+    if (!fixedPhone) {
+      throw new Error(`Unsupported locale for phone generation: ${locale}`);
+    }
+    return fixedPhone;
+  }
+
+  return generateRandomPhone(locale);
+}
 
 /**
  * **************************************************************************
@@ -785,4 +883,27 @@ export async function openNewTab(page: Page, action: () => Promise<void>): Promi
   return newPage
 }
 
+export async function clickBlankAreaToClosePopup(page: Page, description = 'Click blank area to close popup'): Promise<void> {
+  await step(description, async () => {
+    const viewport = page.viewportSize();
+    if (!viewport) return;
+
+    await page.mouse.click(viewport.width - 10, 10);
+  });
+}
+
 type WaitCondition = 'visible' | 'hidden';
+
+type SupportedLocale =
+  | 'sg'
+  | 'jp'
+  | 'au'
+  | 'hk'
+  | 'id'
+  | 'in'
+  | 'nz'
+  | 'kr'
+  | 'my'
+  | 'ph'
+  | 'th'
+  | 'tw';

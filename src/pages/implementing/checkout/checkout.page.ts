@@ -17,6 +17,11 @@ export class CheckoutPage extends BasePage {
     readonly postalCodeTxt: Locator;
     readonly address1Txt: Locator;
     readonly unitnumberTxt: Locator;
+    readonly apartmentTxt: Locator;
+    readonly addressTxt: Locator;
+    readonly suburbTxt: Locator
+    readonly stateDropdown: Locator;
+    readonly countryTxt: Locator;
     readonly shippingContinueBtn: Locator;
     readonly yourDetailsEditBtn: Locator;
     readonly recipientSection: Locator;
@@ -28,6 +33,7 @@ export class CheckoutPage extends BasePage {
     readonly paymentcontinueBtn: Locator;
     readonly paymentEditBtn: Locator;
     readonly visaIcon: Locator;
+    readonly creditIcon: Locator;
     readonly masterIcon: Locator;
     readonly paypalIcon: Locator;
     readonly atomeIcon: Locator;
@@ -38,6 +44,11 @@ export class CheckoutPage extends BasePage {
     readonly orderSuccessTitle: Locator;
     readonly cvvModalCVVTextbox: Locator;
     readonly cvvModalSubmitButton: Locator;
+    readonly notlistedLink: Locator;
+    readonly atomePhoneTextbox: Locator;
+    readonly atomeNextButton: Locator;
+    readonly smsContinueButton: Locator;
+    readonly otpInput: Locator;
 
     constructor(page: Page) {
         super(page);
@@ -49,9 +60,14 @@ export class CheckoutPage extends BasePage {
         this.phoneTextbox = this.customerDetailsSection.locator(`xpath=.//input[@id="billingPhoneNumber"]`)
         this.continueButton = this.customerDetailsSection.locator(`xpath=.//button[@type="submit"]`)
         this.shippingSection = page.locator(`//div[@class="shipping-section"]//div[@class="single-shipping"]`)
-        this.postalCodeTxt = this.shippingSection.locator(`xpath=.//input[@id="shippingZipCode"]`)
+        this.postalCodeTxt = this.shippingSection.locator(`xpath=.//input[@id="shippingZipCode" or @id="shippingPostalCode"]`)
         this.address1Txt = this.shippingSection.locator(`xpath=.//input[@id="shippingAddressOne"]`)
         this.unitnumberTxt = this.shippingSection.locator(`xpath=.//input[@id="shippingAddressTwo"]`)
+        this.apartmentTxt = this.shippingSection.locator(`xpath=.//input[@id="shippingAddressTwo"]`)
+        this.addressTxt = this.shippingSection.locator(`xpath=.//input[@id="shippingAddressOne"]`)
+        this.suburbTxt = this.shippingSection.locator(`xpath=.//input[@id="shippingCity"]`)
+        this.stateDropdown = this.shippingSection.locator(`xpath=.//select[@id="shippingState"]`)
+        this.countryTxt = this.shippingSection.locator(`xpath=.//select[@id="shippingCountry"]`)
         this.shippingContinueBtn = this.shippingSection.locator(`xpath=.//button[@type="submit"]`)
         this.yourDetailsEditBtn = page.locator(`//div[h4[normalize-space(text())="Your details"]]//span[normalize-space(text())="Edit"]`)
         this.recipientSection = page.locator(`//div[@class="single-shipping"]`)
@@ -63,16 +79,22 @@ export class CheckoutPage extends BasePage {
         this.paymentEditBtn = page.locator(`//div[h4[normalize-space(text())="Payment"]]//span[normalize-space(text())="Edit"]`)
         this.paymentcontinueBtn = page.locator(`//div[@class="card payment-form"]//button[@type="submit"]`)
         this.visaIcon = page.locator(`//li[@data-method-id="CREDIT_CARD" and @data-card-type="Visa"]//a`)
+        this.creditIcon = page.locator(`//li[@data-method-id="CREDIT_CARD"]//a`)
         this.masterIcon = page.locator(`//li[@data-method-id="CREDIT_CARD" and @data-card-type="MasterCard"]//a`)
         this.paypalIcon = page.locator(`//li[@data-method-id="PayPal"]//a`)
         this.atomeIcon = page.locator(`//li[@data-method-id="ATOME_PAYMENT"]//a`)
         this.googlepayIcon = page.locator(`//li[@data-method-id="DW_GOOGLE_PAY"]//a`)
         this.gpaybutton = page.locator(`#gpay-button-online-api-id`)
         this.placeOrderBtn = page.locator('//div[contains(@class,"page-checkout")]//div[contains(@class,"mini-order-summary")]//button[@value="place-order"]');
-        this.paypalCheckoutBtn = page.locator(`//div[.//span[normalize-space(text())="Checkout"] and @role="button"]`)
+        this.paypalCheckoutBtn = page.locator(`//div[contains(@id,"paypal-button")]`)
         this.orderSuccessTitle = this.page.locator('//h2[@class="order-thank-you-msg"]');
         this.cvvModalCVVTextbox = page.locator(`//div[label[normalize-space(text())="CVV"] and @class="security-code-input"]//input`)
         this.cvvModalSubmitButton = page.locator(`//button[@id="cvv-code-submit-btn"]`)
+        this.notlistedLink = page.locator(`//span[@class="not-list"]`)
+        this.atomePhoneTextbox = page.locator(`//div[contains(@class,"input_atome")]//input`)
+        this.atomeNextButton = page.locator(`//button[@type="submit" and text()="Next"]`)
+        this.smsContinueButton = page.locator(`//button[text()="Continue with SMS"]`)
+        this.otpInput = page.locator(`//input[@type="number"]`)
     }
 
     // =========================
@@ -81,25 +103,25 @@ export class CheckoutPage extends BasePage {
     async fillCheckoutYourDetailForm(page: Page, data: CheckoutYourDetailLoad, description?: string): Promise<void> {
         await step(description || "Fill checkout detail", async () => {
             if (data.firstName) {
-                await this.type(this.firstNameTextbox, data.firstName,
+                await this.typeByManual(this.firstNameTextbox, data.firstName,
                     `Fill firstname textbox: ${data.firstName}`
                 )
             }
 
             if (data.lastName) {
-                await this.type(this.lastNameTextbox, data.lastName,
+                await this.typeByManual(this.lastNameTextbox, data.lastName,
                     `Fill lastname textbox: ${data.lastName}`
                 )
             }
 
             if (data.email) {
-                await this.type(this.emailTextbox, data.email,
+                await this.typeByManual(this.emailTextbox, data.email,
                     `Fill email textbox: ${data.email}`
                 )
             }
 
             if (data.phone) {
-                await this.type(this.phoneTextbox, data.phone,
+                await this.typeByManual(this.phoneTextbox, data.phone,
                     `Fill phone number textbox: ${data.phone}`
                 )
             }
@@ -121,23 +143,48 @@ export class CheckoutPage extends BasePage {
     async fillRecipientDetilsForm(page: Page, data: RecipientDetails, description?: string): Promise<void> {
         await step(description || "Fill recipient details detail", async () => {
             if (data.postcode) {
-                await this.type(this.postalCodeTxt, data.postcode,
+                await this.typeByManual(this.postalCodeTxt, data.postcode,
                     `Fill postcode textbox: ${data.postcode}`
                 )
             }
 
             if (data.address1) {
-                await this.type(this.address1Txt, data.address1,
+                await this.typeByManual(this.address1Txt, data.address1,
                     `Fill address textbox: ${data.address1}`
                 )
             }
 
             if (data.unitnumber) {
-                await this.type(this.unitnumberTxt, data.unitnumber,
+                await this.typeByManual(this.unitnumberTxt, data.unitnumber,
                     `Fill unit number textbox: ${data.unitnumber}`
                 )
             }
 
+            if (data.apartment) {
+                await this.typeByManual(this.unitnumberTxt, data.apartment,
+                    `Fill apartment textbox: ${data.apartment}`
+                )
+            }
+
+            if (data.address) {
+                await this.typeByManual(this.addressTxt, data.address,
+                    `Fill address textbox: ${data.address}`
+                )
+            }
+
+            if (data.suburb) {
+                await this.click(this.notlistedLink.first(), "Click Not listed link to fill suburb")
+
+                await this.typeByManual(this.suburbTxt, data.suburb,
+                    `Fill suburb textbox: ${data.suburb}`
+                )
+            }
+
+            if (data.state) {
+                await selectDropdownOption(page, this.stateDropdown, data.state, "value",
+                    `Select shipping state: ${data.state}`
+                )
+            }
         })
     }
 
@@ -147,7 +194,7 @@ export class CheckoutPage extends BasePage {
             const cvvIframe = this.page.locator('input#securityCode');
 
             await this.type(cardNumberIframe, cardNumber, `Fill card number: ${cardNumber}`);
-            await this.type(cvvIframe, cvv, `Fill card number: ${cvv}`);
+            await this.type(cvvIframe, cvv, `Fill cvv number: ${cvv}`);
 
             await selectDropdownOption(page, "select#expirationMonth", cardMonth, "value",
                 `Select card expiration month: ${cardMonth}`
@@ -159,6 +206,43 @@ export class CheckoutPage extends BasePage {
         })
     }
 
+    async fillCreditCardPaymentDetails(page: Page, cardNumber: string, expDate: string, cvv: string, name: string, description?: string): Promise<void> {
+        await step(description || "Fill visa payment details", async () => {
+
+            const cardNumberFrame = page.frameLocator('iframe[name="braintree-hosted-field-number"]');
+
+            const expirationFrame = page.frameLocator('iframe[name="braintree-hosted-field-expirationDate"]');
+
+            const cvvFrame = page.frameLocator('iframe[name="braintree-hosted-field-cvv"]');
+
+            const nameOnCard = page.locator('#braintreeCardOwner');
+
+            await this.type(
+                cardNumberFrame.locator('input#credit-card-number'),
+                cardNumber,
+                `Fill card number: ${cardNumber}`
+            );
+
+            await this.type(
+                expirationFrame.locator('input#expiration'),
+                expDate,
+                `Fill expiration date: ${expDate}`
+            );
+
+            await this.type(
+                cvvFrame.locator('input#cvv'),
+                cvv,
+                `Fill cvv: ${cvv}`
+            );
+
+            await this.type(
+                nameOnCard,
+                name,
+                `Fill name on card: ${name}`
+            );
+        });
+    }
+
     // =========================
     // 📦 Helpers
     // =========================
@@ -168,9 +252,9 @@ export class CheckoutPage extends BasePage {
             const title = await this.page.title();
             const expectedTitle = t.checkoutpage('title')
             const currentUrl = await this.page.url();
-            let expectedUrl = Config.baseURL + "checkout?stage=shipping#shipping";
+            let expectedUrl = Config.baseURL + "checkout";
 
-            if (login) {expectedUrl = Config.baseURL + "checkout"}
+            if (login) { expectedUrl = Config.baseURL + "checkout" }
 
             await test.step("Checkout page data: ", async () => {
                 await attachment("Current Page Title", title, "text/plain");
@@ -243,4 +327,9 @@ export type RecipientDetails = {
     postcode?: string;
     address1?: string;
     unitnumber?: string;
+    apartment?: string;
+    address?: string;
+    suburb?: string;
+    state?: string;
+    country?: string;
 }

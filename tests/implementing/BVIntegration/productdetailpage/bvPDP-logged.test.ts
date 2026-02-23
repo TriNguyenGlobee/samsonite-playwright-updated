@@ -432,7 +432,7 @@ test.describe("PDP is shown correctly - [Logged]", async () => {
         const pdppage = new PDPPage(loggedInPage)
         const questionText = `Auto question ${await generateReadableTimeBasedId()}`
         const nickname = `Auto Nickname ${await generateSentence(5)}`
-        const email = `autoemail${await generateReadableTimeBasedId()}@mailinator.com`
+        const email = `autoemail${await generateReadableTimeBasedId()}@yopmail.com`
         const location = "NY"
 
         //await pdppage.goto("https://ssau.dev.samsonite-asia.com/upscape/spinner-55-exp/ss-143108-1041.html")
@@ -505,7 +505,7 @@ test.describe("PDP is shown correctly - [Logged]", async () => {
         const pdppage = new PDPPage(loggedInPage)
         const questionText = `Auto question ${await generateReadableTimeBasedId()}`
         const nickname = `Auto Nickname ${await generateSentence(5)}`
-        const email = `autoemail${await generateReadableTimeBasedId()}@mailinator.com`
+        const email = `autoemail${await generateReadableTimeBasedId()}@yopmail.com`
         const location = "NY"
 
         //await pdppage.goto("https://ssau.dev.samsonite-asia.com/upscape/spinner-55-exp/ss-143108-1041.html")

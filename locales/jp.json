@@ -422,6 +422,7 @@
     "guestcheckoutbutton": "会員登録せずに購入",
     "title": "商品購入｜スーツケース、ビジネスバッグ/サムソナイト(Samsonite)公式サイト",
     "newsletter": "新商品、クーポン、イベント情報をいち早くメールでお知らせします",
+    "receivenews": "I want to receive news, offers and other promotional materials from Samsonite, via text message.",
     "terms": "に同意します",
     "firstname": "名",
     "lastname": "姓",
@@ -467,5 +468,32 @@
     "reviewtitle": "レビューのタイトル",
     "nickname": "ニックネーム",
     "email": "電子メール"
+  },
+  "contactuspage": {
+    "title": "Contact Us | Samsonite Singapore",
+    "successmsg": "Your message has been sent. We will be contacting you shortly."
+  },
+  "myorder": {
+    "title": "My Orders | Samsonite Singapore"
+  },
+  "myprofile": {
+    "title": "My Profile | Samsonite Singapore"
+  },
+  "myaddressbook": {
+    "title": "Address Book | Samsonite Singapore",
+    "addnewaddressbutton": "Add New Address",
+    "editaddressbutton": "Edit Address",
+    "removeaddressbutton": "Remove Address",
+    "confirmremovemodaltitle": "Are you sure you want to remove this address?",
+    "confirmremovebutton": "Yes, Remove",
+    "cancelremovebutton": "Cancel"
+  },
+  "mypayments": {
+    "title": "Payment instrument | Samsonite Singapore"
+  },
+  "mycoupons": {
+    "title": "My Coupon",
+    "savedcouponstitle": "Saved Coupons",
+    "appliedcouponstitle": "Applied Coupons"
   }
 }
