@@ -4,7 +4,8 @@ import { step } from "allure-js-commons";
 import { GlobalNavFooterPage } from "../../../src/pages/delivery/home/global-nav-footer.page";
 import { Config } from "../../../config/env.config";
 import { steps } from "../../../utils/helpers/localeStep";
-import { MailSlurp } from 'mailslurp-client';
+//import { MailSlurp } from 'mailslurp-client';
+import { EmailService } from "../../../utils/helpers/emailService";
 
 test.describe("Subscription-homepage", () => {
     test.beforeEach(async ({ basicAuthPage }) => {
@@ -67,23 +68,26 @@ test.describe("Subscription-homepage", () => {
         const createdmsg = basicAuthPage.locator(`//footer[@id="footer"]//div[contains(@class,"subscribe-msg accountcreated")]`)
         const successmsg = basicAuthPage.locator(`//div[@class="resp-messages"]//h2[@class="success"]`)
         const emailexistmsg = basicAuthPage.locator(`//footer[@id="footer"]//div[contains(@class,"subscribe-msg accountexists")]`)
+        const emailService = new EmailService();
+        const email = emailService.generateEmail();
         const returnbutton = basicAuthPage.locator(`//button[@class="btn-return"]`)
+        /*
         const mailslurp = new MailSlurp({
             apiKey: process.env.MAILSLURP_API_KEY!,
-        });
+        });*/
 
-        let inbox: any;
+        //let inbox: any;
         let emailaddress: string;
-
+        /*
         await test.step('Create MailSlurp inbox', async () => {
             inbox = await mailslurp.createInbox();
             emailaddress = inbox.emailAddress
             expect(emailaddress).toBeTruthy();
-        });
+        });*/
 
         await step("[STEP] Type a valid email and click Subscribe button", async () => {
             await step("[ChSTEP] Type valid email into email textbox", async () => {
-                await globalnavfooterpage.type(globalnavfooterpage.emailTextbox, emailaddress)
+                await globalnavfooterpage.type(globalnavfooterpage.emailTextbox, email)
             })
 
             await step("[ChSTEP] Clicking on the subscribe button", async () => {
@@ -93,7 +97,7 @@ test.describe("Subscription-homepage", () => {
 
                 await steps(["au"], "Fill the lastest news", async () => {
                     await globalnavfooterpage.fillLatestNewsForm({
-                        email: emailaddress
+                        email: email
                     })
                 })
 
@@ -127,12 +131,20 @@ test.describe("Subscription-homepage", () => {
         })
 
         await step('[STEP] Verify - 4. Wait for verification email', async () => {
-            const email = await mailslurp.waitForLatestEmail(inbox.id, 30000, true);
+            //const email = await mailslurp.waitForLatestEmail(inbox.id, 30000, true);
+            const message = await emailService.waitForEmail(email);
 
-            await globalnavfooterpage.assertEqual(email.subject?.toLowerCase(), `Hi there, welcome to the World of Samsonite.`.toLowerCase(),
+            await globalnavfooterpage.assertEqual(message.subject?.toLowerCase(), `Hi there, welcome to the World of Samsonite.`.toLowerCase(),
                 "Assert the email subject")
 
-            await basicAuthPage.setContent(email.body || '<p>No email body</p>', { waitUntil: 'load' });
+            //await basicAuthPage.setContent(email.body || '<p>No email body</p>', { waitUntil: 'load' });
+
+            await step("[ChSTEP] Generate Email HTML", async () => {
+                const html = message.html!.body;
+                await basicAuthPage.goto('about:blank');
+                await basicAuthPage.setContent(html!, { waitUntil: 'load' })
+                await basicAuthPage.waitForLoadState('networkidle');
+            })
 
             await screenshotAndAttach(basicAuthPage, './screenshots/Subscription', '04 - Email');
         });
@@ -142,7 +154,7 @@ test.describe("Subscription-homepage", () => {
 
             await step("[ChSTEP] Type the same email into email textbox again", async () => {
                 await step("Enter the subscribed email into the email textbox", async () => {
-                    await globalnavfooterpage.type(globalnavfooterpage.emailTextbox, emailaddress)
+                    await globalnavfooterpage.type(globalnavfooterpage.emailTextbox, email)
                 })
             })
 

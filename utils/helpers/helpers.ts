@@ -3,7 +3,6 @@ import { I18n, Translations } from "../../config/i18n.config";
 import { test, expect } from '@playwright/test';
 import { step } from "allure-js-commons";
 import path from 'path';
-import { attachment } from 'allure-js-commons';
 import fs from 'fs';
 
 /**
@@ -553,6 +552,20 @@ export function getLocalPhone(random: boolean = false): string {
   }
 
   return generateRandomPhone(locale);
+}
+
+export async function disableAnimations(page: Page): Promise<void> {
+  await page.addStyleTag({
+    content: `
+      *,
+      *::before,
+      *::after {
+        animation: none !important;
+        transition: none !important;
+        caret-color: transparent !important;
+      }
+    `,
+  });
 }
 
 /**

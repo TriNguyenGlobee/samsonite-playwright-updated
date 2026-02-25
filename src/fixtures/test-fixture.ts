@@ -5,6 +5,7 @@ import { createLoginPage } from "../factories/login.factory";
 import { startModalWatchdog } from "../../utils/helpers/modalWatchdog";
 import { getLocales } from "../../utils/helpers/localeHelper";
 import { delay, PageUtils } from "../../utils/helpers/helpers";
+import { Eyes, Configuration, BatchInfo } from "@applitools/eyes-playwright";
 
 type MyFixtures = {
   user: { username: string; password: string };
@@ -12,6 +13,7 @@ type MyFixtures = {
   basicAuthPageNoWatchdog: Page;
   loggedInPage: Page;
   locale: string;
+  eyes: Eyes;
 };
 
 export const test = base.extend<MyFixtures>({
@@ -114,6 +116,23 @@ export const test = base.extend<MyFixtures>({
     await stopWatchdog()
     await page.close({ runBeforeUnload: false }).catch(() => { });
     await context.close().catch(() => { });
+  },
+
+  eyes: async ({ }, use) => {
+    const eyes = new Eyes();
+
+    const config = new Configuration();
+    config.setApiKey(process.env.APPLITOOLS_API_KEY!);
+    config.setAppName("My Samsonite");
+    config.setBatch(new BatchInfo("Samsonite Visual Tests"));
+
+    eyes.setConfiguration(config);
+
+    try {
+      await use(eyes);
+    } finally {
+      await eyes.abortIfNotClosed();
+    }
   },
 });
 

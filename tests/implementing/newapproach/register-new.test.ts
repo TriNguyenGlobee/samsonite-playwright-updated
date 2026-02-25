@@ -11,9 +11,10 @@ import { createCartPage } from "../../../src/factories/cart.factory";
 import { CheckoutPage } from "../../../src/pages/implementing/checkout/checkout.page";
 import { MyPaymentsPage } from "../../../src/pages/implementing/mypage/mypayments.page";
 import { screenshotAndAttach, t, randomAlphaString, getLocalPhone, scrollToBottom, PageUtils, delay } from "../../../utils/helpers/helpers";
-import { MailSlurp } from 'mailslurp-client';
+//import { MailSlurp } from 'mailslurp-client';
 import { Config } from "../../../config/env.config";
 import { loadTestData } from "../../../utils/data";
+import { EmailService } from "../../../utils/helpers/emailService";
 
 test.describe("Clicking create account button with valid information", async () => {
     test.beforeEach(async ({ basicAuthPage }) => {
@@ -56,25 +57,28 @@ test.describe("Clicking create account button with valid information", async () 
         const accountexistMsg = t.globalnavfooter('duplicateemail')
         const emailexistmsg = basicAuthPage.locator(`//footer[@id="footer"]//div[contains(@class,"subscribe-msg accountexists")]`)
         const { checkoutShippingData } = loadTestData();
-        const mailslurp = new MailSlurp({
+        const emailService = new EmailService();
+        const email = emailService.generateEmail();
+        /*const mailslurp = new MailSlurp({
             apiKey: process.env.MAILSLURP_API_KEY!,
-        });
+        });*/
 
         const confirmPassword = "Test@123"
         const updateFirstName = `fname ${randomAlphaString(4)} Updated`
         const updateLastName = `lname ${randomAlphaString(4)} Updated`
 
-        let inbox: any;
-        let emailaddress: string;
+        //let inbox: any;
+        //let emailaddress: string;
         let paymentMethodInitialCount: number
         let paymentMethodCount: number
         let cartPageURL = `${Config.baseURL}cart`
 
+        /*
         await test.step('Create MailSlurp inbox', async () => {
             inbox = await mailslurp.createInbox();
             emailaddress = inbox.emailAddress
             expect(emailaddress).toBeTruthy();
-        });
+        });*/
 
         await step('[STEP] Verify - 1. Register page is displayed - Register form shows correctly', async () => {
             await registerpage.isRegisterpageDisplayed()
@@ -82,7 +86,7 @@ test.describe("Clicking create account button with valid information", async () 
         })
 
         await step('[STEP] Fill register form with valid information', async () => {
-            await registerpage.fillRegisterForm({ firstname: firstname, phone: getLocalPhone(true), email: emailaddress })
+            await registerpage.fillRegisterForm({ firstname: firstname, phone: getLocalPhone(true), email: email })
         })
 
         await step('[STEP] Click on Create Account button', async () => {
@@ -96,13 +100,22 @@ test.describe("Clicking create account button with valid information", async () 
         })
 
         await step('[STEP] Verify - 2. Verification email', async () => {
-            const email = await mailslurp.waitForLatestEmail(inbox.id, 30000, true);
-            
-            await step ("[ChSTEP] Assert the email subject", async () => {
-                await mypage.assertEqual(email.subject?.toLowerCase(), `Thank you for registering, ${firstname}.`.toLowerCase(),"Assert the email subject")
+            //const email = await mailslurp.waitForLatestEmail(inbox.id, 30000, true);
+            const message = await emailService.waitForEmail(email);
+
+            await step("[ChSTEP] Assert the email subject", async () => {
+                //await mypage.assertEqual(email.subject?.toLowerCase(), `Thank you for registering, ${firstname}.`.toLowerCase(), "Assert the email subject")
+                await mypage.assertEqual(message.subject?.toLowerCase(), `Thank you for registering, ${firstname}.`.toLowerCase(), "Assert the email subject")
             })
 
-            await basicAuthPage.setContent(email.body || '<p>No email body</p>', { waitUntil: 'load' });
+            //await basicAuthPage.setContent(email.body || '<p>No email body</p>', { waitUntil: 'load' });
+
+            await step("[ChSTEP] Generate Email HTML", async () => {
+                const html = message.html!.body;
+                await basicAuthPage.goto('about:blank');
+                await basicAuthPage.setContent(html!, { waitUntil: 'load' })
+                await basicAuthPage.waitForLoadState('networkidle');
+            })
 
             await screenshotAndAttach(basicAuthPage, './screenshots/Register', '02 - Email');
         });
@@ -113,20 +126,20 @@ test.describe("Clicking create account button with valid information", async () 
         })
 
         await step("[STEP] Type the registered email into Subscribe textbox", async () => {
-                await globalnavfooterpage.type(globalnavfooterpage.emailTextbox, emailaddress)
+            await globalnavfooterpage.type(globalnavfooterpage.emailTextbox, email)
         })
 
         await step("[STEP ] Veriy - 3. Duplicate message is displayed", async () => {
-            await step ("[ChSTEP] Clicking on Subscribe button", async () => {
+            await step("[ChSTEP] Clicking on Subscribe button", async () => {
                 await globalnavfooterpage.click(globalnavfooterpage.subscribeButton, "Clicking on Subscribe button")
-           });
+            });
 
-            await step ("[ChSTEP] Waiting for underlay screen hidden", async () => {
-                await globalnavfooterpage.assertHidden(globalnavfooterpage.underlay,"Waiting for underlay screen hidden")
-           });
+            await step("[ChSTEP] Waiting for underlay screen hidden", async () => {
+                await globalnavfooterpage.assertHidden(globalnavfooterpage.underlay, "Waiting for underlay screen hidden")
+            });
 
-            await step ("[ChSTEP] Assert invalid-feedback: Account exists", async () => {
-                await globalnavfooterpage.assertText(emailexistmsg, accountexistMsg,"Assert invalid-feedback: Account exists")
+            await step("[ChSTEP] Assert invalid-feedback: Account exists", async () => {
+                await globalnavfooterpage.assertText(emailexistmsg, accountexistMsg, "Assert invalid-feedback: Account exists")
                 await screenshotAndAttach(basicAuthPage, './screenshots/Register', '03 - Duplicate subscription message');
             });
         })
@@ -134,10 +147,10 @@ test.describe("Clicking create account button with valid information", async () 
         await step('[STEP] Go to PLP page and add product to cart', async () => {
             await step('[ChSTEP] - Go to Luggage', async () => {
 
-                await step ("[ChSTEP] Click menu item luggage ", async () => {
+                await step("[ChSTEP] Click menu item luggage ", async () => {
                     await globalnavfooterpage.clickMenuItem('luggage')
                 })
-                
+
                 await newarrivalspage.logoImg.hover()
 
                 await step('[ChSTEP] Click on In-stock checkbox', async () => {
@@ -157,7 +170,7 @@ test.describe("Clicking create account button with valid information", async () 
             homepage.goto(`${Config.baseURL}checkout?stage=shipping#shipping`)
         })
 
-        await step("[STEP] Fill recipient information form",async () => {
+        await step("[STEP] Fill recipient information form", async () => {
             await step("[ChSTEP] Fill recipient info", async () => {
                 await checkoutpage.fillRecipientDetilsForm(basicAuthPage, checkoutShippingData)
             })
@@ -186,7 +199,7 @@ test.describe("Clicking create account button with valid information", async () 
         await step('[STEP] Go to My Account page by URL', async () => {
             await basicAuthPage.goto(`${Config.baseURL}account`)
         })
-        
+
         await step("[STEP] Click on My Payment link", async () => {
             await myAccountPage.click(myAccountPage.paymentLink);
             await basicAuthPage.waitForURL(/wallet/, { waitUntil: 'networkidle' })
@@ -228,7 +241,7 @@ test.describe("Clicking create account button with valid information", async () 
         })
 
         await step('[STEP] Click appy button to apply coupon', async () => {
-            await cartpage.click(cartpage.couponApplyLink.first(),"Click apply coupon link")
+            await cartpage.click(cartpage.couponApplyLink.first(), "Click apply coupon link")
         })
 
         await delay(2000)
@@ -261,23 +274,23 @@ test.describe("Clicking create account button with valid information", async () 
             })
 
             await step("[ChSTEP] Assert remove product modal is closed", async () => {
-                await cartpage.assertHidden(cartpage.removeProductModal, 'Assert remove product modal is closed')  
-            }) 
+                await cartpage.assertHidden(cartpage.removeProductModal, 'Assert remove product modal is closed')
+            })
 
             await step("[ChSTEP] Click remove product button in Cart page", async () => {
-                await cartpage.click(cartpage.removeProductButton.first(), 'Click remove product button in Cart page')  
-            })  
+                await cartpage.click(cartpage.removeProductButton.first(), 'Click remove product button in Cart page')
+            })
         })
 
         await step('Verify - 11. Click cancle button to close remove product modal', async () => {
             await step("[ChSTEP] Cancel remove product", async () => {
                 await cartpage.click(cartpage.removeProdModalCancelButton, 'Cancel remove product')
-            }) 
+            })
 
             await step("[ChSTEP] Assert remove product modal is closed", async () => {
                 await cartpage.assertHidden(cartpage.removeProductModal, 'Assert remove product modal is closed')
-                await screenshotAndAttach(basicAuthPage, './screenshots/Register', '11 - Remove product modal closed');  
-            }) 
+                await screenshotAndAttach(basicAuthPage, './screenshots/Register', '11 - Remove product modal closed');
+            })
         })
 
         await step('[STEP] Verify - 12. Remove all produt from cart page', async () => {
@@ -334,7 +347,7 @@ test.describe("Clicking create account button with valid information", async () 
 
         await step("[STEP] Go to my Profile by URL", async () => {
             await mypage.goto(Config.baseURL + 'profile')
-        }) 
+        })
 
         await step("[STEP] Verify - 15. Unregister Account", async () => {
             await myProfilePage.unregisterAccount()
