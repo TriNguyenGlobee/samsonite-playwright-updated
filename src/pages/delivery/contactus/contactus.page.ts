@@ -37,7 +37,7 @@ export class ContactUS extends BasePage {
         phone?: string;
         subject?: string;
         message?: string;
-    }) {
+    }, description?:string) {
         const {
             gender = `Mr.`,
             name = `name ${randomAlphaString(4)} ${randomAlphaString(3)}`,
@@ -47,7 +47,7 @@ export class ContactUS extends BasePage {
             message = `globee test ${generateSentence(20)}`
         } = data ?? {};
 
-        await step('Fill contact us form', async () => {
+        await step(description || 'Fill contact us form', async () => {
 
             if (gender != "") {
                 await selectDropdownOption(this.page, this.titleDropdown, gender)

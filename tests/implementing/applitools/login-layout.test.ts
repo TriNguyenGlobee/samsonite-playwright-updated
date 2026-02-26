@@ -2,16 +2,21 @@ import { test, expect } from "../../../src/fixtures/test-fixture";
 import { MyPage } from "../../../src/pages/implementing/mypage/mypage.page";
 import { Config } from "../../../config/env.config";
 import { step } from "allure-js-commons";
-import { screenshotAndAttach } from "../../../utils/helpers/helpers";
+import { screenshotAndAttach, disableAnimations } from "../../../utils/helpers/helpers";
 import { createLoginPage } from "../../../src/factories/login.factory";
 import { createHomePage } from "../../../src/factories/home.factory"
-import { tests } from "../../../utils/helpers/localeTest";
+import { Target } from "@applitools/eyes-playwright";
 
 test.describe('Login with normal-email', () => {
+    test.beforeEach(async ({ basicAuthPage, eyes }) => {
+        await disableAnimations(basicAuthPage);
+        await eyes.open(basicAuthPage, "My Samsonite", "Login Page");
+    });
+
     test(`
         1. Login page is displayed correctly
         2. User can login with valid username and password
-        `, async ({ basicAuthPage }) => {
+        `, async ({ basicAuthPage, eyes }) => {
         const homePage = createHomePage(basicAuthPage);
         const loginPage = createLoginPage(basicAuthPage);
         const myPage = new MyPage(basicAuthPage);
@@ -25,6 +30,10 @@ test.describe('Login with normal-email', () => {
             await screenshotAndAttach(basicAuthPage, './screenshots/Login-normal-email', '01 - Login Page')
         });
 
+        await step("Visual Check - Login Page Layout", async () => {
+            await eyes.check("Login Page Layout", Target.window().fully().layout());
+        });
+
         await step("[STEP] Type valid email and passsword into login form and click Sign In button", async () => {
             await loginPage.login(Config.credentials.username, Config.credentials.password);
         });
@@ -33,6 +42,12 @@ test.describe('Login with normal-email', () => {
             await myPage.assertEqual(await myPage.isMyPageDisplayed(), true, "Mypage is displayed");
             await screenshotAndAttach(basicAuthPage, './screenshots/Login-normal-email', '02 - MyPage')
         });
+
+        await step("Visual Check - MyPage Layout", async () => {
+            await eyes.check("MyPage Layout", Target.window().fully().layout());
+        });
+
+        await eyes.close();
     });
 
     test.afterEach(async ({ basicAuthPage }) => {

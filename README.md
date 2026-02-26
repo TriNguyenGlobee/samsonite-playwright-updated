@@ -4,8 +4,8 @@
 
 ## 🚀 Setting Guide
 ```bash
-git clone https://github.com/TriNguyenGlobee/samsonite-playwright.git
-cd samsonite-playwright
+git clone https://github.com/TriNguyenGlobee/samsonite-playwright-updated.git
+cd samsonite-playwright-updated
 npm install
 npx playwright install
 npm install --save mailslurp-client
@@ -24,6 +24,9 @@ npm run report:open
 
 - Clear old result (allure-results + allure-report)
 npm run report:clean
+
+- Generate Excel Report
+npx ts-node scripts/generate-excel.ts
 
 ## With specific folder
 - Generate Allure report
@@ -46,7 +49,7 @@ npm run test:login
 CMD: run-tests.bat jp stg tests/delivery
 Powershell: .\run-tests.bat sg stg tests/delivery
 OR:
-npx cross-env ENV=stg LOCALE=jp npx playwright test --project=chromium tests/delivery
+npx cross-env ENV=stg LOCALE=au npx playwright test --project=chromium tests/implementing/newapproach/
 
 ## Multi test
 - Run each locale in turn

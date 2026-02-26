@@ -3,7 +3,6 @@ import { I18n, Translations } from "../../config/i18n.config";
 import { test, expect } from '@playwright/test';
 import { step } from "allure-js-commons";
 import path from 'path';
-import { attachment } from 'allure-js-commons';
 import fs from 'fs';
 
 /**
@@ -413,17 +412,25 @@ export async function screenshotAndAttach(
   folderPath: string,
   fileName: string
 ) {
-  const dir = path.resolve(folderPath);
+  await step('[SCREENSHOT]', async () => {
+    const dir = path.resolve(folderPath);
 
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
-  }
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
 
-  const filePath = path.join(dir, `${fileName}.png`);
+    const filePath = path.join(dir, `${fileName}.png`);
 
-  const buffer = await page.screenshot({ path: filePath, fullPage: true });
+    const buffer = await page.screenshot({
+      path: filePath,
+      fullPage: true,
+    });
 
-  await attachment(fileName, buffer, 'image/png');
+    await test.info().attach(fileName, {
+      body: buffer,
+      contentType: 'image/png',
+    });
+  });
 }
 
 /**
@@ -545,6 +552,20 @@ export function getLocalPhone(random: boolean = false): string {
   }
 
   return generateRandomPhone(locale);
+}
+
+export async function disableAnimations(page: Page): Promise<void> {
+  await page.addStyleTag({
+    content: `
+      *,
+      *::before,
+      *::after {
+        animation: none !important;
+        transition: none !important;
+        caret-color: transparent !important;
+      }
+    `,
+  });
 }
 
 /**
