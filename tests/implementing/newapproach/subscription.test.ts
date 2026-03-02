@@ -173,9 +173,9 @@ test.describe("Subscription-homepage", () => {
             await globalnavfooterpage.assertText(emailexistmsg, accountexistMsg,
                 "Assert invalid-feedback: Account exists"
             )
-        })
 
-        await screenshotAndAttach(basicAuthPage, './screenshots/Subscription', '05 - Duplicate subscription message');
+            await screenshotAndAttach(basicAuthPage, './screenshots/Subscription', '05 - Duplicate subscription message');
+        })
     })
 
     test.afterEach(async ({ basicAuthPage }) => {

@@ -16,7 +16,7 @@ import { Config } from "../../../config/env.config";
 import { loadTestData } from "../../../utils/data";
 import { EmailService } from "../../../utils/helpers/emailService";
 
-test.describe("Clicking create account button with valid information", async () => {
+test.describe("Create account with valid information", async () => {
     test.beforeEach(async ({ basicAuthPage }) => {
         const loginPage = createLoginPage(basicAuthPage);
 
@@ -195,7 +195,7 @@ test.describe("Clicking create account button with valid information", async () 
         await step("[STEP] Click continue button", async () => {
             await checkoutpage.click(checkoutpage.paymentcontinueBtn, "Click on payment continue button")
         })
-
+        
         await step('[STEP] Go to My Account page by URL', async () => {
             await basicAuthPage.goto(`${Config.baseURL}account`)
         })

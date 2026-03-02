@@ -32,6 +32,7 @@ export class CheckoutPage extends BasePage {
     readonly recipientContinueBtn: Locator;
     readonly paymentcontinueBtn: Locator;
     readonly paymentEditBtn: Locator;
+    readonly paymentMethodSection: Locator;
     readonly visaIcon: Locator;
     readonly creditIcon: Locator;
     readonly masterIcon: Locator;
@@ -77,7 +78,8 @@ export class CheckoutPage extends BasePage {
         this.recipientPhone = this.recipientSection.locator(`xpath=.//input[@id="shippingPhoneNumber"]`)
         this.recipientContinueBtn = this.recipientSection.locator(`xpath=.//button[@type="submit"]`)
         this.paymentEditBtn = page.locator(`//div[h4[normalize-space(text())="Payment"]]//span[normalize-space(text())="Edit"]`)
-        this.paymentcontinueBtn = page.locator(`//div[@class="card payment-form"]//button[@type="submit"]`)
+        this.paymentcontinueBtn = page.locator(`//div[@class="card payment-form"]//button[@type="submit"]|//div[contains(@id,"oid-paypal-buttons") and contains(@class,"paypal-button")]`)
+        this.paymentMethodSection = page.locator(`//fieldset[contains(@class,"payment-option")]`)
         this.visaIcon = page.locator(`//li[@data-method-id="CREDIT_CARD" and @data-card-type="Visa"]//a`)
         this.creditIcon = page.locator(`//li[@data-method-id="CREDIT_CARD"]//a`)
         this.masterIcon = page.locator(`//li[@data-method-id="CREDIT_CARD" and @data-card-type="MasterCard"]//a`)

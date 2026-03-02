@@ -131,9 +131,9 @@ test.describe("Browse-search", async () => {
         })
     });
 
-    test.afterEach(async ({ basicAuthPage }) => {
+    test.afterEach(async ({ basicAuthPageNoWatchdog }) => {
         await step('[STEP] [FINAL STATE]', async () => {
-            await screenshotAndAttach(basicAuthPage, './screenshots/Search', 'Final State');
+            await screenshotAndAttach(basicAuthPageNoWatchdog, './screenshots/Search', 'Final State');
         });
     });
 })

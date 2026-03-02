@@ -5,6 +5,10 @@ import * as path from 'path';
 const ALLURE_RESULTS = './allure-results';
 const OUTPUT = './excel-report/playwright-report.xlsx';
 
+function sanitizeSheetName(name: string): string {
+    return name.replace(/[\\/*?:[\]]/g, '').substring(0, 31);
+}
+
 function applyStatusStyle(cell: ExcelJS.Cell, status?: string) {
     if (!status) return;
 
@@ -19,13 +23,19 @@ function applyStatusStyle(cell: ExcelJS.Cell, status?: string) {
     }
 }
 
+function getSuiteName(data: any): string {
+    const subSuite = data.labels?.find((l: any) => l.name === 'subSuite')?.value;
+    const suite = data.labels?.find((l: any) => l.name === 'suite')?.value;
+
+    if (subSuite) return subSuite;
+    if (suite) return path.basename(suite);
+
+    return 'Unknown Suite';
+}
+
 function collectSteps(steps: any[] = [], result: any[] = []) {
     for (const step of steps) {
-        if (
-            typeof step.name === 'string' &&
-            step.name.startsWith('[STEP]')
-            //(step.name.startsWith('[STEP]') || step.name.startsWith('[ChSTEP]'))
-        ) {
+        if (typeof step.name === 'string' && step.name.startsWith('[STEP]')) {
             result.push(step);
         }
 
@@ -54,97 +64,134 @@ function findScreenshotFromStep(step: any): any | null {
     return null;
 }
 
-function getTestLevelScreenshot(testResult: any): any | null {
-    if (!Array.isArray(testResult.attachments)) return null;
-
-    return testResult.attachments.find(
-        (a: any) => a.type === 'image/png'
-    );
-}
-
 async function generateExcel() {
     if (!fs.existsSync(ALLURE_RESULTS)) {
         throw new Error('allure-results folder not found');
     }
 
     const workbook = new ExcelJS.Workbook();
-    const sheet = workbook.addWorksheet('Test Report');
 
-    sheet.columns = [
-        { header: 'Test Case', key: 'testCase', width: 45 },
-        //{ header: 'Test Status', key: 'testStatus', width: 14 },
-        { header: 'Step', key: 'step', width: 55 },
-        //{ header: 'Child Step', key: 'childStep', width: 55 },
-        { header: 'Step Status', key: 'stepStatus', width: 14 },
-        { header: 'Screenshot', key: 'screenshot', width: 22 },
-        //{ header: 'Note', key: 'note', width: 55 },
+    const summary = workbook.addWorksheet('Summary');
+
+    summary.columns = [
+        { header: 'Page/Features', key: 'feature', width: 40 },
+        { header: 'Status (Passed / Failed)', key: 'status', width: 30 },
     ];
 
-    sheet.getRow(1).eachCell(cell => {
+    summary.getRow(1).eachCell(cell => {
         cell.font = { bold: true };
     });
-
-    sheet.getColumn('testCase').alignment = {
-        wrapText: true,
-        vertical: 'middle',
-        horizontal: 'center',
-    };
-    //sheet.getColumn('note').alignment = { wrapText: true };
-
-    let currentTestCase = '';
-    let testCaseStartRow = 2;
-
-    let totalTests = 0;
-    let passedTests = 0;
-    let failedTests = 0;
 
     const files = fs
         .readdirSync(ALLURE_RESULTS)
         .filter(f => f.endsWith('-result.json'));
+
+    const latestResults = new Map<string, any>();
 
     for (const file of files) {
         const data = JSON.parse(
             fs.readFileSync(path.join(ALLURE_RESULTS, file), 'utf-8')
         );
 
-        const testName = data.name;
-        const testStatus = data.status;
+        const key = data.historyId || data.testCaseId;
+        if (!key) continue;
 
-        totalTests++;
-        if (testStatus === 'passed') passedTests++;
-        if (testStatus === 'failed' || testStatus === 'broken') failedTests++;
+        if (!latestResults.has(key)) {
+            latestResults.set(key, data);
+        } else {
+            const existing = latestResults.get(key);
+            if ((data.start ?? 0) > (existing.start ?? 0)) {
+                latestResults.set(key, data);
+            }
+        }
+    }
 
+    const suiteMap = new Map<
+        string,
+        {
+            sheet: ExcelJS.Worksheet;
+            passed: number;
+            failed: number;
+        }
+    >();
+
+    let totalPassed = 0;
+    let totalFailed = 0;
+
+    for (const data of latestResults.values()) {
+        const testStatus: string = data.status;
+        const rawSuiteName = getSuiteName(data);
+        const sheetName = sanitizeSheetName(rawSuiteName);
+
+        if (!suiteMap.has(sheetName)) {
+            const sheet = workbook.addWorksheet(sheetName);
+
+            sheet.columns = [
+                { header: 'Test Case', key: 'testCase', width: 45 },
+                { header: 'Step', key: 'step', width: 55 },
+                { header: 'Step Status', key: 'stepStatus', width: 14 },
+                { header: 'Screenshot', key: 'screenshot', width: 22 },
+            ];
+
+            sheet.getRow(1).eachCell(cell => {
+                cell.font = { bold: true };
+            });
+
+            sheet.getColumn(1).alignment = {
+                wrapText: true,
+                vertical: 'middle',
+                horizontal: 'center',
+            };
+
+            suiteMap.set(sheetName, {
+                sheet,
+                passed: 0,
+                failed: 0,
+            });
+        }
+
+        const suiteData = suiteMap.get(sheetName)!;
+        const sheet = suiteData.sheet;
+
+        const testName: string = data.name;
         const steps = collectSteps(data.steps ?? []);
 
-        for (const step of steps) {
-            const isParent = step.name.startsWith('[STEP]');
-            const stepName = step.name
-                .replace('[STEP]', '')
-                //.replace('[ChSTEP]', '')
-                .trim();
+        let startRow = 0;
 
-            const note =
-                step.status === 'failed'
-                    ? step.statusDetails?.message ||
-                    data.statusDetails?.message ||
-                    ''
-                    : '';
+        for (const step of steps) {
+            const cleanStepName = step.name.replace('[STEP]', '').trim();
 
             const row = sheet.addRow({
                 testCase: testName,
-                //testStatus,
-                step: isParent ? stepName : '',
-                //childStep: !isParent ? stepName : '',
+                step: cleanStepName,
                 stepStatus: step.status,
-                //note,
             });
 
-            //applyStatusStyle(row.getCell('testStatus'), testStatus);
             applyStatusStyle(row.getCell('stepStatus'), step.status);
 
+            if (step.status === 'passed') {
+                suiteData.passed++;
+                totalPassed++;
+            }
+
+            if (step.status === 'failed' || step.status === 'broken') {
+                suiteData.failed++;
+                totalFailed++;
+            }
+
             const screenshot = findScreenshotFromStep(step);
+
+            const isFinalState = step.name.includes('[FINAL STATE]');
+
             if (screenshot) {
-                const imagePath = path.join(ALLURE_RESULTS, screenshot.source);
+                if (isFinalState && testStatus === 'passed') {
+                    continue;
+                }
+
+                const imagePath = path.join(
+                    ALLURE_RESULTS,
+                    screenshot.source
+                );
 
                 if (fs.existsSync(imagePath)) {
                     const imageId = workbook.addImage({
@@ -154,55 +201,53 @@ async function generateExcel() {
 
                     sheet.addImage(imageId, {
                         tl: { col: 3, row: row.number - 1 },
-                        ext: { width: 140, height: 120 },
+                        ext: { width: 140, height: 110 },
                     });
 
-                    sheet.getRow(row.number).height = 100;
+                    sheet.getRow(row.number).height = 95;
                 }
             }
 
-            const rowNumber = row.number;
+            if (!startRow) startRow = row.number;
+        }
 
-            if (!currentTestCase) {
-                currentTestCase = testName;
-                testCaseStartRow = rowNumber;
-            }
-
-            if (testName !== currentTestCase) {
-                if (rowNumber - 1 > testCaseStartRow) {
-                    sheet.mergeCells(
-                        `A${testCaseStartRow}:A${rowNumber - 1}`
-                    );
-                }
-                currentTestCase = testName;
-                testCaseStartRow = rowNumber;
-            }
+        const lastRow = sheet.lastRow?.number ?? startRow;
+        if (lastRow > startRow && startRow !== 0) {
+            sheet.mergeCells(`A${startRow}:A${lastRow}`);
         }
     }
 
-    const lastRow = sheet.lastRow?.number ?? testCaseStartRow;
-    if (lastRow > testCaseStartRow) {
-        sheet.mergeCells(`A${testCaseStartRow}:A${lastRow}`);
+    for (const [sheetName, data] of suiteMap.entries()) {
+        const row = summary.addRow({
+            feature: sheetName,
+            status: `${data.passed} Passed / ${data.failed} Failed`,
+        });
+
+        row.getCell(1).value = {
+            text: sheetName,
+            hyperlink: `#'${sheetName}'!A1`,
+        };
+
+        if (data.failed > 0) {
+            row.eachCell(cell => {
+                cell.fill = {
+                    type: 'pattern',
+                    pattern: 'solid',
+                    fgColor: { argb: 'FFFFC7CE' },
+                };
+                cell.font = { bold: true, color: { argb: 'FF9C0006' } };
+            });
+        }
     }
 
-    /* -------------------- Summary sheet -------------------- */
-    const summary = workbook.addWorksheet('Summary');
-
-    summary.columns = [
-        { header: 'Metric', key: 'metric', width: 30 },
-        { header: 'Count', key: 'count', width: 15 },
-    ];
-
-    summary.getRow(1).eachCell(cell => {
-        cell.font = { bold: true };
+    const totalRow = summary.addRow({
+        feature: 'TOTAL',
+        status: `${totalPassed} Passed / ${totalFailed} Failed`,
     });
 
-    summary.addRow({ metric: 'Total Test Cases', count: totalTests });
-    summary.addRow({ metric: 'Passed', count: passedTests });
-    summary.addRow({ metric: 'Failed', count: failedTests });
-
-    applyStatusStyle(summary.getCell('B3'), 'passed');
-    applyStatusStyle(summary.getCell('B4'), 'failed');
+    totalRow.eachCell(cell => {
+        cell.font = { bold: true };
+    });
 
     fs.mkdirSync('./excel-report', { recursive: true });
     await workbook.xlsx.writeFile(OUTPUT);

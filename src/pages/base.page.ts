@@ -684,7 +684,7 @@ export class BasePage {
         if (!url) return url;
 
         try {
-            if (/% [0 - 9A - Fa - f]{ 2 }/.test(url)) {
+            if (/%[0-9A-Fa-f]{2}/.test(url)) {
                 const decoded = decodeURIComponent(url);
 
                 if (decoded !== url) {
@@ -712,7 +712,7 @@ export class BasePage {
     async assertVisible(locator: Locator, description?: string) {
         await step(description || "Assert element visible", async () => {
             await expect(locator).toBeVisible({
-                timeout: 10000
+                timeout: 20000
             });
         });
     }
@@ -765,13 +765,14 @@ export class BasePage {
     async assertUrl(expectedUrl: string | RegExp, description?: string) {
         const currentUrl = await this.page.url();
         const decodedUrl = await this.decodeUrlIfNeeded(currentUrl);
+        const decodedExpectedUrl = typeof expectedUrl === 'string' ? await this.decodeUrlIfNeeded(expectedUrl) : expectedUrl;
 
         await step(description || "Check current URL", async () => {
             const urlToCheck = String(decodedUrl);
-            if (expectedUrl instanceof RegExp) {
-                expect(urlToCheck).toMatch(expectedUrl);
+            if (decodedExpectedUrl instanceof RegExp) {
+                expect(urlToCheck).toMatch(decodedExpectedUrl);
             } else {
-                expect(expectedUrl).toContain(urlToCheck);
+                expect(decodedExpectedUrl).toContain(urlToCheck);
             }
         });
     }

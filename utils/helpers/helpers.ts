@@ -896,6 +896,31 @@ export async function openNewTab(page: Page, action: () => Promise<void>): Promi
   return newPage
 }
 
+export async function openPopup(page: Page, action: () => Promise<void>): Promise<Page> {
+  const popupPromise = page.waitForEvent('popup');
+
+  await action();
+
+  const popup = await popupPromise;
+  await popup.waitForLoadState('domcontentloaded');
+
+  return popup;
+}
+
+export async function clickPaypalAndWaitPopup(page: Page): Promise<Page> {
+  const frame = page.frameLocator('iframe[name^="__zoid__paypal_buttons__"]');
+  const button = frame.locator('[aria-label="PayPal Checkout"]');
+
+  await button.waitFor({ state: 'visible', timeout: 15000 });
+  await button.click();
+
+  const paypalOverlay = page.frameLocator('iframe[title*="PayPal"]');
+
+  await paypalOverlay.first().locator('body').waitFor({ timeout: 20000 });
+
+  return page;
+}
+
 export async function clickBlankAreaToClosePopup(page: Page, description = 'Click blank area to close popup'): Promise<void> {
   await step(description, async () => {
     const viewport = page.viewportSize();
